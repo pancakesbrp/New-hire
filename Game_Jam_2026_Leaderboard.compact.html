@@ -180,15 +180,221 @@
   .hud-bottom {
     display: flex; justify-content: space-between; align-items: flex-end;
     font-size: 10px; opacity: 0.7;
+    gap: 16px;
   }
-  .controls span { margin-right: 20px; }
-  .controls kbd {
-    display: inline-block; padding: 3px 7px;
+  .hud-controls-reminder-line {
+    flex: 1;
+    min-width: 0;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px;
+    opacity: 0.55;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+  .hud-controls-reminder-line kbd {
+    display: inline-block;
+    padding: 2px 7px;
+    margin-right: 8px;
+    font-size: 9px;
+    opacity: 0.95;
+    border: 1px solid rgba(244, 234, 208, 0.32);
+    border-radius: 3px;
+    background: rgba(10, 10, 8, 0.5);
+    vertical-align: baseline;
+  }
+  body:not(.input-mode-keyboard):not(.input-mode-gamepad) .hud-controls-reminder-line {
+    display: none;
+  }
+
+  /* Floor 25 — three-phase interview (shown while rounds are active). */
+  .boss-phase-hud {
+    position: fixed;
+    left: 50%;
+    bottom: calc(max(88px, 14vh));
+    transform: translateX(-50%);
+    max-width: min(560px, 92vw);
+    padding: 10px 18px;
+    border-radius: 10px;
+    background: rgba(12, 8, 18, 0.82);
+    border: 1px solid rgba(232, 220, 200, 0.15);
+    color: #ebe4dc;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: clamp(11px, 2vw, 14px);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    text-align: center;
+    z-index: 34;
+    pointer-events: none;
+    line-height: 1.35;
+  }
+  .boss-phase-hud.hidden {
+    display: none;
+  }
+
+  /* Input preference: menus & hints (HUD bindings removed — use C for full layout) */
+  body.input-mode-gamepad .gp-input-col--keyboard,
+  body.input-mode-gamepad #hint-text .gp-input-col--keyboard {
+    display: none !important;
+  }
+  body.input-mode-keyboard .gp-input-col--pad,
+  body.input-mode-keyboard #hint-text .gp-input-col--pad {
+    display: none !important;
+  }
+  body.input-mode-gamepad .gp-input-split,
+  body.input-mode-keyboard .gp-input-split {
+    justify-content: center;
+  }
+
+  /* First-run input picker & controls reference */
+  #input-choice-overlay {
+    z-index: 120;
+  }
+  #controls-help-overlay {
+    z-index: 125;
+  }
+  .input-choice-card,
+  .controls-help-card {
+    max-width: 460px;
+    padding: 36px 40px;
+    border: 1px solid rgba(232, 223, 168, 0.38);
+    background: rgba(10, 10, 8, 0.88);
+    backdrop-filter: blur(10px);
+    text-align: center;
+  }
+  .input-choice-title {
+    font-family: 'VT323', monospace;
+    font-size: 46px;
+    margin-bottom: 14px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    line-height: 1;
+  }
+  .input-choice-rec {
+    font-size: 13px;
+    opacity: 0.72;
+    letter-spacing: 0.1em;
+    line-height: 1.6;
+    margin-bottom: 28px;
+    max-width: 380px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .input-choice-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    align-items: stretch;
+  }
+  .input-choice-buttons .cta {
+    margin-top: 0;
+  }
+  .controls-help-heading {
+    font-family: 'VT323', monospace;
+    font-size: 40px;
+    margin-bottom: 8px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  /* Override generic .overlay h2 / .overlay p for this panel */
+  #controls-help-overlay .controls-help-heading {
+    font-size: 40px;
+    letter-spacing: 0.08em;
+    text-align: center;
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 14px;
+    text-shadow: 0 0 18px rgba(232, 223, 168, 0.22);
+  }
+  #controls-help-overlay .controls-help-c-foot {
+    text-align: center;
+  }
+  .controls-help-tabs {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    gap: 0;
+    margin: 0 auto 20px;
+    max-width: 360px;
+    border-bottom: 1px solid rgba(232, 223, 168, 0.22);
+  }
+  .controls-help-tab {
+    flex: 1;
+    padding: 12px 14px 14px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    color: rgba(232, 223, 168, 0.42);
+    cursor: pointer;
+    transition: color 0.15s ease, border-color 0.15s ease;
+  }
+  .controls-help-tab:hover {
+    color: rgba(232, 223, 168, 0.78);
+  }
+  .controls-help-tab[aria-selected='true'] {
+    color: rgba(244, 242, 238, 0.96);
+    border-bottom-color: rgba(184, 45, 31, 0.88);
+  }
+  .controls-help-tab:focus-visible {
+    outline: 2px solid rgba(184, 45, 31, 0.55);
+    outline-offset: 3px;
+  }
+  .controls-help-tabpanel[hidden] {
+    display: none !important;
+  }
+  .controls-help-section-title {
+    font-size: 10px;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    opacity: 0.48;
+    margin-bottom: 10px;
+    text-align: left;
+  }
+  .controls-help-body {
+    text-align: left;
+    margin-bottom: 22px;
+  }
+  .controls-help-body .hud-bind-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.04em;
+    line-height: 1.45;
+    color: rgba(244, 234, 208, 0.93);
+    max-width: none;
+  }
+  .controls-help-body .hud-bind-stack kbd {
+    display: inline-block;
+    padding: 2px 6px;
+    margin-right: 4px;
     background: rgba(10, 10, 8, 0.55);
     border: 1px solid rgba(244, 234, 208, 0.35);
     font-family: 'IBM Plex Mono', monospace;
-    font-size: 9px; margin-right: 4px;
+    font-size: 9px;
     color: #f4f2ee;
+    border-radius: 2px;
+  }
+  .controls-help-c-foot {
+    font-size: 11px;
+    opacity: 0.82;
+    letter-spacing: 0.1em;
+    margin-bottom: 22px;
+    line-height: 1.55;
+  }
+  .controls-help-c-foot kbd {
+    padding: 3px 9px;
+    border: 1px solid rgba(232, 223, 168, 0.45);
+    background: rgba(10, 10, 8, 0.55);
+    border-radius: 3px;
+    font-size: 11px;
+    margin-right: 6px;
   }
 
   /* ========== SCREENS ========== */
@@ -283,6 +489,47 @@
     letter-spacing: 0.5em;
     padding: 16px 56px;
   }
+  button.gp-menu-focus {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+    box-shadow: 0 0 12px rgba(184, 45, 31, 0.35);
+  }
+
+  /* Controller vs keyboard — shared two-column layout */
+  .gp-input-split {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 28px 36px;
+    width: 100%;
+  }
+  .gp-input-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+    flex: 1 1 200px;
+    max-width: 280px;
+  }
+  .gp-input-col--keyboard {
+    align-items: flex-start;
+  }
+  .gp-input-col-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: rgba(232, 223, 168, 0.55);
+    width: 100%;
+    text-align: center;
+  }
+  .gp-input-col--keyboard .gp-input-col-label {
+    text-align: left;
+  }
+
   .meta {
     position: absolute; bottom: 40px; left: 50%;
     transform: translateX(-50%);
@@ -320,10 +567,46 @@
     background: rgba(184, 45, 31, 0.9);
     border-color: rgba(184, 45, 31, 0.9);
   }
-  #pause-body, #levels-panel, #reset-confirm-panel {
+  #pause-body, #levels-panel, #reset-confirm-panel, #admin-code-panel, #admin-panel {
     display: flex; flex-direction: column; align-items: center;
   }
-  #levels-panel.hidden, #pause-body.hidden, #reset-confirm-panel.hidden { display: none; }
+  #levels-panel.hidden, #pause-body.hidden, #reset-confirm-panel.hidden,
+  #admin-code-panel.hidden, #admin-panel.hidden { display: none; }
+  #pause-admin-hotspot {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 92px;
+    height: 92px;
+    opacity: 0;
+    border: 0;
+    background: transparent;
+    cursor: default;
+    z-index: 3;
+  }
+  #admin-code-input {
+    width: 160px;
+    padding: 12px 14px;
+    margin-bottom: 10px;
+    background: rgba(10, 10, 8, 0.6);
+    border: 1px solid rgba(244, 234, 208, 0.45);
+    color: #f4f2ee;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 18px;
+    letter-spacing: 0.35em;
+    text-align: center;
+    outline: none;
+  }
+  #admin-code-status, #admin-status {
+    min-height: 16px;
+    margin-bottom: 14px;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    opacity: 0.7;
+  }
+  #admin-code-status.error, #admin-status.error { color: var(--accent); opacity: 1; }
+  #admin-status.success { color: #8ec98e; opacity: 1; }
   .level-panel-title {
     font-family: 'VT323', monospace;
     font-size: 28px;
@@ -482,7 +765,7 @@
     z-index: 80;
     pointer-events: none;
     transition: top 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-    max-width: 520px;
+    max-width: 640px;
     backdrop-filter: blur(6px);
   }
   #hint-banner.show { top: 24px; }
@@ -494,10 +777,29 @@
     color: #e8e4dc;
     line-height: 1.6;
   }
-  #hint-text strong {
-    color: #b82d1f;
-    font-weight: 700;
-    letter-spacing: 0.1em;
+  #hint-text .hint-lead {
+    margin: 8px 0 12px;
+    opacity: 0.92;
+    font-size: 11px;
+    line-height: 1.55;
+  }
+  #hint-text .gp-input-split {
+    margin-top: 4px;
+    justify-content: flex-start;
+  }
+  #hint-text .gp-input-col {
+    align-items: flex-start;
+    max-width: none;
+    flex: 1 1 220px;
+  }
+  #hint-text .gp-input-col-label {
+    text-align: left;
+  }
+  #hint-text .hint-bind-details {
+    margin: 0;
+    font-size: 11px;
+    line-height: 1.55;
+    letter-spacing: 0.04em;
   }
   #hint-text kbd {
     background: rgba(232, 223, 168, 0.12);
@@ -661,17 +963,162 @@
     font-size: 9px; letter-spacing: 0.3em; text-transform: uppercase;
     opacity: 0.45; margin-bottom: 12px;
   }
+
+  /* ========== STANDALONE LEADERBOARD OVERLAY (title + pause) ========== */
+  #leaderboard-overlay {
+    z-index: 120;
+    padding: 56px 24px 96px;
+    overflow-y: auto;
+    justify-content: flex-start;
+  }
+  #leaderboard-overlay .lb-overlay-title {
+    font-family: 'VT323', monospace;
+    font-size: clamp(56px, 9vw, 96px);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    text-shadow: 0 0 20px rgba(232, 223, 168, 0.3);
+    text-align: center;
+  }
+  #leaderboard-overlay .lb-overlay-sub {
+    font-size: 10px;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    opacity: 0.5;
+    margin-bottom: 36px;
+    text-align: center;
+  }
+  #leaderboard-overlay .lb-overlay-table-wrap {
+    width: 100%;
+    max-width: 620px;
+    border: 1px solid rgba(244, 234, 208, 0.2);
+    background: rgba(10, 10, 8, 0.55);
+    max-height: 60vh;
+    overflow-y: auto;
+    margin-bottom: 32px;
+  }
+  #leaderboard-overlay #lb-overlay-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+  }
+  #leaderboard-overlay #lb-overlay-table th {
+    font-size: 9px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    opacity: 0.5;
+    padding: 12px 16px;
+    border-bottom: 1px solid rgba(244, 234, 208, 0.18);
+    text-align: left;
+    background: rgba(10, 10, 8, 0.65);
+    position: sticky;
+    top: 0;
+  }
+  #leaderboard-overlay #lb-overlay-table th:last-child { text-align: right; }
+  #leaderboard-overlay #lb-overlay-table td {
+    padding: 10px 16px;
+    border-bottom: 1px solid rgba(244, 234, 208, 0.07);
+    color: rgba(244, 234, 208, 0.85);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 220px;
+  }
+  #leaderboard-overlay #lb-overlay-table td:last-child {
+    text-align: right;
+    font-family: 'VT323', monospace;
+    font-size: 18px;
+    letter-spacing: 0.05em;
+  }
+  #leaderboard-overlay #lb-overlay-table tr.lb-me td {
+    color: #f4f2ee;
+    background: rgba(184, 45, 31, 0.12);
+  }
+  #leaderboard-overlay #lb-overlay-table tr.lb-gold   td:first-child { color: #e8c84a; }
+  #leaderboard-overlay #lb-overlay-table tr.lb-silver td:first-child { color: #c0c0c0; }
+  #leaderboard-overlay #lb-overlay-table tr.lb-bronze td:first-child { color: #cd7f32; }
+  #lb-overlay-loading {
+    padding: 40px 20px;
+    opacity: 0.45;
+    font-size: 11px;
+    letter-spacing: 0.3em;
+    text-align: center;
+  }
+  #lb-overlay-back {
+    min-width: 200px;
+  }
 </style>
 </head>
 <body>
   <canvas id="game"></canvas>
+
+  <!-- First-run: keyboard vs controller (preference saved to localStorage) -->
+  <div id="input-choice-overlay" class="overlay hidden" aria-modal="true" role="dialog" aria-labelledby="input-choice-title">
+    <div class="input-choice-card">
+      <h2 id="input-choice-title" class="input-choice-title">How do you want to play?</h2>
+      <p class="input-choice-rec">Controller is recommended for the best experience — but keyboard works great too.</p>
+      <div class="input-choice-buttons">
+        <button type="button" class="cta" id="input-choice-gamepad">Controller</button>
+        <button type="button" class="cta pause-btn pause-sec" id="input-choice-keyboard">Keyboard</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Controls reference (toggle with C anytime) -->
+  <div id="controls-help-overlay" class="overlay hidden" aria-modal="true" role="dialog" aria-labelledby="controls-help-heading">
+    <div class="controls-help-card">
+      <h2 id="controls-help-heading" class="controls-help-heading">Controls</h2>
+
+      <div class="controls-help-tabs" role="tablist" aria-label="Control scheme reference">
+        <button type="button" class="controls-help-tab" role="tab" id="controls-help-tab-gamepad" aria-selected="true" aria-controls="controls-help-body-gamepad">Controller</button>
+        <button type="button" class="controls-help-tab" role="tab" id="controls-help-tab-keyboard" aria-selected="false" aria-controls="controls-help-body-keyboard">Keyboard</button>
+      </div>
+
+      <div id="controls-help-body-gamepad" class="controls-help-body controls-help-tabpanel" role="tabpanel" aria-labelledby="controls-help-tab-gamepad">
+        <div class="controls-help-section-title">In-game</div>
+        <div class="hud-bind-stack" title="PS/DualSense: ⊗ ○ △ □ · Xbox names shown">
+          <span>LS — Move (incl. wall climb)</span>
+          <span>A — Jump · LT — Dash (air)</span>
+          <span>RB — Briefcase slash · RT — Parry / strike</span>
+          <span>View — Restart floor</span>
+        </div>
+      </div>
+
+      <div id="controls-help-body-keyboard" class="controls-help-body controls-help-tabpanel" role="tabpanel" aria-labelledby="controls-help-tab-keyboard" hidden>
+        <div class="controls-help-section-title">In-game</div>
+        <div class="hud-bind-stack">
+          <span><kbd>A</kbd><kbd>D</kbd> Move & wall climb</span>
+          <span><kbd>Space</kbd> Jump · <kbd>Space</kbd> (air) Dash</span>
+          <span><kbd>LMB</kbd> or <kbd>F</kbd> Briefcase slash · <kbd>RMB</kbd> Parry</span>
+          <span><kbd>R</kbd> Restart floor · <kbd>Esc</kbd> Pause menu</span>
+        </div>
+      </div>
+
+      <p class="controls-help-c-foot"><kbd>C</kbd> Open or close this panel anytime during play.</p>
+      <button type="button" class="cta pause-btn pause-sec" id="controls-help-close">Close</button>
+    </div>
+  </div>
+  <script>
+    (function () {
+      try {
+        var m = localStorage.getItem('floor25_input_mode_v1');
+        var pick = document.getElementById('input-choice-overlay');
+        if (m === 'keyboard' || m === 'gamepad') {
+          document.body.classList.add('input-mode-' + m);
+        } else if (pick) {
+          pick.classList.remove('hidden');
+        }
+      } catch (e) {}
+    })();
+  </script>
 
   <!-- ============== HUD ============== -->
   <div id="hud">
     <!-- Building minimap — left side, canvas rendered -->
     <div id="minimap">
       <canvas id="minimap-canvas" width="52" height="300"></canvas>
-      <div id="minimap-label">FLOOR <span id="minimap-floor-num">1</span></div>
+      <div id="minimap-label"><span id="minimap-floor-prefix">FLOOR</span> <span id="minimap-floor-num">1</span></div>
       <div id="minimap-sublabel">OF 25</div>
     </div>
     <div class="hud-top">
@@ -687,16 +1134,10 @@
     </div>
     <div></div>
     <div class="hud-bottom">
-      <div class="controls">
-        <span><kbd>A</kbd><kbd>D</kbd> Move</span>
-        <span><kbd>Space</kbd> Jump</span>
-        <span><kbd>F</kbd> Staple Gun</span>
-        <span><kbd>A</kbd>/<kbd>D</kbd>+Wall Climb</span>
-        <span><kbd>LMB</kbd> Strike / Parry</span>
-        <span><kbd>R</kbd> Restart floor</span>
-      </div>
+      <div class="hud-controls-reminder-line"><kbd>C</kbd> Controls</div>
       <div>LUMON // 25TH FLOOR</div>
     </div>
+    <div id="boss-phase-hud" class="boss-phase-hud hidden"></div>
   </div>
 
 
@@ -707,8 +1148,8 @@
     <p class="subtitle">You slept through your alarm. The interview is on the 25th floor. The elevator is out of order. Climb.</p>
     <button class="cta" id="start-btn">Begin Interview</button>
     <button class="cta" id="tutorial-btn" style="margin-top:16px;">Tutorial</button>
+    <button class="cta" id="title-leaderboard-btn" style="margin-top:16px;">Leaderboard</button>
     <div class="best-time" id="best-time-display"></div>
-    <div class="meta">Press <kbd style="background:transparent;border:1px solid currentColor;padding:2px 6px;">Esc</kbd> to pause</div>
   </div>
 
   <!-- ============== TUTORIAL ============== -->
@@ -761,10 +1202,12 @@
 
   <!-- ============== PAUSE MENU ============== -->
   <div id="pause-menu" class="overlay hidden">
+    <button id="pause-admin-hotspot" aria-label="Admin"></button>
     <h2 id="pause-title">Paused</h2>
     <div id="pause-body">
       <button class="cta pause-btn" id="pause-resume">Resume</button>
       <button class="cta pause-btn" id="pause-levels">Level Select</button>
+      <button class="cta pause-btn" id="pause-leaderboard">Leaderboard</button>
       <button class="cta pause-btn pause-sec" id="pause-audio">Audio: <span id="pause-audio-state">On</span></button>
       <button class="cta pause-btn pause-danger" id="pause-reset">Reset Game</button>
     </div>
@@ -779,6 +1222,36 @@
       <button class="cta pause-btn pause-danger" id="reset-confirm-yes">Yes, Reset</button>
       <button class="cta pause-btn pause-sec" id="reset-confirm-no">Cancel</button>
     </div>
+    <div id="admin-code-panel" class="hidden">
+      <div class="level-panel-title">Admin Access</div>
+      <input id="admin-code-input" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="4" placeholder="0000" autocomplete="off" />
+      <div id="admin-code-status"></div>
+      <button class="cta pause-btn" id="admin-code-submit">Enter</button>
+      <button class="cta pause-btn pause-sec" id="admin-code-cancel">Cancel</button>
+    </div>
+    <div id="admin-panel" class="hidden">
+      <div class="level-panel-title">Admin Panel</div>
+      <div id="admin-status"></div>
+      <button class="cta pause-btn pause-danger" id="admin-reset-scoreboard">Reset Scoreboard</button>
+      <button class="cta pause-btn" id="admin-unlock-floors">Unlock All Floors</button>
+      <button class="cta pause-btn" id="admin-god-mode">Toggle God Mode</button>
+      <button class="cta pause-btn" id="admin-win-now">Win Current Run</button>
+      <button class="cta pause-btn pause-sec" id="admin-back">Back</button>
+    </div>
+  </div>
+
+  <!-- ============== STANDALONE LEADERBOARD OVERLAY ============== -->
+  <div id="leaderboard-overlay" class="overlay hidden">
+    <div class="lb-overlay-title">Leaderboard</div>
+    <div class="lb-overlay-sub">— Worldwide Top 25 —</div>
+    <div class="lb-overlay-table-wrap">
+      <div id="lb-overlay-loading">Loading scores…</div>
+      <table id="lb-overlay-table" style="display:none;">
+        <thead><tr><th>#</th><th>Name</th><th>Deaths</th><th>Time</th></tr></thead>
+        <tbody id="lb-overlay-body"></tbody>
+      </table>
+    </div>
+    <button class="cta pause-btn pause-sec" id="lb-overlay-back">Back</button>
   </div>
 
   <!-- Mechanic intro hint banner — appears at top of screen when a new mechanic is introduced -->
@@ -839,6 +1312,9 @@
     parryRange: 2.5,        // how close a plane needs to be to parry
   };
 
+  /** Horizontal clearance from platform edges to dash crystal centers — matches full flat dash travel (vx × dash duration). */
+  const CRYSTAL_PLATFORM_GAP_X = PHYS.dashVel * PHYS.dashTime;
+
   // 25 individual floor palettes — each floor has a distinct look.
   // Colors progress: Backrooms yellow → sickly green → cold blue → warm tan →
   // bruised purple → slate → seafoam → executive dark → boss black-red.
@@ -887,8 +1363,7 @@
   const ZONES = [
     { name: 'Lobby',     range: [1, 8],   bg: 0xe4e2de, fog: 0xdcdcda, accent: 0xb82d1f, wallColor: 0xf4f2ee, floorColor: 0xb4b0ac, ceilColor: 0xfafaf8 },
     { name: 'Corporate', range: [9, 16],  bg: 0xc0cdd4, fog: 0xb0bdc4, accent: 0xb82d1f, wallColor: 0xdde4e8, floorColor: 0x88929a, ceilColor: 0xe8ecf0 },
-    { name: 'Executive', range: [17, 24], bg: 0x8a958a, fog: 0x6a756a, accent: 0xb82d1f, wallColor: 0xa8b2ac, floorColor: 0x4a5550, ceilColor: 0xc8d2cc },
-    { name: 'Top Floor', range: [25, 25], bg: 0x2a2820, fog: 0x1a1814, accent: 0xb82d1f, wallColor: 0x3a3830, floorColor: 0x1a1814, ceilColor: 0x4a4840 },
+    { name: 'Executive', range: [17, 25], bg: 0x8a958a, fog: 0x6a756a, accent: 0xb82d1f, wallColor: 0xa8b2ac, floorColor: 0x4a5550, ceilColor: 0xc8d2cc },
   ];
 
   // =========================================================================
@@ -930,7 +1405,6 @@
     door_open:  { procedural: true, volume: 0.8, mono: true },
     door_enter: { procedural: true, volume: 0.9, mono: true },
     crystal:    { src: null, volume: 0.8, poly: 4 },
-    staple:     { src: null, volume: 0.5, poly: 6 },
     crumble:    { src: null, volume: 0.7, poly: 3 },
     crumble_fall: { src: null, volume: 0.6, poly: 2 },
     acid_death: { src: null, volume: 1.0, poly: 2 },
@@ -942,8 +1416,8 @@
     ui_close:   { _b64: UI_CLOSE_B64, volume: 0.7, mono: true },
     ui_tab:     { src: null, volume: 0.4, poly: 2 },
     ambient_hum:   { src: null, volume: 0.35, loop: true },
-    music_menu:    { url: 'assets/music_menu.mp3', volume: 0.55, loop: true, mono: true },
-    music_game:    { url: 'assets/music_game.mp3', volume: 0.55, loop: true, mono: true },
+    music_menu:    { url: 'assets/music_menu.mp3', volume: 0.78, loop: true, mono: true },
+    music_game:    { url: 'assets/music_game.mp3', volume: 0.78, loop: true, mono: true },
     ambient_acid:  { src: null, volume: 0.3, loop: true },
   };
 
@@ -1330,6 +1804,7 @@
     shakeAmount: 0,      // current shake intensity
     shakeDecay: 10,      // how fast shake fades
     currentFloorKindSet: null,
+    adminGodMode: false,
   };
 
   function currentZone() {
@@ -1351,8 +1826,9 @@
 
   const scene = new THREE.Scene();
   scene.background = new THREE.Color(0xdcdad6);
-  // Exponential fog — that "hallway disappears into nothing" Backrooms feel
-  scene.fog = new THREE.FogExp2(0xd8d4cc, 0.028);
+  // Exponential fog — hallway fades into distance (density ↑ = thicker haze)
+  const FOG_EXP_DENSITY = 0.038;
+  scene.fog = new THREE.FogExp2(0xd8d4cc, FOG_EXP_DENSITY);
 
   // Fixed side-view camera — wider FOV for that wide-angle surveillance feel
   const camera = new THREE.PerspectiveCamera(52, window.innerWidth / window.innerHeight, 0.1, 400);
@@ -1390,16 +1866,33 @@
   // Platforms stored as { x, y, w, h, mesh }
   let platforms = [];
   let hazards = [];  // { type, x, y, w, h, mesh, vx?, vy?, phase? }
-  let staples = [];  // player-fired staple projectiles
   let goalX = 0, goalY = 0;
   let spawnX = -12, spawnY = 2;
   let goalMesh = null;
 
   function clearWorld() {
+    disposePaperPlane();
+    disposePaperThrower();
+    paperThrowWindup = 0;
+    paperThrowFollow = 0;
     while (worldGroup.children.length) {
       const c = worldGroup.children.pop();
-      c.geometry?.dispose();
-      c.material?.dispose?.();
+      c.traverse((obj) => {
+        if (!obj.isMesh) return;
+        if (obj.geometry) obj.geometry.dispose();
+        const m = obj.material;
+        if (m) {
+          if (Array.isArray(m)) {
+            for (const mm of m) {
+              if (mm?.map) mm.map.dispose();
+              mm?.dispose?.();
+            }
+          } else {
+            if (m.map) m.map.dispose();
+            m.dispose?.();
+          }
+        }
+      });
     }
     platforms = [];
     hazards = [];
@@ -3050,13 +3543,28 @@
   // Each room: platforms to jump between, acid pools on the ground that kill
   // instantly, a door at the far right to reach. Camera follows player X.
 
-  const ROOM_LENGTH = 80;  // width of each room
+  const ROOM_LENGTH = 80;  // width of each normal gauntlet room
+  /* Floor 25 finale uses extended roomLen — hallSpanX follows roomLen for walls/sky. */
   let acidZones = [];      // {x, w} — ground segments that kill on touch
   let acidBubbles = [];    // sizzling green bubbles on acid surface
+  /** Shared bubble geometry — avoid allocating one SphereGeometry per bubble each frame. */
+  let acidBubbleSurfGeo = null;
   let acidBalls = [];      // dangerous acid balls that launch up and kill player
   let ceilingLights = [];  // flickering fluorescent fixtures per floor
   let doorState = null;    // door animation state {pivot, openAmount}
   let doorLocked = false;  // door is always open (no wave system)
+  /** Active gauntlet length (ROOM_LENGTH or extended finale hall). Used for ambient spawns. */
+  let gauntletRoomLen = ROOM_LENGTH;
+  /** Floors 10+ — single decorative/hazard paper plane at a time, right → left */
+  let paperPlane = null;
+  let paperPlaneSpawnTimer = 9999;
+  /** Floors 10+ — coworker on a late platform throws planes (see buildCoworkerThrowerMesh). */
+  let paperThrower = null;
+  let paperThrowWindup = 0;
+  let paperThrowFollow = 0;
+  const PAPER_THROW_WINDUP = 0.38;
+  const PAPER_THROW_FOLLOW = 0.22;
+  const PAPER_PLANE_SCALE = 0.44;
 
   // 10 hand-designed room layouts. Each entry is a list of:
   //   platforms: [{x, y, w}]  (h always 0.5)
@@ -3125,7 +3633,7 @@
         ]
       },
       // 6 onwards — previous general layouts (shifted: was 1-13, now 6-18)
-      // 6
+      // 6 — zigzag platforms across acid (jump + dash only)
       { platforms: [
           {x:8,y:0,w:5}, {x:17,y:1.5,w:4}, {x:25,y:3,w:4},
           {x:33,y:1.5,w:4}, {x:42,y:3,w:4}, {x:51,y:1.5,w:4},
@@ -3150,7 +3658,7 @@
       { platforms: [
           {x:5,y:0,w:4}, {x:17,y:0,w:3}, {x:28,y:2,w:3},
           {x:40,y:0,w:3}, {x:52,y:2,w:3}, {x:62,y:0,w:7},
-        ], acid: [{x:9,w:8},{x:20,w:8},{x:31,w:9},{x:43,w:9},{x:55,w:7}]
+        ], acid: [{x:9,w:8},{x:20,w:8},{x:31,w:9},{x:43,w:9},{x:55,w:7}],
       },
       // 10
       { platforms: [
@@ -3193,7 +3701,7 @@
         ], acid: [{x:8,w:22},{x:34,w:28}],
         crystals: [
           {x:13, y:3}, {x:19, y:4}, {x:25, y:3},   // gap 1: spawn→mid
-          {x:39, y:3}, {x:44, y:4}, {x:49, y:3}, {x:54, y:4}, {x:59, y:3}, // gap 2: mid→door
+          {x:39, y:3}, {x:44, y:4}, {x:49, y:3}, {x:54, y:4}, {x:58.75, y:3}, // gap 2: mid→door (≥CRYSTAL_PLATFORM_GAP_X from x=62)
         ]
       },
       // 16 — Crystal tower — verified passable: every hop ≤6 units
@@ -3203,8 +3711,8 @@
         crystals: [
           // spawn(edge=8) → raised1(left=14): one hop, gap=6 ✓
           {x:22, y:6}, {x:28, y:7}, {x:34, y:6}, // raised1(right=16.5) → raised2(left=40)
-          {x:48, y:4}, {x:54, y:3}, {x:60, y:3}, // raised2(right=42.5) → door(left=62)
-        ]
+          {x:48, y:4}, {x:54, y:3}, {x:58.75, y:3}, // raised2(right=42.5) → door(left=62); last orb ≥CRYSTAL_PLATFORM_GAP_X from door plat
+        ],
       },
       // 17 — Crystal maze — verified passable: 7 crystals at 6-unit steps, door at x=50
       { platforms: [
@@ -3214,12 +3722,53 @@
           {x:14,y:3}, {x:20,y:6}, {x:26,y:4}, {x:32,y:7}, {x:38,y:4}, {x:44,y:6},
         ]
       },
+      // 18 — Floor 25: alternates orb-free parkour with orb-assisted stretches where gaps are ~15u (cannot be crossed without crystal dash chains).
+      {
+        finaleMix: true,
+        platforms: [
+          // —— Parkour α — low steps/movers (stay ~2–5u high, not near ceiling) ——
+          { kind: 'solid', x: 4, y: 0, w: 8 },
+          { kind: 'crumble', x: 22, y: 1.35, w: 2.75 },
+          { kind: 'crumble', x: 38, y: 2.05, w: 2.7 },
+          { kind: 'moving', x: 54, y: 1.85, w: 3.2, moveDist: 2.25, moveSpeed: 2.58 },
+          { kind: 'crumble', x: 70, y: 1.45, w: 2.85 },
+          { kind: 'solid', x: 82, y: 0.35, w: 8 },
+          // —— Orb highway — same gaps; platforms lowered + shorter mover strokes ——
+          { kind: 'moving', x: 105, y: 1.95, w: 3.2, moveDist: 2.2, moveSpeed: 2.58 },
+          { kind: 'crumble', x: 123, y: 2.1, w: 2.75 },
+          { kind: 'moving', x: 141, y: 1.95, w: 3.2, moveDist: 2.25, moveSpeed: 2.72 },
+          { kind: 'solid', x: 159, y: 0.35, w: 5 },
+          { kind: 'solid', x: 179, y: 0.35, w: 5 },
+          // —— Parkour β ——
+          { kind: 'crumble', x: 199, y: 2.15, w: 2.65 },
+          { kind: 'moving', x: 217, y: 1.95, w: 3.2, moveDist: 2.35, moveSpeed: 2.88 },
+        ],
+        crystals: [
+          // Orbs just above max platform/mover height (~5.5u); gorge lower over acid.
+          // [82,90] → [105,108.2]
+          { x: 95.0, y: 5.6 }, { x: 100.0, y: 5.55 },
+          // [108.2,123]
+          { x: 113.0, y: 5.6 }, { x: 118.0, y: 5.55 },
+          // [125.75,141]
+          { x: 132.0, y: 5.6 }, { x: 136.0, y: 5.65 },
+          // [144.2,159]
+          { x: 150.0, y: 5.6 }, { x: 154.0, y: 5.55 },
+          // Gorge [164,179]
+          { x: 170.0, y: 3.9 }, { x: 174.0, y: 3.9 },
+          // [184,199]
+          { x: 191.0, y: 5.6 }, { x: 195.0, y: 5.55 },
+          // [201.65,217]
+          { x: 208.0, y: 5.6 }, { x: 212.0, y: 5.55 },
+          // [220.2,234] — last gap before door safe strip (no end platform)
+          { x: 227.0, y: 5.6 }, { x: 231.0, y: 5.55 },
+        ],
+      },
     ];
 
     // Floors 1-5: use exact layouts by index (deliberate teaching sequence)
-    // Floor 25 — the interview room. Flat floor, no acid, no platforms.
-    if (n === 25) return { platforms: [], acid: [] };
     if (n <= 5) return layouts[n - 1];
+    // Finale uses last layout — layouts.at(-1) so indices stay correct (was wrongly layouts[18] when length is 18)
+    if (n === 25) return layouts[layouts.length - 1];
     // Floor 6+: cycle through the general layouts (indices 5-16)
     return layouts[5 + ((n - 6) % 12)];
   }
@@ -3233,25 +3782,52 @@
     ceilingLights = [];
     doorLocked = false;
 
-    // Floor 25 is completely different — skip all normal room generation
-    if (n === 25) {
-      buildInterviewRoom();
-      spawnX = 2; spawnY = 1;
-      return;
-    }
+    camera.fov = 52;
+    camera.updateProjectionMatrix();
 
     const zone = currentZone();
     scene.background = new THREE.Color(zone.bg);
     scene.fog.color.setHex(zone.fog);
     applyZoneToMaterials(zone);
-    state.currentFloorKindSet = pickFloorKindSet(zone.name, n);
 
     const layout = getRoomLayout(n);
+    const isFinale = n === 25;
+
+    // Finale floor — distinct mood: darker void, warm key/rim, subdued walls (reads as "last room," not another gauntlet).
+    if (isFinale) {
+      scene.background.setHex(0x100c14);
+      key.color.setHex(0xffe8d0);
+      key.intensity = 0.72;
+      rim.color.setHex(0xff6a4a);
+      rim.intensity = 0.32;
+      ambient.color.setHex(0x584868);
+      ambient.intensity = 0.2;
+      matWall.color.setHex(0x322a34);
+      matWallDark.color.setHex(0x2a222c);
+      matCeiling.color.setHex(0x1e1a22);
+      matFloor.color.setHex(0x3a343e);
+      matFloorDetail.color.setHex(0x2e2830);
+    } else {
+      key.color.setHex(0xfff0b8);
+      key.intensity = 0.7;
+      rim.color.setHex(0x6a7580);
+      rim.intensity = 0.2;
+      ambient.color.setHex(0xfff4c8);
+      ambient.intensity = 0.25;
+    }
+    scene.fog.density = FOG_EXP_DENSITY;
+
+    state.currentFloorKindSet = pickFloorKindSet(zone.name, n);
+    const roomLen = n === 25 ? 240 : ROOM_LENGTH;
     const HALL_H = 12;
     // Room width for wall/ceiling — spans from inner edge of left wall (-0.75)
     // to inner edge of door wall (81.6). No visible gap past either end wall.
-    const roomW  = 81.6 - (-0.75);
-    const roomCenterX = (-0.75 + 81.6) / 2;
+    // Horizontal span along the course X axis — floor 25 is longer than legacy ~82u; walls/sky must match roomLen.
+    const roomWFixed = 81.6 - (-0.75);
+    const hallSpanX = Math.max(roomWFixed, roomLen);
+    const hallCx = hallSpanX / 2;
+    /** Floor 25 (long hall): ceiling tile grid + ~33 fluorescent PointLights scale badly — coarser decor + emissive-only tubes. */
+    const longHallPerf = n === 25;
 
     // ============================================================
     // BACK WALL — detailed with wainscoting, wallpaper seams, stains,
@@ -3260,9 +3836,16 @@
     // BACK WALL — segmented to leave gaps where windows are
     // Window positions must match the window rendering below exactly
     const WIN_W = 5.5, WIN_SPACING = 8, WIN_START = 10;
+    const decoXMul = 1; // same rhythm as other floors; long finale uses hallSpanX for extended walls/sky
+    const winStep = WIN_SPACING * decoXMul;
+    const panelPxStep = longHallPerf ? 5 : 2.5 * decoXMul;
+    const seamPxStep = longHallPerf ? 6 : 3 * decoXMul;
+    const outletPxStep = longHallPerf ? 14 : 8 * decoXMul;
+    const ventPxStep = longHallPerf ? 18 : 10 * decoXMul;
+    const floorSeamStep = longHallPerf ? 6 : 3 * decoXMul;
     const WIN_Y_BOT = 0.0, WIN_Y_TOP = HALL_H - 0.15; // window goes floor to ceiling
     const wallZ = -3, wallDepth = 0.5;
-    const wallRight = roomW; // right edge of room
+    const wallRight = hallSpanX; // right edge of back wall / hall strip along X
 
     // Helper: add a wall segment
     function addWallSeg(x, y, w, h) {
@@ -3274,20 +3857,20 @@
 
     // Collect window x-spans
     const winXSpans = [];
-    for (let wx = WIN_START; wx < ROOM_LENGTH - 4; wx += WIN_SPACING) {
+    for (let wx = WIN_START; wx < roomLen - 4; wx += winStep) {
       winXSpans.push([wx - WIN_W / 2, wx + WIN_W / 2]);
     }
 
     // Build wall as horizontal strips: above windows, below windows, and between windows
     // Above windows (full width)
     const aboveH = HALL_H - WIN_Y_TOP;
-    addWallSeg(roomCenterX, WIN_Y_TOP + aboveH / 2, roomW, aboveH);
+    addWallSeg(hallCx, WIN_Y_TOP + aboveH / 2, hallSpanX, aboveH);
 
     // No below-window strip — windows go to floor
 
     // Between windows — vertical wall piers
     // Sort window spans and fill gaps
-    const allEdges = [0, ...winXSpans.flat(), roomW].sort((a, b) => a - b);
+    const allEdges = [0, ...winXSpans.flat(), hallSpanX].sort((a, b) => a - b);
     for (let i = 0; i < allEdges.length - 1; i += 2) {
       const x0 = allEdges[i], x1 = allEdges[i + 1];
       const pierW = x1 - x0;
@@ -3307,16 +3890,16 @@
       worldGroup.add(m);
     }
     let prevEdge = 0;
-    for (let wx = WIN_START; wx < ROOM_LENGTH - 4; wx += WIN_SPACING) {
+    for (let wx = WIN_START; wx < roomLen - 4; wx += winStep) {
       addWain(prevEdge, wx - WIN_W / 2 - prevEdge);
       prevEdge = wx + WIN_W / 2;
     }
-    addWain(prevEdge, roomW - prevEdge);
+    addWain(prevEdge, hallSpanX - prevEdge);
 
     // Chair rail — segmented to skip window openings
     const chairRailMat = new THREE.MeshStandardMaterial({ color: 0xb8b4b0, roughness: 0.5 });
     let crPrev = 0;
-    for (let wx = WIN_START; wx < ROOM_LENGTH - 4; wx += WIN_SPACING) {
+    for (let wx = WIN_START; wx < roomLen - 4; wx += winStep) {
       const segW = wx - WIN_W / 2 - crPrev;
       if (segW > 0.1) {
         const cr2 = new THREE.Mesh(new THREE.BoxGeometry(segW, 0.12, 0.56), chairRailMat);
@@ -3325,7 +3908,7 @@
       }
       crPrev = wx + WIN_W / 2;
     }
-    const crLastW = roomW - crPrev;
+    const crLastW = hallSpanX - crPrev;
     if (crLastW > 0.1) {
       const crLast = new THREE.Mesh(new THREE.BoxGeometry(crLastW, 0.12, 0.56), chairRailMat);
       crLast.position.set(crPrev + crLastW / 2, wainHeight + 0.06, -2.96);
@@ -3334,10 +3917,10 @@
 
     // Wainscoting vertical panel dividers — only between windows
     const panelMat = new THREE.MeshStandardMaterial({ color: 0xa8a4a0, roughness: 0.6 });
-    for (let px = 0; px < ROOM_LENGTH; px += 2.5) {
+    for (let px = 0; px < roomLen; px += panelPxStep) {
       // Skip if inside a window opening
       let inWindow = false;
-      for (let wx = WIN_START; wx < ROOM_LENGTH - 4; wx += WIN_SPACING) {
+      for (let wx = WIN_START; wx < roomLen - 4; wx += winStep) {
         if (px > wx - WIN_W / 2 && px < wx + WIN_W / 2) { inWindow = true; break; }
       }
       if (inWindow) continue;
@@ -3354,7 +3937,7 @@
     const rand = rng(n * 137 + 41);
     const stainCount = 5 + Math.floor(rand() * 4);
     for (let i = 0; i < stainCount; i++) {
-      const sx = 2 + rand() * (ROOM_LENGTH - 4);
+      const sx = 2 + rand() * (roomLen - 4);
       const sy = wainHeight + 0.5 + rand() * (HALL_H - wainHeight - 2);
       const sw = 0.6 + rand() * 1.8;
       const sh = 0.4 + rand() * 1.4;
@@ -3382,7 +3965,7 @@
     const seamMat = new THREE.MeshStandardMaterial({
       color: 0x8a7a48, roughness: 0.9, transparent: true, opacity: 0.35
     });
-    for (let px = 1; px < ROOM_LENGTH; px += 3) {
+    for (let px = 1; px < roomLen; px += seamPxStep) {
       const seam = new THREE.Mesh(new THREE.BoxGeometry(0.04, HALL_H - wainHeight - 0.3, 0.03), seamMat);
       seam.position.set(px, wainHeight + (HALL_H - wainHeight) / 2 + 0.15, -2.85);
       worldGroup.add(seam);
@@ -3391,7 +3974,7 @@
     // Outlets on wainscoting — every 8 units
     const outletMat = new THREE.MeshStandardMaterial({ color: 0xeae0c0, roughness: 0.5 });
     const outletSlotMat = new THREE.MeshStandardMaterial({ color: 0x0a0808, roughness: 0.9 });
-    for (let px = 4; px < ROOM_LENGTH; px += 8) {
+    for (let px = 4; px < roomLen; px += outletPxStep) {
       const plate = new THREE.Mesh(new THREE.BoxGeometry(0.35, 0.5, 0.04), outletMat);
       plate.position.set(px, 1.0, -2.92);
       worldGroup.add(plate);
@@ -3434,14 +4017,14 @@
     const skyPlaneMat = new THREE.MeshBasicMaterial({ map: skyTex, side: THREE.FrontSide });
 
     // One wide plane spanning the whole room behind the windows
-    const skyPlaneW = roomW + 20;
+    const skyPlaneW = hallSpanX + 20;
     const skyPlaneH = winH2 + 4;
     // Position slightly low so the city fills the window — aerial look
     const skyPlane = new THREE.Mesh(new THREE.PlaneGeometry(skyPlaneW, skyPlaneH), skyPlaneMat);
-    skyPlane.position.set(roomCenterX, winY2 - winH2 * 0.08, skyZ);
+    skyPlane.position.set(hallCx, winY2 - winH2 * 0.08, skyZ);
     worldGroup.add(skyPlane);
 
-    for (let wx = WIN_START; wx < ROOM_LENGTH - 4; wx += WIN_SPACING) {
+    for (let wx = WIN_START; wx < roomLen - 4; wx += winStep) {
 
       const glass2 = new THREE.Mesh(new THREE.PlaneGeometry(winW2, winH2), glassMat2);
       glass2.position.set(wx, winY2, wz2);
@@ -3490,13 +4073,16 @@
       worldGroup.add(trim);
     }
     // Small spotlight illuminating the sign
-    const plaqueLight = new THREE.PointLight(0xffe8b0, 1.0, 7);
+    const plaqueLight = new THREE.PointLight(isFinale ? 0xffcc88 : 0xffe8b0, isFinale ? 1.35 : 1.0, isFinale ? 10 : 7);
     plaqueLight.position.set(plaqueX, plaqueY, -1.2);
     worldGroup.add(plaqueLight);
 
     // Render the number using a 5x7 pixel font built from small box meshes
     const digitMat = new THREE.MeshStandardMaterial({
-      color: 0xffffff, emissive: 0xfff8f4, emissiveIntensity: 0.45, roughness: 0.5
+      color: isFinale ? 0xfff0c8 : 0xffffff,
+      emissive: isFinale ? 0xffc040 : 0xfff8f4,
+      emissiveIntensity: isFinale ? 0.85 : 0.45,
+      roughness: 0.5
     });
     // 5x7 pixel digits. Each digit is 35 chars (5 cols × 7 rows, reading L-to-R, top-to-bottom).
     // '#' = pixel on, '.' = pixel off.
@@ -3542,18 +4128,21 @@
 
     // Small "FLOOR" label above the number
     const labelMat = new THREE.MeshStandardMaterial({
-      color: 0xc8a858, emissive: 0xc8a858, emissiveIntensity: 0.3, roughness: 0.5
+      color: 0xc8a858, emissive: 0xc8a858, emissiveIntensity: isFinale ? 0.55 : 0.3, roughness: 0.5
     });
-    // Mini 4x5 letters for "FLOOR" — 20 chars each, 4 cols × 5 rows
+    // Mini 4x5 letters — "FLOOR" normally; "FINAL" on floor 25
     const MINI = {
       'F': '####' + '#...' + '###.' + '#...' + '#...',
+      'I': '.##.' + '.#..' + '.#..' + '.#..' + '.##.',
+      'N': '#..#' + '##.#' + '#.##' + '#..#' + '#..#',
+      'A': '.##.' + '#..#' + '####' + '#..#' + '#..#',
       'L': '#...' + '#...' + '#...' + '#...' + '####',
       'O': '.##.' + '#..#' + '#..#' + '#..#' + '.##.',
       'R': '###.' + '#..#' + '###.' + '#.#.' + '#..#',
     };
     const miniSize = 0.075;
     const letterW = 4 * miniSize + 0.08;
-    const word = 'FLOOR';
+    const word = isFinale ? 'FINAL' : 'FLOOR';
     const wordW = letterW * word.length - 0.08;
     const wStartX = plaqueX - wordW / 2 + miniSize / 2;
     const wStartY = plaqueY + 1.1;
@@ -3579,10 +4168,10 @@
 
     // Baseboard (dark trim at floor level)
     const baseboard = new THREE.Mesh(
-      new THREE.BoxGeometry(roomW, 0.4, 0.6),
+      new THREE.BoxGeometry(hallSpanX, 0.4, 0.6),
       new THREE.MeshStandardMaterial({ color: 0x2a1810, roughness: 0.5 })
     );
-    baseboard.position.set(roomCenterX, 0.2, -2.92);
+    baseboard.position.set(hallCx, 0.2, -2.92);
     worldGroup.add(baseboard);
 
     // ============================================================
@@ -3590,22 +4179,23 @@
     // ============================================================
     const CEIL_Y = HALL_H;
     // Main ceiling base (slightly recessed)
-    const ceil = new THREE.Mesh(new THREE.BoxGeometry(roomW, 0.15, 6), matCeiling);
-    ceil.position.set(roomCenterX, CEIL_Y + 0.075, 0);
+    const ceil = new THREE.Mesh(new THREE.BoxGeometry(hallSpanX, 0.15, 6), matCeiling);
+    ceil.position.set(hallCx, CEIL_Y + 0.075, 0);
     worldGroup.add(ceil);
-    platforms.push({ x: roomCenterX, y: CEIL_Y + 0.075, w: roomW, h: 0.15, isCeiling: true });
+    platforms.push({ x: hallCx, y: CEIL_Y + 0.075, w: hallSpanX, h: 0.15, isCeiling: true });
 
     // Drop ceiling T-bar grid — dark gray metal
     const gridMat = new THREE.MeshStandardMaterial({ color: 0x5a5a58, metalness: 0.5, roughness: 0.5 });
     const TILE = 2.0; // 2-unit square tiles
+    const ceilStep = longHallPerf ? TILE * 2 : TILE * decoXMul;
     // Longitudinal T-bars (along X axis)
-    for (let tz = -2.5; tz <= 2.5; tz += TILE) {
-      const bar = new THREE.Mesh(new THREE.BoxGeometry(roomW, 0.08, 0.08), gridMat);
-      bar.position.set(roomCenterX, CEIL_Y - 0.04, tz);
+    for (let tz = -2.5; tz <= 2.5; tz += ceilStep) {
+      const bar = new THREE.Mesh(new THREE.BoxGeometry(hallSpanX, 0.08, 0.08), gridMat);
+      bar.position.set(hallCx, CEIL_Y - 0.04, tz);
       worldGroup.add(bar);
     }
     // Cross T-bars (along Z axis)
-    for (let tx = 0; tx <= ROOM_LENGTH; tx += TILE) {
+    for (let tx = 0; tx <= roomLen; tx += ceilStep) {
       const bar = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.08, 5), gridMat);
       bar.position.set(tx, CEIL_Y - 0.04, 0);
       worldGroup.add(bar);
@@ -3614,16 +4204,16 @@
     // Inset tile panels — slightly darker to create recessed look
     const tileMat = new THREE.MeshStandardMaterial({ color: 0xd8d0b0, roughness: 0.95 });
     const stainedTileMat = new THREE.MeshStandardMaterial({ color: 0xa89868, roughness: 0.95 });
-    for (let tx = 0; tx < ROOM_LENGTH; tx += TILE) {
-      for (let tz = -2.5; tz < 2.5; tz += TILE) {
+    for (let tx = 0; tx < roomLen; tx += ceilStep) {
+      for (let tz = -2.5; tz < 2.5; tz += ceilStep) {
         // Some tiles have water stains
         const isStained = rand() < 0.15;
         const mat = isStained ? stainedTileMat : tileMat;
         const tile = new THREE.Mesh(
-          new THREE.BoxGeometry(TILE - 0.15, 0.04, TILE - 0.15),
+          new THREE.BoxGeometry(ceilStep - 0.15, 0.04, ceilStep - 0.15),
           mat
         );
-        tile.position.set(tx + TILE / 2, CEIL_Y - 0.02, tz + TILE / 2);
+        tile.position.set(tx + ceilStep / 2, CEIL_Y - 0.02, tz + ceilStep / 2);
         worldGroup.add(tile);
       }
     }
@@ -3632,9 +4222,14 @@
     // Each fixture gets its own material + light + flicker phase so they
     // flicker independently.
     const fixtureFrame = new THREE.MeshStandardMaterial({ color: 0x3a3a38, roughness: 0.6 });
-    for (let fx = 4; fx < ROOM_LENGTH; fx += 6) {
+    const fluorStep = longHallPerf ? 14 : 6 * decoXMul;
+    for (let fx = 4; fx < roomLen; fx += fluorStep) {
+      const fluorEmissive = isFinale ? 0xffd8a0 : 0xfffff0;
+      const fluorBase = isFinale ? 2.05 : 1.8;
       const fluorMat = new THREE.MeshStandardMaterial({
-        color: 0xfffff0, emissive: 0xfffff0, emissiveIntensity: 1.8
+        color: isFinale ? 0xfff0d8 : 0xfffff0,
+        emissive: fluorEmissive,
+        emissiveIntensity: fluorBase
       });
       // Frame
       const frame = new THREE.Mesh(new THREE.BoxGeometry(1.6, 0.1, 0.8), fixtureFrame);
@@ -3647,14 +4242,16 @@
       const tube2 = new THREE.Mesh(new THREE.BoxGeometry(1.4, 0.05, 0.12), fluorMat);
       tube2.position.set(fx, CEIL_Y - 0.06, 0.2);
       worldGroup.add(tube2);
-      // Soft fill light below
-      const fLight = new THREE.PointLight(0xfff8e0, 0.5, 10);
-      fLight.position.set(fx, CEIL_Y - 1, 0);
-      worldGroup.add(fLight);
-      // Register for flicker update
+      let fLight = null;
+      if (!longHallPerf) {
+        fLight = new THREE.PointLight(isFinale ? 0xffe4c8 : 0xfff8e0, 0.5, 10);
+        fLight.position.set(fx, CEIL_Y - 1, 0);
+        worldGroup.add(fLight);
+      }
+      // Register for flicker update (floor 25: emissive-only — no PointLight pollutes lighting passes)
       ceilingLights.push({
         mat: fluorMat, light: fLight,
-        baseEmissive: 1.8, baseIntensity: 0.5,
+        baseEmissive: fluorBase, baseIntensity: fLight ? 0.5 : 0,
         hum: Math.random() * Math.PI * 2,
         nextEvent: 0.5 + Math.random() * 2,
         state: 1, // 1 = on, 0 = off/low
@@ -3664,7 +4261,7 @@
 
     // Ceiling vents — every ~10 units
     const ventMat = new THREE.MeshStandardMaterial({ color: 0x8a8a88, metalness: 0.4, roughness: 0.6 });
-    for (let vx = 7; vx < ROOM_LENGTH; vx += 10) {
+    for (let vx = 7; vx < roomLen; vx += ventPxStep) {
       const vent = new THREE.Mesh(new THREE.BoxGeometry(1.0, 0.06, 0.6), ventMat);
       vent.position.set(vx, CEIL_Y - 0.01, -1.6);
       worldGroup.add(vent);
@@ -3678,49 +4275,97 @@
     }
 
     // Acid fills the entire gap between the spawn safe zone and the door safe zone.
-    // Safe zones: x=0 to x=SAFE_START at the start, and x=ROOM_LENGTH-SAFE_END to door at the end.
+    // Safe zones: x=0 to x=SAFE_START at the start, and x=roomLen-SAFE_END to door at the end.
     const SAFE_START = 6;  // width of safe platform at spawn
     const SAFE_END   = 6;  // width of safe platform at the door
     const acidStartX = SAFE_START;
-    const acidEndX   = ROOM_LENGTH - SAFE_END;
-    const acidList = [{ x: acidStartX, w: acidEndX - acidStartX }];
+    const acidEndX   = roomLen - SAFE_END;
+    /** Same span as default gauntlet (`ROOM_LENGTH − safe margins`) — tiling long finale acid avoids wide-pool "fat" mesh + maxed caps (lumpy look). */
+    const ACID_STRIP_REF_W = ROOM_LENGTH - SAFE_START - SAFE_END;
+    const acidSpanTotal = acidEndX - acidStartX;
+    const acidList = [];
+    if (longHallPerf) {
+      let ax = acidStartX;
+      while (ax < acidEndX - 1e-6) {
+        acidList.push({ x: ax, w: Math.min(ACID_STRIP_REF_W, acidEndX - ax) });
+        ax += ACID_STRIP_REF_W;
+      }
+    } else {
+      acidList.push({ x: acidStartX, w: acidSpanTotal });
+    }
 
-    // Single continuous floor platform — no seams, no horizontal push issues
+    // Single continuous floor platform — physics collider must span x≈0…roomLen when roomLen > legacy hall span (floor 25).
+    const floorColliderW = Math.max(roomWFixed + 20, roomLen + 32);
+
     const fullFloor = new THREE.Mesh(
-      new THREE.BoxGeometry(roomW + 20, 2, 6), matFloor
+      new THREE.BoxGeometry(floorColliderW, 2, 6), matFloor
     );
-    fullFloor.position.set(ROOM_LENGTH / 2, -1, 0);
+    fullFloor.position.set(roomLen / 2, -1, 0);
     fullFloor.receiveShadow = true;
     worldGroup.add(fullFloor);
-    platforms.push({ x: ROOM_LENGTH / 2, y: -1, w: roomW + 20, h: 2, mesh: fullFloor });
+    platforms.push({ x: roomLen / 2, y: -1, w: floorColliderW, h: 2, mesh: fullFloor });
 
     // Floor seam lines for visual interest
-    for (let sx = 0; sx < ROOM_LENGTH; sx += 3) {
+    for (let sx = 0; sx < roomLen; sx += floorSeamStep) {
       const seam = new THREE.Mesh(new THREE.BoxGeometry(0.05, 2.1, 6), matFloorDetail);
       seam.position.set(sx, -1, 0);
       worldGroup.add(seam);
     }
 
-    // Electrical hazard zones — live wires on scorched floor
-    const scorchedMat = new THREE.MeshStandardMaterial({
-      color: 0x1a1814, roughness: 0.95, metalness: 0.0,
+    // Acid hazard zones — green toxic pools that sit on top of the office floor.
+    const acidMat = new THREE.MeshStandardMaterial({
+      color: 0x57e837,
+      emissive: 0x35ff2a,
+      emissiveIntensity: 0.55,
+      roughness: 0.32,
+      metalness: 0.0,
+      transparent: true,
+      opacity: 0.88,
     });
-    const scorchedEdgeMat = new THREE.MeshStandardMaterial({
-      color: 0x2a2218, roughness: 0.9,
+    const acidDeepMat = new THREE.MeshStandardMaterial({
+      color: 0x17951f,
+      emissive: 0x1ecf28,
+      emissiveIntensity: 0.25,
+      roughness: 0.5,
+      transparent: true,
+      opacity: 0.78,
     });
-    const wireMat = new THREE.MeshStandardMaterial({
-      color: 0x222222, roughness: 0.6, metalness: 0.8,
+    const acidFoamMat = new THREE.MeshStandardMaterial({
+      color: 0xc8ffb8,
+      emissive: 0x8cff68,
+      emissiveIntensity: 0.35,
+      roughness: 0.65,
+      transparent: true,
+      opacity: 0.8,
     });
-    const arcMat = new THREE.MeshStandardMaterial({
-      color: 0xffffff, emissive: 0x88ccff, emissiveIntensity: 3.0,
-      transparent: true, opacity: 0.9,
+    const acidMistCanvas = document.createElement('canvas');
+    acidMistCanvas.width = 128;
+    acidMistCanvas.height = 128;
+    const acidMistCtx = acidMistCanvas.getContext('2d');
+    const acidMistGradient = acidMistCtx.createRadialGradient(64, 64, 6, 64, 64, 64);
+    acidMistGradient.addColorStop(0.0, 'rgba(214,255,190,0.42)');
+    acidMistGradient.addColorStop(0.38, 'rgba(128,255,92,0.22)');
+    acidMistGradient.addColorStop(1.0, 'rgba(128,255,92,0)');
+    acidMistCtx.fillStyle = acidMistGradient;
+    acidMistCtx.fillRect(0, 0, 128, 128);
+    const acidMistTexture = new THREE.CanvasTexture(acidMistCanvas);
+    const acidMistMat = new THREE.SpriteMaterial({
+      map: acidMistTexture,
+      color: 0xd8ffd0,
+      transparent: true,
+      opacity: 0.28,
+      depthWrite: false,
+      blending: THREE.AdditiveBlending,
     });
-    const glowMat = new THREE.MeshStandardMaterial({
-      color: 0x4488ff, emissive: 0x4488ff, emissiveIntensity: 1.2,
-      transparent: true, opacity: 0.3,
+    const acidSignYellowMat = new THREE.MeshStandardMaterial({
+      color: 0xe0c84a,
+      roughness: 0.55,
+      emissive: 0x665500,
+      emissiveIntensity: 0.15,
     });
+    const acidSignBlackMat = new THREE.MeshStandardMaterial({ color: 0x16140c, roughness: 0.75 });
 
-    acidList.forEach(az => {
+    acidList.forEach((az, acidSegIdx) => {
       const cx = az.x + az.w / 2;
       const seed = Math.floor(az.x * 97 + az.w * 31);
       const rng = (i) => {
@@ -3728,126 +4373,174 @@
         return ((s % 233280) + 233280) % 233280 / 233280;
       };
 
-      // Scorched floor slab — dark burnt concrete
-      const slab = new THREE.Mesh(
-        new THREE.BoxGeometry(az.w, 0.06, 5.2),
-        scorchedMat
-      );
-      slab.position.set(cx, 0.03, 0);
+      const dummy = new THREE.Object3D();
+
+      // Spill-style acid surface: overlapping flat puddles instead of a rectangular slab.
+      const slab = new THREE.Group();
       worldGroup.add(slab);
 
-      // Scorched edge strips (slightly lighter burnt marks)
-      for (const ex of [az.x, az.x + az.w]) {
-        const edge = new THREE.Mesh(
-          new THREE.BoxGeometry(0.4, 0.04, 5.0),
-          scorchedEdgeMat
+      // Full-density formulas + wider pools get ~12% richer detail — skip on long halls (acid is tiled to ref width instead).
+      const fat = az.w > 140 && !longHallPerf ? 1.12 : 1;
+      const puddleCount = Math.min(52, Math.max(10, Math.floor((az.w / 2.05) * fat)));
+      const puddleGeo = new THREE.CylinderGeometry(1, 1, 0.065, fat > 1 ? 30 : 28);
+      const puddleInst = new THREE.InstancedMesh(puddleGeo, acidMat, puddleCount);
+      for (let i = 0; i < puddleCount; i++) {
+        const t = (i + 0.5) / puddleCount;
+        const bx = az.x + t * az.w + (rng(i * 19) - 0.5) * 0.9;
+        const bz = (rng(i * 19 + 1) - 0.5) * 0.75;
+        dummy.position.set(bx, 0.055 + i * 0.0004, bz);
+        dummy.scale.set(
+          1.25 + rng(i * 19 + 2) * 1.2,
+          1,
+          1.55 + rng(i * 19 + 3) * 0.9
         );
-        edge.position.set(ex, 0.04, 0);
-        worldGroup.add(edge);
+        dummy.rotation.set(0, rng(i * 19 + 4) * Math.PI, 0);
+        dummy.updateMatrix();
+        puddleInst.setMatrixAt(i, dummy.matrix);
+      }
+      puddleInst.instanceMatrix.needsUpdate = true;
+      slab.add(puddleInst);
+
+      const splashCount = Math.min(56, Math.max(14, Math.floor(az.w * 0.78 * fat)));
+      const splashGeo = new THREE.CylinderGeometry(1, 0.85, 0.04, fat > 1 ? 20 : 18);
+      const splashMxLight = [];
+      const splashMxDeep = [];
+      for (let i = 0; i < splashCount; i++) {
+        const side = rng(i * 23) > 0.5 ? 1 : -1;
+        dummy.position.set(
+          az.x + rng(i * 23 + 2) * az.w,
+          0.078 + i * 0.00035,
+          side * (1.75 + rng(i * 23 + 3) * 0.85)
+        );
+        dummy.scale.set(
+          0.28 + rng(i * 23 + 4) * 0.75,
+          1,
+          0.16 + rng(i * 23 + 5) * 0.38
+        );
+        dummy.rotation.set(0, rng(i * 23 + 6) * Math.PI, 0);
+        dummy.updateMatrix();
+        if (rng(i * 23 + 1) > 0.35) splashMxLight.push(dummy.matrix.clone());
+        else splashMxDeep.push(dummy.matrix.clone());
+      }
+      if (splashMxLight.length > 0) {
+        const im = new THREE.InstancedMesh(splashGeo, acidMat, splashMxLight.length);
+        splashMxLight.forEach((m, i) => im.setMatrixAt(i, m));
+        im.instanceMatrix.needsUpdate = true;
+        slab.add(im);
+      }
+      if (splashMxDeep.length > 0) {
+        const im = new THREE.InstancedMesh(splashGeo, acidDeepMat, splashMxDeep.length);
+        splashMxDeep.forEach((m, i) => im.setMatrixAt(i, m));
+        im.instanceMatrix.needsUpdate = true;
+        slab.add(im);
       }
 
-      // Fallen cables / wires lying on the floor
-      const wireCount = 2 + Math.floor(rng(0) * 3);
-      for (let w = 0; w < wireCount; w++) {
-        const wz = -2.0 + rng(w * 7) * 4.0;
-        const wire = new THREE.Mesh(
-          new THREE.BoxGeometry(az.w * (0.5 + rng(w * 3) * 0.5), 0.06, 0.06),
-          wireMat
-        );
-        wire.position.set(az.x + az.w * 0.3 + rng(w) * az.w * 0.4, 0.07, wz);
-        wire.rotation.y = (rng(w * 11) - 0.5) * 0.4;
-        worldGroup.add(wire);
+      const blobCount = Math.min(48, Math.max(8, Math.floor(az.w * 0.74 * fat)));
+      const blobGeo = new THREE.CylinderGeometry(1, 0.75, 0.035, fat > 1 ? 20 : 18);
+      const blobMxLight = [];
+      const blobMxDeep = [];
+      for (let i = 0; i < blobCount; i++) {
+        const bx = az.x + rng(i * 5) * az.w;
+        const bz = -1.85 + rng(i * 5 + 1) * 3.7;
+        const radius = 0.28 + rng(i * 5 + 2) * 0.6;
+        const squashZ = 0.45 + rng(i * 11) * 0.75;
+        dummy.position.set(bx, 0.085 + i * 0.0005, bz);
+        dummy.rotation.set(0, rng(i * 5 + 4) * Math.PI, 0);
+        dummy.scale.set(radius, 1, radius * squashZ);
+        dummy.updateMatrix();
+        if (rng(i * 5 + 3) > 0.45) blobMxLight.push(dummy.matrix.clone());
+        else blobMxDeep.push(dummy.matrix.clone());
+      }
+      if (blobMxLight.length > 0) {
+        const im = new THREE.InstancedMesh(blobGeo, acidMat, blobMxLight.length);
+        blobMxLight.forEach((m, i) => im.setMatrixAt(i, m));
+        im.instanceMatrix.needsUpdate = true;
+        slab.add(im);
+      }
+      if (blobMxDeep.length > 0) {
+        const im = new THREE.InstancedMesh(blobGeo, acidDeepMat, blobMxDeep.length);
+        blobMxDeep.forEach((m, i) => im.setMatrixAt(i, m));
+        im.instanceMatrix.needsUpdate = true;
+        slab.add(im);
       }
 
-      // Arc spark columns — upward bolts at random positions
-      const arcCount = Math.max(3, Math.floor(az.w * 0.5));
-      for (let i = 0; i < arcCount; i++) {
-        const ax2 = az.x + 0.5 + rng(i * 3) * (az.w - 1.0);
-        const az2 = -1.8 + rng(i * 3 + 1) * 3.6;
-        const arcH = 0.4 + rng(i * 3 + 2) * 1.2;
-
-        // Main arc bolt — thin jagged column
-        const arc = new THREE.Mesh(
-          new THREE.BoxGeometry(0.06, arcH, 0.06),
-          arcMat.clone()
+      const foamCount = Math.min(54, Math.max(10, Math.floor(az.w * 0.86 * fat)));
+      const foamSeg = fat > 1 ? 12 : 10;
+      const foamGeo = new THREE.SphereGeometry(1, foamSeg, 8);
+      const foamInst = new THREE.InstancedMesh(foamGeo, acidFoamMat, foamCount);
+      for (let i = 0; i < foamCount; i++) {
+        const r = 0.08 + rng(i * 13) * 0.18;
+        dummy.position.set(
+          az.x + rng(i * 13 + 1) * az.w,
+          0.16 + rng(i * 13 + 2) * 0.08,
+          -2.1 + rng(i * 13 + 3) * 4.2
         );
-        arc.position.set(ax2, arcH / 2, az2);
-        arc.rotation.z = (rng(i * 7) - 0.5) * 0.3;
-        worldGroup.add(arc);
+        dummy.rotation.set(0, 0, 0);
+        dummy.scale.set(r, r * 0.45, r);
+        dummy.updateMatrix();
+        foamInst.setMatrixAt(i, dummy.matrix);
+      }
+      foamInst.instanceMatrix.needsUpdate = true;
+      slab.add(foamInst);
 
-        // Secondary fork
-        if (rng(i * 5) > 0.5) {
-          const fork = new THREE.Mesh(
-            new THREE.BoxGeometry(0.04, arcH * 0.5, 0.04),
-            arcMat.clone()
-          );
-          fork.position.set(ax2 + (rng(i)-0.5) * 0.4, arcH * 0.6, az2);
-          fork.rotation.z = (rng(i * 9) - 0.5) * 0.6;
-          worldGroup.add(fork);
-        }
-
-        // Glow halo at base
-        const halo = new THREE.Mesh(
-          new THREE.CylinderGeometry(0.3 + rng(i)*0.3, 0.1, 0.08, 8),
-          glowMat.clone()
+      const mistTotalBudget = Math.min(22, Math.max(6, Math.floor(acidSpanTotal * 0.3 * fat)));
+      const mistCount = longHallPerf
+        ? Math.max(2, Math.floor(mistTotalBudget / acidList.length))
+        : Math.min(22, Math.max(6, Math.floor(az.w * 0.3 * fat)));
+      for (let i = 0; i < mistCount; i++) {
+        const mist = new THREE.Sprite(acidMistMat.clone());
+        mist.position.set(
+          az.x + rng(i * 29 + 1) * az.w,
+          0.45 + rng(i * 29 + 2) * 0.8,
+          -0.7 + rng(i * 29 + 3) * 1.4
         );
-        halo.position.set(ax2, 0.05, az2);
-        worldGroup.add(halo);
-
-        // Point light at arc tip
-        const arcLight = new THREE.PointLight(0x66aaff, 1.2, 4);
-        arcLight.position.set(ax2, arcH, az2);
-        worldGroup.add(arcLight);
+        mist.scale.set(
+          3.0 + rng(i * 29 + 4) * 3.8,
+          1.1 + rng(i * 29 + 5) * 1.2,
+          1
+        );
+        slab.add(mist);
       }
 
-      // Ambient glow light across the whole zone — blue-white electrical
-      const glow = new THREE.PointLight(0x88bbff, 0.8, az.w + 4, 2);
-      glow.position.set(cx, 1.0, 0);
+      // Ambient green light — dimmer per tiled segment so overlapping pools don't bloom.
+      const glow = new THREE.PointLight(0x88ff66, longHallPerf ? 0.42 : 0.95, az.w + 6, 2);
+      glow.position.set(cx, 0.8, 0);
       worldGroup.add(glow);
 
-      // HIGH VOLTAGE warning signs at the edges of the hazard zone
-      for (const edgeX of [az.x, az.x + az.w]) {
+      // Yellow caution signs at the outer edges of the full acid run only (tiled segments share one pair of signs).
+      const segCount = acidList.length;
+      const edgeXs =
+        segCount <= 1
+          ? [az.x, az.x + az.w]
+          : [...(acidSegIdx === 0 ? [az.x] : []), ...(acidSegIdx === segCount - 1 ? [az.x + az.w] : [])];
+      for (const edgeX of edgeXs) {
         const sign = new THREE.Group();
-        const redMat = new THREE.MeshStandardMaterial({
-          color: 0xcc1a1a, roughness: 0.5, metalness: 0.1,
-          emissive: 0xcc1a1a, emissiveIntensity: 0.2
-        });
-        const blackMat = new THREE.MeshStandardMaterial({ color: 0x0a0806, roughness: 0.7 });
-        const yellowMat = new THREE.MeshStandardMaterial({
-          color: 0xffcc00, roughness: 0.5, emissive: 0xffcc00, emissiveIntensity: 0.3
-        });
-        // Sign board — red rectangle on a post
-        const board = new THREE.Mesh(new THREE.BoxGeometry(0.7, 0.55, 0.05), redMat);
+        const board = new THREE.Mesh(new THREE.BoxGeometry(0.72, 0.58, 0.05), acidSignYellowMat);
         board.position.set(0, 0.85, 0);
         sign.add(board);
-        // White border
-        const border = new THREE.Mesh(new THREE.BoxGeometry(0.74, 0.59, 0.04), 
-          new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.7 }));
-        border.position.set(0, 0.85, -0.01);
-        sign.add(border);
-        // Lightning bolt symbol (yellow triangles)
-        const bolt1 = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.28, 0.04), yellowMat);
-        bolt1.position.set(0, 0.95, 0.04);
-        bolt1.rotation.z = 0.4;
-        sign.add(bolt1);
-        const bolt2 = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.24, 0.04), yellowMat);
-        bolt2.position.set(0.04, 0.74, 0.04);
-        bolt2.rotation.z = 0.4;
-        sign.add(bolt2);
-        // Post
-        const post = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.65, 0.06), blackMat);
+
+        // Simple black hazard glyph: skull-ish head plus crossed marks.
+        const head = new THREE.Mesh(new THREE.SphereGeometry(0.12, 10, 6), acidSignBlackMat);
+        head.position.set(0, 0.95, 0.045);
+        head.scale.y = 0.85;
+        sign.add(head);
+        const crossA = new THREE.Mesh(new THREE.BoxGeometry(0.36, 0.05, 0.04), acidSignBlackMat);
+        crossA.position.set(0, 0.73, 0.045);
+        crossA.rotation.z = 0.45;
+        sign.add(crossA);
+        const crossB = new THREE.Mesh(new THREE.BoxGeometry(0.36, 0.05, 0.04), acidSignBlackMat);
+        crossB.position.set(0, 0.73, 0.045);
+        crossB.rotation.z = -0.45;
+        sign.add(crossB);
+
+        const post = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.65, 0.06), acidSignBlackMat);
         post.position.set(0, 0.32, 0);
         sign.add(post);
-        // Base feet
         for (const fx of [-0.18, 0.18]) {
-          const foot = new THREE.Mesh(new THREE.BoxGeometry(0.38, 0.05, 0.18), blackMat);
+          const foot = new THREE.Mesh(new THREE.BoxGeometry(0.38, 0.05, 0.18), acidSignBlackMat);
           foot.position.set(fx, 0.03, 0);
           sign.add(foot);
         }
-        // Small point light on sign
-        const signLight = new THREE.PointLight(0xff4400, 0.6, 3);
-        signLight.position.set(0, 1.0, 0.5);
-        sign.add(signLight);
 
         const signX = edgeX === az.x ? az.x - 0.6 : az.x + az.w + 0.6;
         sign.position.set(signX, 0, 1.3);
@@ -3857,12 +4550,36 @@
       acidZones.push({ x: az.x, w: az.w, mesh: slab, glow });
     });
 
+    const throwerTarget = null;
+    let throwerAnchorPlatform = null;
+
     // Platforms
     layout.platforms.forEach((p, idx) => {
-      const isEdge = idx === 0 || idx === layout.platforms.length - 1;
       const cx = p.x + p.w / 2, cy = p.y + 0.8;
+      const isThrowerTarget = p === throwerTarget;
 
-      if (isEdge || state.floor <= 2) {
+      // Floor 25 finale — explicit per-platform kinds (solid / crumble / moving)
+      if (layout.finaleMix) {
+        const k = isThrowerTarget ? 'solid' : (p.kind || 'solid');
+        if (k === 'moving') {
+          const md = p.moveDist != null ? p.moveDist : 2.85;
+          const spd = p.moveSpeed != null ? p.moveSpeed : 2.65;
+          addMovingPlatform(cx, cy - md, cx, cy + md, p.w, 0.5, spd);
+        } else if (k === 'crumble') {
+          addCrumblePlatform(cx, cy, p.w, 0.5);
+        } else {
+          addPlatform(cx, cy, p.w, 0.5);
+          if (isThrowerTarget) throwerAnchorPlatform = platforms[platforms.length - 1];
+        }
+        return;
+      }
+
+      const isEdge = idx === 0 || idx === layout.platforms.length - 1;
+
+      if (isThrowerTarget) {
+        addPlatform(cx, cy, p.w, 0.5);
+        throwerAnchorPlatform = platforms[platforms.length - 1];
+      } else if (isEdge || state.floor <= 2) {
         // Floors 1-2: always normal — no distractions while learning the basics
         addPlatform(cx, cy, p.w, 0.5);
       } else if (layout.forceCrumble) {
@@ -3887,6 +4604,8 @@
       }
     });
 
+    // Paper-plane thrower concept disabled.
+
     // Spawn dash refill crystals if layout defines them
     if (layout.crystals) {
       layout.crystals.forEach(c => addCrystal(c.x, c.y));
@@ -3899,7 +4618,7 @@
     const doorH = 3.0;
     const wallH = HALL_H;
     const wallT = 0.8;
-    const wallEndX = ROOM_LENGTH + 2;
+    const wallEndX = roomLen + 2;
 
     // Wall above the door (collision blocker)
     const wallAbove = new THREE.Mesh(
@@ -3925,7 +4644,8 @@
 
     // Outer door frame — dark painted metal trim
     const frameMat = new THREE.MeshStandardMaterial({
-      color: 0x3a3a38, metalness: 0.6, roughness: 0.5
+      color: isFinale ? 0x6a5030 : 0x3a3a38, metalness: isFinale ? 0.75 : 0.6, roughness: 0.45,
+      emissive: isFinale ? 0x2a1808 : 0x000000, emissiveIntensity: isFinale ? 0.08 : 0
     });
     // Top bar of frame
     const topBar = new THREE.Mesh(new THREE.BoxGeometry(doorW + 0.35, 0.25, 0.5), frameMat);
@@ -3950,7 +4670,8 @@
 
     // Actual door panel — gray steel, slab style
     const doorPanelMat = new THREE.MeshStandardMaterial({
-      color: 0x7a7a78, metalness: 0.55, roughness: 0.45
+      color: isFinale ? 0x5a4a40 : 0x7a7a78, metalness: 0.55, roughness: 0.45,
+      emissive: isFinale ? 0x1a1008 : 0x000000, emissiveIntensity: isFinale ? 0.12 : 0
     });
     const doorPanel = new THREE.Mesh(
       new THREE.BoxGeometry(0.12, doorH - 0.1, doorW - 0.12),
@@ -3979,8 +4700,8 @@
 
     // PUSH BAR — horizontal red bar across the door, hallmark of emergency exits
     const pushBarMat = new THREE.MeshStandardMaterial({
-      color: 0xc82820, metalness: 0.3, roughness: 0.4,
-      emissive: 0x3a0a05, emissiveIntensity: 0.15
+      color: isFinale ? 0xe84830 : 0xc82820, metalness: 0.35, roughness: 0.38,
+      emissive: isFinale ? 0x6a2010 : 0x3a0a05, emissiveIntensity: isFinale ? 0.35 : 0.15
     });
     const pushBar = new THREE.Mesh(
       new THREE.BoxGeometry(0.08, 0.1, doorW - 0.45),
@@ -4030,9 +4751,9 @@
     }
 
     // ---- EXIT SIGN above the door ----
-    // Green illuminated box with pixel letters spelling "EXIT"
+    // Green illuminated box with pixel letters spelling "EXIT" (warm amber on finale)
     const exitBoxMat = new THREE.MeshStandardMaterial({
-      color: 0x0a3a0a, roughness: 0.7
+      color: isFinale ? 0x3a2810 : 0x0a3a0a, roughness: 0.7
     });
     const exitBox = new THREE.Mesh(
       new THREE.BoxGeometry(1.3, 0.5, 0.12),
@@ -4042,7 +4763,9 @@
     worldGroup.add(exitBox);
     // White inner panel (the lit face)
     const exitFaceMat = new THREE.MeshStandardMaterial({
-      color: 0xe8f8e8, emissive: 0x5afa5a, emissiveIntensity: 2.2
+      color: isFinale ? 0xfff4e0 : 0xe8f8e8,
+      emissive: isFinale ? 0xffb030 : 0x5afa5a,
+      emissiveIntensity: isFinale ? 2.65 : 2.2
     });
     const exitFace = new THREE.Mesh(
       new THREE.BoxGeometry(1.22, 0.42, 0.02),
@@ -4083,7 +4806,7 @@
     }
 
     // Soft green glow from the sign
-    const exitLight = new THREE.PointLight(0x5afa5a, 1.2, 8);
+    const exitLight = new THREE.PointLight(isFinale ? 0xffa040 : 0x5afa5a, isFinale ? 1.45 : 1.2, isFinale ? 11 : 8);
     exitLight.position.set(wallEndX - 0.5, doorH + 0.8, 0);
     worldGroup.add(exitLight);
 
@@ -4168,322 +4891,57 @@
     // Right side void — flush against the door wall, extends behind it and back in z
     // so you see black through the door crack.
     const rightVoid = new THREE.Mesh(new THREE.BoxGeometry(40, HALL_H + 20, 30), voidMat);
-    rightVoid.position.set(ROOM_LENGTH + 2.5 + 20, HALL_H / 2 - 5, -5);
+    rightVoid.position.set(roomLen + 2.5 + 20, HALL_H / 2 - 5, -5);
     worldGroup.add(rightVoid);
     // Floor void below the playable floor (in case camera tilts or sees under)
-    const floorVoid = new THREE.Mesh(new THREE.BoxGeometry(ROOM_LENGTH + 80, 10, 20), voidMat);
-    floorVoid.position.set(ROOM_LENGTH / 2, -12, 0);
+    const floorVoid = new THREE.Mesh(new THREE.BoxGeometry(roomLen + 80, 10, 20), voidMat);
+    floorVoid.position.set(roomLen / 2, -12, 0);
     worldGroup.add(floorVoid);
     // Ceiling void above the playable ceiling
-    const ceilVoid = new THREE.Mesh(new THREE.BoxGeometry(ROOM_LENGTH + 80, 10, 20), voidMat);
-    ceilVoid.position.set(ROOM_LENGTH / 2, HALL_H + 6, 0);
+    const ceilVoid = new THREE.Mesh(new THREE.BoxGeometry(roomLen + 80, 10, 20), voidMat);
+    ceilVoid.position.set(roomLen / 2, HALL_H + 6, 0);
     worldGroup.add(ceilVoid);
 
     // Spawn
     spawnX = 2; spawnY = 1;
 
-}
-
-  function buildInterviewRoom() {
-    const RL = ROOM_LENGTH; // ~80 units wide
-    const HALL_H = 12;
-    const roomW = 81.6 - (-0.75);
-    const roomCX = (-0.75 + 81.6) / 2;
-
-    // Sky background — bright daylight blue
-    scene.background = new THREE.Color(0x7ab0d4);
-    scene.fog = new THREE.Fog(0x7ab0d4, 60, 200);
-
-    // ---- LIGHTING ----
-    // Bright ambient — daytime feel
-    const amb = new THREE.AmbientLight(0xddeeff, 0.9);
-    worldGroup.add(amb);
-    // Sun from outside the window
-    const sun = new THREE.DirectionalLight(0xfffaf0, 1.6);
-    sun.position.set(80, 20, 15);
-    worldGroup.add(sun);
-    // Soft fill from left
-    const fill = new THREE.DirectionalLight(0xc8d8f0, 0.4);
-    fill.position.set(-20, 10, 5);
-    worldGroup.add(fill);
-    // Ceiling lights — overhead warm
-    for (const lx of [15, 35, 55, 72]) {
-      const cl = new THREE.PointLight(0xfff8f0, 0.5, 25);
-      cl.position.set(lx, 9, 0);
-      worldGroup.add(cl);
-    }
-
-    // ---- FLOOR — polished dark marble/stone ----
-    const floorMat = new THREE.MeshStandardMaterial({
-      color: 0x2a2820, roughness: 0.15, metalness: 0.3,
-    });
-    const floor = new THREE.Mesh(new THREE.BoxGeometry(roomW + 4, 0.3, 8), floorMat);
-    floor.position.set(roomCX, -0.15, 0);
-    worldGroup.add(floor);
-    // Floor reflection lines — tile seams
-    const seamMat = new THREE.MeshBasicMaterial({ color: 0x1a1612, transparent: true, opacity: 0.5 });
-    for (let gx = 0; gx < RL; gx += 8) {
-      const sx = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.02, 8), seamMat);
-      sx.position.set(gx, 0.01, 0);
-      worldGroup.add(sx);
-    }
-    for (let gz = -3; gz <= 3; gz += 1.5) {
-      const sz = new THREE.Mesh(new THREE.BoxGeometry(roomW + 4, 0.02, 0.06), seamMat);
-      sz.position.set(roomCX, 0.01, gz);
-      worldGroup.add(sz);
-    }
-
-    // ---- CEILING — dark panel tiles ----
-    const ceilMat = new THREE.MeshStandardMaterial({ color: 0x1a1c20, roughness: 0.9 });
-    const ceil = new THREE.Mesh(new THREE.BoxGeometry(roomW + 4, 0.4, 8), ceilMat);
-    ceil.position.set(roomCX, HALL_H, 0);
-    worldGroup.add(ceil);
-    // Ceiling tile grid
-    const tileMat = new THREE.MeshStandardMaterial({ color: 0x22242a, roughness: 0.95 });
-    for (let gx = 0; gx < RL; gx += 6) {
-      for (let gz = -3; gz <= 3; gz += 3) {
-        const tile = new THREE.Mesh(new THREE.BoxGeometry(5.8, 0.05, 2.8), tileMat);
-        tile.position.set(gx + 3, HALL_H - 0.2, gz);
-        worldGroup.add(tile);
-      }
-    }
-    // Recessed ceiling lights
-    const lightPanelMat = new THREE.MeshStandardMaterial({
-      color: 0xffffff, emissive: 0xfff8e8, emissiveIntensity: 0.6, roughness: 1
-    });
-    for (const lx of [18, 42, 64]) {
-      const lp = new THREE.Mesh(new THREE.BoxGeometry(6, 0.05, 1.2), lightPanelMat);
-      lp.position.set(lx, HALL_H - 0.18, 0);
-      worldGroup.add(lp);
-    }
-
-    // ---- SIDE WALLS ----
-    const wallMat = new THREE.MeshStandardMaterial({ color: 0x2e2a24, roughness: 0.85 });
-    // Left wall (spawn side)
-    const wallL = new THREE.Mesh(new THREE.BoxGeometry(0.5, HALL_H, 8), wallMat);
-    wallL.position.set(-0.75, HALL_H / 2, 0);
-    worldGroup.add(wallL);
-    // Right wall (door side) — but door opening is cut by not rendering it solid
-    // We just add narrow bits above and below door
-    const wallRTop = new THREE.Mesh(new THREE.BoxGeometry(0.5, HALL_H - 4, 8), wallMat);
-    wallRTop.position.set(RL + 2.5, HALL_H / 2 + 2, 0);
-    worldGroup.add(wallRTop);
-
-    // ---- BACK WALL — floor-to-ceiling panoramic windows ----
-    // Dark frame surround at edges
-    const frameMat = new THREE.MeshStandardMaterial({ color: 0x1a1c20, roughness: 0.4, metalness: 0.6 });
-    // Left frame strip
-    const frameL = new THREE.Mesh(new THREE.BoxGeometry(3, HALL_H, 0.5), frameMat);
-    frameL.position.set(1.5, HALL_H / 2, -3.2);
-    worldGroup.add(frameL);
-    // Right frame strip
-    const frameR = new THREE.Mesh(new THREE.BoxGeometry(3, HALL_H, 0.5), frameMat);
-    frameR.position.set(RL - 1.5, HALL_H / 2, -3.2);
-    worldGroup.add(frameR);
-
-    // Window glass panels — 5 bays, floor to ceiling
-    const glassMat = new THREE.MeshStandardMaterial({
-      color: 0x90bcd8, transparent: true, opacity: 0.28,
-      roughness: 0.0, metalness: 0.05,
-    });
-    // Sky visible behind — fill the back with sky color
-    const skyBG = new THREE.Mesh(new THREE.PlaneGeometry(roomW, HALL_H + 2), 
-      new THREE.MeshBasicMaterial({ color: 0x7ab0d4 }));
-    skyBG.position.set(roomCX, HALL_H / 2, -3.5);
-    worldGroup.add(skyBG);
-
-    // Cloud patches in sky
-    const cloudMat = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.7 });
-    for (const [cx, cy, cw, ch] of [
-      [10,9,8,2],[25,10,12,2.5],[45,8,9,2],[60,10,14,3],[72,9,7,1.8]
-    ]) {
-      const cloud = new THREE.Mesh(new THREE.BoxGeometry(cw, ch, 0.1), cloudMat);
-      cloud.position.set(cx, cy, -3.45);
-      worldGroup.add(cloud);
-    }
-
-    // Distant city skyline
-    const cityMat = new THREE.MeshBasicMaterial({ color: 0x4a5a70 });
-    const cityData = [
-      [5,3,3],[10,5,4],[15,4,3],[22,7,5],[28,4,3],[35,6,4],
-      [40,3,3],[46,8,4],[53,5,3],[58,4,4],[64,6,3],[70,4,5],[75,3,3]
-    ];
-    for (const [cx, ch, cw] of cityData) {
-      const bld = new THREE.Mesh(new THREE.BoxGeometry(cw, ch, 0.1), cityMat);
-      bld.position.set(cx, ch / 2, -3.4);
-      worldGroup.add(bld);
-      // Windows on skyline buildings
-      const winMat2 = new THREE.MeshBasicMaterial({ color: 0xffe090 });
-      for (let wx = 0; wx < cw - 0.5; wx += 1.2) {
-        for (let wh = 0.5; wh < ch - 0.5; wh += 1.0) {
-          if (Math.random() > 0.45) continue;
-          const sw = new THREE.Mesh(new THREE.PlaneGeometry(0.4, 0.3), winMat2);
-          sw.position.set(cx - cw/2 + wx + 0.3, wh, -3.36);
-          worldGroup.add(sw);
-        }
-      }
-    }
-
-    // Ground level below skyline — darker city base
-    const groundCity = new THREE.Mesh(new THREE.PlaneGeometry(roomW, 3), 
-      new THREE.MeshBasicMaterial({ color: 0x2a3040 }));
-    groundCity.position.set(roomCX, 1.5, -3.42);
-    worldGroup.add(groundCity);
-
-    // Window glass overlaid on top of the sky view
-    const winBayW = (roomW - 6) / 5;
-    for (let wb = 0; wb < 5; wb++) {
-      const wx = 3 + wb * winBayW + winBayW / 2;
-      const glass = new THREE.Mesh(new THREE.PlaneGeometry(winBayW - 0.3, HALL_H), glassMat);
-      glass.position.set(wx, HALL_H / 2, -3.1);
-      worldGroup.add(glass);
-      // Vertical mullion
-      const mull = new THREE.Mesh(new THREE.BoxGeometry(0.2, HALL_H, 0.15), frameMat);
-      mull.position.set(wx - winBayW / 2, HALL_H / 2, -3.1);
-      worldGroup.add(mull);
-      // Horizontal transom
-      const tran = new THREE.Mesh(new THREE.BoxGeometry(winBayW - 0.3, 0.2, 0.15), frameMat);
-      tran.position.set(wx, HALL_H * 0.55, -3.1);
-      worldGroup.add(tran);
-    }
-    // Close the right mullion
-    const mullR = new THREE.Mesh(new THREE.BoxGeometry(0.2, HALL_H, 0.15), frameMat);
-    mullR.position.set(3 + 5 * winBayW, HALL_H / 2, -3.1);
-    worldGroup.add(mullR);
-
-    // ---- TWO EXECUTIVE DESKS flanking center ----
-    const deskMat = new THREE.MeshStandardMaterial({ color: 0x3a1e08, roughness: 0.2, metalness: 0.05 });
-    const deskTopMat = new THREE.MeshStandardMaterial({ color: 0x2a1406, roughness: 0.1, metalness: 0.1 });
-    const legMat = new THREE.MeshStandardMaterial({ color: 0x1a0e04, roughness: 0.5 });
-
-    for (const [dx, dz] of [[22, -1.2], [58, -1.2]]) {
-      // Desk body
-      const dBody = new THREE.Mesh(new THREE.BoxGeometry(12, 1.8, 3.5), deskMat);
-      dBody.position.set(dx, 0.9, dz);
-      worldGroup.add(dBody);
-      // Desk top
-      const dTop = new THREE.Mesh(new THREE.BoxGeometry(12.3, 0.1, 3.8), deskTopMat);
-      dTop.position.set(dx, 1.85, dz);
-      worldGroup.add(dTop);
-      // Legs
-      for (const [lx, lz] of [[-5.5, 1.3], [-5.5, -1.3], [5.5, 1.3], [5.5, -1.3]]) {
-        const leg = new THREE.Mesh(new THREE.BoxGeometry(0.25, 1.8, 0.25), legMat);
-        leg.position.set(dx + lx, 0.0, dz + lz);
-        worldGroup.add(leg);
-      }
-      // Monitor
-      const monMat = new THREE.MeshStandardMaterial({ color: 0x111111, roughness: 0.6 });
-      const scrMat = new THREE.MeshStandardMaterial({ color: 0x1a2a3a, emissive: 0x0a1520, emissiveIntensity: 0.5 });
-      const mon = new THREE.Mesh(new THREE.BoxGeometry(2.2, 1.6, 0.1), monMat);
-      mon.position.set(dx - 1, 3.0, dz - 1.2);
-      worldGroup.add(mon);
-      const scr = new THREE.Mesh(new THREE.BoxGeometry(2.0, 1.4, 0.06), scrMat);
-      scr.position.set(dx - 1, 3.0, dz - 1.17);
-      worldGroup.add(scr);
-      const monBase = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.08, 0.5), monMat);
-      monBase.position.set(dx - 1, 1.9, dz - 1.2);
-      worldGroup.add(monBase);
-      // Scattered papers
-      const paperMat = new THREE.MeshStandardMaterial({ color: 0xdcdad6, roughness: 0.95 });
-      for (let p = 0; p < 3; p++) {
-        const pap = new THREE.Mesh(new THREE.BoxGeometry(1.1, 0.02, 0.8), paperMat);
-        pap.position.set(dx + 2 + p * 1.3, 1.92, dz + 0.6 + (Math.random()-0.5)*0.3);
-        pap.rotation.y = (Math.random()-0.5) * 0.4;
-        worldGroup.add(pap);
-      }
-      // Chair behind desk
-      const chairMat2 = new THREE.MeshStandardMaterial({ color: 0x0d0d14, roughness: 0.6, metalness: 0.3 });
-      const cSeat = new THREE.Mesh(new THREE.BoxGeometry(2.0, 0.15, 1.6), chairMat2);
-      cSeat.position.set(dx, 1.5, dz - 2.0);
-      worldGroup.add(cSeat);
-      const cBack = new THREE.Mesh(new THREE.BoxGeometry(2.0, 2.2, 0.18), chairMat2);
-      cBack.position.set(dx, 2.65, dz - 2.75);
-      worldGroup.add(cBack);
-    }
-
-    // ---- INTERVIEWER — center, standing at window, back to player ----
-    // (like the reference: silhouette figure looking out)
-    const figX = 40;
-    const suitMat2 = new THREE.MeshStandardMaterial({ color: 0x0f0f18, roughness: 0.8 });
-    const skinMat2 = new THREE.MeshStandardMaterial({ color: 0xc08858, roughness: 0.8 });
-    const shirtMat2 = new THREE.MeshStandardMaterial({ color: 0xeeeae0, roughness: 0.85 });
-
-    // Legs
-    for (const lx of [-0.22, 0.22]) {
-      const leg = new THREE.Mesh(new THREE.BoxGeometry(0.38, 1.8, 0.35), suitMat2);
-      leg.position.set(figX + lx, 0.9, -2.0);
-      worldGroup.add(leg);
-      // Shoe
-      const shoe = new THREE.Mesh(new THREE.BoxGeometry(0.4, 0.18, 0.5), 
-        new THREE.MeshStandardMaterial({ color: 0x080808, roughness: 0.6 }));
-      shoe.position.set(figX + lx, 0.09, -1.85);
-      worldGroup.add(shoe);
-    }
-    // Torso / suit jacket
-    const torso2 = new THREE.Mesh(new THREE.BoxGeometry(1.2, 1.8, 0.65), suitMat2);
-    torso2.position.set(figX, 2.7, -2.0);
-    worldGroup.add(torso2);
-    // Shirt visible at front
-    const shirt2 = new THREE.Mesh(new THREE.BoxGeometry(0.45, 1.4, 0.66), shirtMat2);
-    shirt2.position.set(figX, 2.65, -1.68);
-    worldGroup.add(shirt2);
-    // Jacket lapels
-    for (const lx of [-0.28, 0.28]) {
-      const lapel = new THREE.Mesh(new THREE.BoxGeometry(0.28, 1.0, 0.67), suitMat2);
-      lapel.position.set(figX + lx, 2.8, -1.67);
-      worldGroup.add(lapel);
-    }
-    // Shoulders broad
-    for (const sx of [-0.66, 0.66]) {
-      const sh = new THREE.Mesh(new THREE.BoxGeometry(0.45, 0.38, 0.62), suitMat2);
-      sh.position.set(figX + sx, 3.52, -2.0);
-      worldGroup.add(sh);
-      // Arm hanging at sides
-      const arm2 = new THREE.Mesh(new THREE.BoxGeometry(0.32, 1.5, 0.32), suitMat2);
-      arm2.position.set(figX + sx, 2.75, -2.0);
-      worldGroup.add(arm2);
-      // Hand
-      const hand = new THREE.Mesh(new THREE.BoxGeometry(0.26, 0.3, 0.26), skinMat2);
-      hand.position.set(figX + sx, 1.98, -2.0);
-      worldGroup.add(hand);
-    }
-    // Head (facing away — just back of head)
-    const head2 = new THREE.Mesh(new THREE.BoxGeometry(0.75, 0.88, 0.72), skinMat2);
-    head2.position.set(figX, 4.26, -2.0);
-    worldGroup.add(head2);
-    // Hair
-    const hair2 = new THREE.Mesh(new THREE.BoxGeometry(0.78, 0.3, 0.74), 
-      new THREE.MeshStandardMaterial({ color: 0x100808, roughness: 0.9 }));
-    hair2.position.set(figX, 4.64, -2.0);
-    worldGroup.add(hair2);
-    // Neck
-    const neck = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.35, 0.28), skinMat2);
-    neck.position.set(figX, 3.85, -2.0);
-    worldGroup.add(neck);
-
-    // Floor reflection of figure (subtle)
-    const refMat = new THREE.MeshBasicMaterial({ color: 0x0a0808, transparent: true, opacity: 0.12 });
-    const ref = new THREE.Mesh(new THREE.BoxGeometry(1.2, 0.02, 4.5), refMat);
-    ref.position.set(figX, 0.0, -0.5);
-    worldGroup.add(ref);
-
-    // ---- GOAL TRIGGER ----
-    // Player walks in from left, goal is reaching the center (the interviewer)
-    // We place the goal at x=65 so player has to walk across the whole room
-    goalX = 65;
-    doorState = null; // No door on floor 25
-
-    // Invisible solid walls to keep player in bounds
-    const wallCollMat = new THREE.MeshBasicMaterial({ visible: false });
-    const wallCollL = new THREE.Mesh(new THREE.BoxGeometry(1, 12, 8), wallCollMat);
-    wallCollL.position.set(-0.5, 6, 0);
-    worldGroup.add(wallCollL);
-    platforms.push({ x: -0.5, y: 6, w: 1, h: 12, isWall: true, mesh: wallCollL });
-
-    // Solid floor platform spanning full room
-    const floorPlat = { x: roomCX, y: -0.15, w: roomW + 4, h: 0.3, mesh: floor };
-    platforms.push(floorPlat);
+    gauntletRoomLen = roomLen;
+    paperPlaneSpawnTimer = 9999;
   }
+
+  function disposeHazardMesh(h) {
+    if (!h || !h.mesh) return;
+    try {
+      h.mesh.traverse((c) => {
+        if (c.geometry) c.geometry.dispose();
+        const m = c.material;
+        if (Array.isArray(m)) {
+          for (const mm of m) {
+            if (mm?.map) mm.map.dispose();
+            mm?.dispose?.();
+          }
+        } else if (m) {
+          if (m.map) m.map.dispose();
+          m.dispose?.();
+        }
+      });
+    } catch (e) { /* ignore */ }
+  }
+
+  function boss_disposeProjectile(h) {
+    if (!h || !h.mesh) return;
+    try {
+      h.mesh.traverse((c) => {
+        if (c.geometry) c.geometry.dispose();
+        const m = c.material;
+        if (m) {
+          if (m.map) m.map.dispose();
+          m.dispose?.();
+        }
+      });
+    } catch (e) { /* ignore */ }
+  }
+
 
   function showFloorBanner() {
     // No-op — floor banner removed, floor number is now on the back wall of each room.
@@ -4508,12 +4966,13 @@
 
   // Called at the start of each floor to show the relevant mechanic hint
   const FLOOR_HINTS = {
-    1: ['', '<strong>NEW — ELECTRICAL HAZARD</strong><br>Live wires on the floor kill instantly. Jump across the platforms to reach the door.'],
-    2: ['', '<strong>NEW — DASH</strong><br>Press <kbd>Space</kbd> again in the air to dash. Cross wider gaps faster.'],
-    3: ['', '<strong>NEW — CRUMBLE BLOCKS</strong><br>Striped platforms collapse after you stand on them. Keep moving!'],
-    4: ['', '<strong>NEW — MOVING PLATFORMS</strong><br>Blue platforms oscillate up and down. Time your jumps.'],
-    5: ['', '<strong>NEW — DASH CRYSTALS</strong><br>Touch the pink crystals in mid-air to refill your dash. Chain them to cross the gap!'],
-    6: ['', 'Your interview is on the <strong>25th floor</strong>.<br>Get there as fast as possible — they won\'t wait forever.'],
+    1: ['', '<strong>NEW — ACID</strong><p class="hint-lead">Green pools kill instantly. Jump across the platforms to reach the door.</p><div class="gp-input-split"><div class="gp-input-col gp-input-col--pad"><span class="gp-input-col-label">Controller</span><p class="hint-bind-details">LS move · <strong>A</strong> jump between safe spots</p></div><div class="gp-input-col gp-input-col--keyboard"><span class="gp-input-col-label">Keyboard</span><p class="hint-bind-details"><kbd>A</kbd><kbd>D</kbd> move · <kbd>Space</kbd> jump</p></div></div>'],
+    2: ['', '<strong>NEW — DASH</strong><p class="hint-lead">Press again while airborne to dash. Cross wider gaps faster.</p><div class="gp-input-split"><div class="gp-input-col gp-input-col--pad"><span class="gp-input-col-label">Controller</span><p class="hint-bind-details"><strong>LT</strong> while in the air (after <strong>A</strong> jump)</p></div><div class="gp-input-col gp-input-col--keyboard"><span class="gp-input-col-label">Keyboard</span><p class="hint-bind-details"><kbd>Space</kbd> again while in the air</p></div></div>'],
+    3: ['', '<strong>NEW — CRUMBLE BLOCKS</strong><p class="hint-lead">Striped platforms collapse after you stand on them. Keep moving!</p><div class="gp-input-split"><div class="gp-input-col gp-input-col--pad"><span class="gp-input-col-label">Controller</span><p class="hint-bind-details">Same movement — LS · <strong>A</strong> jump off quickly</p></div><div class="gp-input-col gp-input-col--keyboard"><span class="gp-input-col-label">Keyboard</span><p class="hint-bind-details"><kbd>A</kbd><kbd>D</kbd> · <kbd>Space</kbd> — don’t linger</p></div></div>'],
+    4: ['', '<strong>NEW — MOVING PLATFORMS</strong><p class="hint-lead">Blue platforms oscillate up and down. Time your jumps.</p><div class="gp-input-split"><div class="gp-input-col gp-input-col--pad"><span class="gp-input-col-label">Controller</span><p class="hint-bind-details">LS · <strong>A</strong> jump to moving ledges</p></div><div class="gp-input-col gp-input-col--keyboard"><span class="gp-input-col-label">Keyboard</span><p class="hint-bind-details"><kbd>A</kbd><kbd>D</kbd> · <kbd>Space</kbd> — watch the rhythm</p></div></div>'],
+    5: ['', '<strong>NEW — DASH CRYSTALS</strong><p class="hint-lead">Touch the pink crystals in mid-air to refill your dash. Chain them to cross the gap!</p><div class="gp-input-split"><div class="gp-input-col gp-input-col--pad"><span class="gp-input-col-label">Controller</span><p class="hint-bind-details">Fly into crystals · <strong>LT</strong> dash between them</p></div><div class="gp-input-col gp-input-col--keyboard"><span class="gp-input-col-label">Keyboard</span><p class="hint-bind-details"><kbd>Space</kbd> dash · crystals refill air dash</p></div></div>'],
+    6: ['', '<strong>ALMOST THERE</strong><p class="hint-lead">Your interview is on the <strong>25th floor</strong>. Get there as fast as possible — they won\'t wait forever.</p>'],
+    25: ['', '<strong>25 — THE FINAL ROOM</strong><p class="hint-lead">This is it — the <strong>last interview floor</strong>. Parkour first with no crystals, then <strong>orb highways</strong> you can\'t skip. The door at the end is the real exit.</p><div class="gp-input-split"><div class="gp-input-col gp-input-col--pad"><span class="gp-input-col-label">Controller</span><p class="hint-bind-details">LS · <strong>A</strong> jump · <strong>LT</strong> dash — chain pink crystals where they appear</p></div><div class="gp-input-col gp-input-col--keyboard"><span class="gp-input-col-label">Keyboard</span><p class="hint-bind-details"><kbd>A</kbd><kbd>D</kbd> · <kbd>Space</kbd> — earn the finish</p></div></div>'],
   };
 
   function nextFloor() {
@@ -4534,6 +4993,531 @@
     hideHint();
     const hint = FLOOR_HINTS[state.floor];
     if (hint) setTimeout(() => showHint(hint[0], hint[1]), 600);
+  }
+
+  function disposePaperPlane() {
+    if (!paperPlane) return;
+    try {
+      worldGroup.remove(paperPlane.group);
+    } catch (e) { /* may already be cleared */ }
+    paperPlane.group.traverse((obj) => {
+      if (obj.geometry) obj.geometry.dispose();
+      const m = obj.material;
+      if (m) {
+        if (Array.isArray(m)) m.forEach((x) => x.dispose());
+        else m.dispose();
+      }
+    });
+    paperPlane = null;
+  }
+
+  function disposePaperThrower() {
+    if (!paperThrower) return;
+    try {
+      const g = paperThrower.group;
+      if (g.parent) g.parent.remove(g);
+    } catch (e) { /* */ }
+    paperThrower.group.traverse((obj) => {
+      if (obj.geometry) obj.geometry.dispose();
+      const m = obj.material;
+      if (m) {
+        if (Array.isArray(m)) m.forEach((x) => x.dispose());
+        else m.dispose();
+      }
+    });
+    paperThrower = null;
+  }
+  const _paperThrowerWorldPos = new THREE.Vector3();
+  function getPaperThrowerWorldPos() {
+    if (!paperThrower) return null;
+    paperThrower.group.updateWorldMatrix(true, true);
+    paperThrower.group.getWorldPosition(_paperThrowerWorldPos);
+    return _paperThrowerWorldPos;
+  }
+  function killPaperThrower() {
+    if (!paperThrower || paperThrower.dead) return;
+    const wp = getPaperThrowerWorldPos();
+    const x = wp ? wp.x : (player.x + 2);
+    const y = wp ? (wp.y + 1.0) : (player.y + 0.5);
+    // Pop like player acid death, with extra paper confetti.
+    emitDeathExplosion(x, y);
+    for (let i = 0; i < 20; i++) {
+      const ang = Math.random() * Math.PI * 2;
+      emit('paper', x, y, {
+        z: (wp ? wp.z : 0) + (Math.random() - 0.5) * 0.6,
+        vx: Math.cos(ang) * (2 + Math.random() * 4),
+        vy: Math.sin(ang) * (2 + Math.random() * 4),
+        life: 0.45 + Math.random() * 0.25,
+        scale: 0.15 + Math.random() * 0.22,
+        vRot: 5 + Math.random() * 8,
+      });
+    }
+    paperThrower.dead = true;
+    disposePaperThrower();
+    paperThrowWindup = 0;
+    paperThrowFollow = 0;
+    paperPlaneSpawnTimer = 9999; // no more throws this floor after death
+  }
+
+  function pickThrowerPlatform(layout, roomLen) {
+    const plats = layout.platforms;
+    if (!plats.length) return null;
+    if (layout.finaleMix && plats.length > 3) {
+      const targetX = roomLen * 0.7;
+      let best = plats[Math.max(1, plats.length - 2)];
+      let bestD = Infinity;
+      for (let i = 1; i < plats.length - 1; i++) {
+        const p = plats[i];
+        const cx = p.x + p.w / 2;
+        const d = Math.abs(cx - targetX);
+        if (d < bestD) { bestD = d; best = p; }
+      }
+      return best;
+    }
+    const idx = Math.max(1, Math.min(plats.length - 2, Math.floor(plats.length * 0.62)));
+    return plats[idx];
+  }
+
+  /** ~Player-sized rig; faces -X to throw across the course. */
+  function buildCoworkerThrowerMesh() {
+    const g = new THREE.Group();
+    const matSkin = new THREE.MeshStandardMaterial({ color: 0xe8c4a8, roughness: 0.78 });
+    const matShirt = new THREE.MeshStandardMaterial({ color: 0xded5a0, roughness: 0.9 });
+    const matPants = new THREE.MeshStandardMaterial({ color: 0x242c38, roughness: 0.82 });
+    const matJacket = new THREE.MeshStandardMaterial({ color: 0x3d4c60, roughness: 0.8 });
+    const matTie = new THREE.MeshStandardMaterial({ color: 0x6b48c4, roughness: 0.5, emissive: 0x2a1080, emissiveIntensity: 0.12 });
+    const matHair = new THREE.MeshStandardMaterial({ color: 0x3a2418, roughness: 0.75 });
+    const matShoe = new THREE.MeshStandardMaterial({ color: 0x0a0a0a, roughness: 0.4, metalness: 0.15 });
+
+    const legL = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.86, 0.22), matPants);
+    legL.position.set(-0.11, 0.43, 0);
+    legL.castShadow = true;
+    const legR = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.86, 0.22), matPants);
+    legR.position.set(0.11, 0.43, 0);
+    legR.castShadow = true;
+    g.add(legL, legR);
+    const footL = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.1, 0.32), matShoe);
+    footL.position.set(-0.11, 0.05, 0.04);
+    const footR = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.1, 0.32), matShoe);
+    footR.position.set(0.11, 0.05, 0.04);
+    g.add(footL, footR);
+
+    const belt = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.08, 0.28), new THREE.MeshStandardMaterial({ color: 0x1a2030, roughness: 0.85 }));
+    belt.position.y = 1.02;
+    belt.castShadow = true;
+    g.add(belt);
+
+    const torso = new THREE.Mesh(new THREE.BoxGeometry(0.54, 0.68, 0.3), matJacket);
+    torso.position.y = 1.34;
+    torso.castShadow = true;
+    g.add(torso);
+
+    const shirtPeek = new THREE.Mesh(new THREE.BoxGeometry(0.28, 0.38, 0.03), matShirt);
+    shirtPeek.position.set(0, 1.34, 0.165);
+    g.add(shirtPeek);
+
+    const tie = new THREE.Mesh(new THREE.BoxGeometry(0.09, 0.52, 0.035), matTie);
+    tie.position.set(0, 1.28, 0.165);
+    tie.castShadow = true;
+    g.add(tie);
+
+    function buildArm(side) {
+      const shoulder = new THREE.Group();
+      shoulder.position.set(side * 0.31, 1.66, 0);
+      const upper = new THREE.Mesh(new THREE.BoxGeometry(0.15, 0.42, 0.18), matJacket);
+      upper.position.y = -0.21;
+      upper.castShadow = true;
+      shoulder.add(upper);
+      const elbow = new THREE.Group();
+      elbow.position.y = -0.42;
+      shoulder.add(elbow);
+      const fore = new THREE.Mesh(new THREE.BoxGeometry(0.14, 0.35, 0.16), matJacket);
+      fore.position.y = -0.18;
+      fore.castShadow = true;
+      elbow.add(fore);
+      const cuff = new THREE.Mesh(new THREE.BoxGeometry(0.14, 0.04, 0.16), matShirt);
+      cuff.position.y = -0.34;
+      elbow.add(cuff);
+      const hand = new THREE.Mesh(new THREE.BoxGeometry(0.14, 0.14, 0.1), matSkin);
+      hand.position.y = -0.42;
+      hand.castShadow = true;
+      elbow.add(hand);
+      return { shoulder, elbow, hand };
+    }
+
+    const armL = buildArm(-1);
+    const armR = buildArm(1);
+    g.add(armL.shoulder, armR.shoulder);
+    armL.elbow.rotation.x = 0.5;
+    armL.shoulder.rotation.z = 0.22;
+    // Paper prop in throwing hand so release timing reads clearly.
+    const heldPaper = new THREE.Mesh(
+      new THREE.BoxGeometry(0.12, 0.02, 0.09),
+      new THREE.MeshStandardMaterial({
+        color: 0xf8f2e8,
+        roughness: 0.55,
+        emissive: 0xd8d2c8,
+        emissiveIntensity: 0.07,
+      })
+    );
+    heldPaper.position.set(-0.02, -0.42, 0.02);
+    heldPaper.rotation.z = 0.25;
+    heldPaper.castShadow = true;
+    armR.hand.add(heldPaper);
+
+    const neck = new THREE.Mesh(new THREE.BoxGeometry(0.14, 0.1, 0.14), matSkin);
+    neck.position.y = 1.74;
+    neck.castShadow = true;
+    g.add(neck);
+
+    const head = new THREE.Group();
+    head.position.y = 1.92;
+    const skull = new THREE.Mesh(new THREE.BoxGeometry(0.28, 0.32, 0.28), matSkin);
+    skull.castShadow = true;
+    head.add(skull);
+    const hair = new THREE.Mesh(new THREE.BoxGeometry(0.31, 0.13, 0.31), matHair);
+    hair.position.y = 0.13;
+    head.add(hair);
+    const eyeGeo = new THREE.BoxGeometry(0.035, 0.022, 0.014);
+    const eyeMat = new THREE.MeshStandardMaterial({ color: 0x1a1814 });
+    const eyeL = new THREE.Mesh(eyeGeo, eyeMat);
+    eyeL.position.set(-0.065, 0.025, 0.146);
+    head.add(eyeL);
+    const eyeR = new THREE.Mesh(eyeGeo, eyeMat);
+    eyeR.position.set(0.065, 0.025, 0.146);
+    head.add(eyeR);
+    const grin = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.03, 0.02), new THREE.MeshStandardMaterial({ color: 0x3a3028 }));
+    grin.position.set(0, -0.09, 0.148);
+    head.add(grin);
+    g.add(head);
+
+    return { group: g, armL, armR, torso, head, heldPaper };
+  }
+
+  function createPaperPlaneGroup() {
+    const group = new THREE.Group();
+    const visual = new THREE.Group();
+    // Low-poly dart — slightly warm paper + cooler/darker greys so it doesn’t match wall beige; thin faces use DoubleSide so no “holes” from back-face cull.
+    const matWhite = new THREE.MeshStandardMaterial({
+      color: 0xfff6ee,
+      roughness: 0.38,
+      metalness: 0,
+      flatShading: true,
+      emissive: 0xffead8,
+      emissiveIntensity: 0.14,
+      side: THREE.DoubleSide,
+    });
+    const matWingR = new THREE.MeshStandardMaterial({
+      color: 0x9aa2a8,
+      roughness: 0.55,
+      metalness: 0.02,
+      flatShading: true,
+      emissive: 0x6a7580,
+      emissiveIntensity: 0.06,
+      side: THREE.DoubleSide,
+    });
+    const matKeel = new THREE.MeshStandardMaterial({
+      color: 0x6e757d,
+      roughness: 0.62,
+      metalness: 0.02,
+      flatShading: true,
+      emissive: 0x3a4048,
+      emissiveIntensity: 0.05,
+      side: THREE.DoubleSide,
+    });
+    const matFold = new THREE.MeshStandardMaterial({
+      color: 0xf0e8e0,
+      roughness: 0.45,
+      metalness: 0,
+      flatShading: true,
+      emissive: 0xe8dcc8,
+      emissiveIntensity: 0.08,
+      side: THREE.DoubleSide,
+    });
+
+    function addTri(a, b, c, mat) {
+      const geo = new THREE.BufferGeometry();
+      geo.setAttribute('position', new THREE.BufferAttribute(new Float32Array([
+        a[0], a[1], a[2], b[0], b[1], b[2], c[0], c[1], c[2],
+      ]), 3));
+      geo.computeVertexNormals();
+      const mesh = new THREE.Mesh(geo, mat);
+      mesh.castShadow = true;
+      visual.add(mesh);
+    }
+
+    // Local axes: nose at -X (first through screen when vx < 0), wings span ±Z, Y up.
+    const nose = [-0.58, 0.1, 0];
+    const tailC = [0.56, 0.05, 0];
+    const Ltip = [-0.02, 0.13, 0.52];
+    const Lbk = [0.52, 0.07, 0.28];
+    const Rtip = [-0.02, 0.13, -0.52];
+    const Rbk = [0.52, 0.07, -0.28];
+    const nUnder = [-0.46, -0.08, 0];
+    const kL = [0.36, -0.22, 0.22];
+    const kR = [0.36, -0.22, -0.22];
+    const kN = [-0.28, -0.18, 0];
+    const kBackMid = [0.36, -0.22, 0];
+
+    // Top: left wing (white), right wing (grey — folded away), center spine strip
+    addTri(nose, Ltip, Lbk, matWhite);
+    addTri(nose, Rbk, Rtip, matWingR);
+    // Bridge panels close center-top wedge so no slit appears during bank/yaw.
+    addTri(nose, Ltip, tailC, matFold);
+    addTri(nose, tailC, Rtip, matWingR);
+    addTri(nose, Lbk, tailC, matFold);
+    addTri(nose, tailC, Rbk, matFold);
+    // Tail cap closes the center seam so no camera-angle pinhole appears.
+    addTri(tailC, Lbk, Rbk, matFold);
+    // Keel / dart handle (grey undersides)
+    addTri(nUnder, kL, kN, matKeel);
+    addTri(nUnder, kN, kR, matKeel);
+    addTri(kL, kR, kBackMid, matKeel);
+    // Rear belly: closes the gap between trailing wing edges and keel (fixes center “hole” from many angles)
+    addTri(Lbk, Rbk, kR, matKeel);
+    addTri(Lbk, kR, kL, matKeel);
+    // Nose-to-keel belly wedge (fills front underside)
+    addTri(nose, kN, nUnder, matKeel);
+    // Under-wing closure near nose/tips to eliminate peek-through while banking.
+    addTri(nUnder, Ltip, Lbk, matKeel);
+    addTri(nUnder, Rbk, Rtip, matKeel);
+    // Side cheeks — tie nose to keel for readable volume from camera
+    addTri(nose, Lbk, nUnder, matWingR);
+    addTri(nose, nUnder, Rbk, matWingR);
+    addTri(nUnder, Rbk, Lbk, matWingR);
+
+    // Present ~¾ view: slight yaw shows both wings; pitch shows keel toward camera (side-scroll friendly).
+    visual.rotation.order = 'YXZ';
+    visual.rotation.y = 0.55;
+    visual.rotation.x = 0.36;
+    visual.rotation.z = 0.07;
+    group.add(visual);
+    group.scale.setScalar(PAPER_PLANE_SCALE);
+    group.userData.visual = visual;
+    return { group };
+  }
+
+  const _paperThrowHandPos = new THREE.Vector3();
+
+  function launchPaperPlaneFromThrower() {
+    if (!paperThrower || paperPlane) return;
+    if (paperThrower.heldPaper) paperThrower.heldPaper.visible = false;
+    paperThrower.armR.hand.updateWorldMatrix(true, true);
+    paperThrower.armR.hand.getWorldPosition(_paperThrowHandPos);
+    _paperThrowHandPos.x -= 0.28;
+    _paperThrowHandPos.y += 0.06;
+    const { group } = createPaperPlaneGroup();
+    group.position.copy(_paperThrowHandPos);
+    worldGroup.add(group);
+    const speed = 11 + Math.random() * 5;
+    paperPlane = {
+      group,
+      vx: -speed,
+      baseY: _paperThrowHandPos.y,
+      baseZ: _paperThrowHandPos.z,
+      worldCollisionDelay: 0.18,
+      phase: Math.random() * Math.PI * 2,
+      t: 0,
+      trailT: 0,
+      didHit: false,
+    };
+  }
+
+  function spawnPaperPlane() {
+    if (state.floor < 10 || paperPlane) return;
+    const { group } = createPaperPlaneGroup();
+    const baseY = 2.8 + Math.random() * 4.4;
+    const baseZ = -1.5 + Math.random() * 3.0;
+    const startX = gauntletRoomLen + 10 + Math.random() * 18;
+    group.position.set(startX, baseY, baseZ);
+    worldGroup.add(group);
+    paperPlane = {
+      group,
+      vx: -(9.5 + Math.random() * 5.5),
+      baseY,
+      baseZ,
+      worldCollisionDelay: 0.18,
+      phase: Math.random() * Math.PI * 2,
+      t: 0,
+      trailT: 0,
+      didHit: false,
+    };
+  }
+
+  function updatePaperPlane(dt) {
+    // Coworker + paper-plane mechanic intentionally disabled.
+    disposePaperPlane();
+    disposePaperThrower();
+    return;
+    if (paperThrower) {
+      const th = paperThrower;
+      const now = performance.now() * 0.001;
+      const idleA = Math.sin(now * 1.75);
+      const idleB = Math.sin(now * 2.6 + 0.8);
+      const idleC = Math.sin(now * 1.1 + 1.4);
+      if (paperThrowWindup > 0) {
+        paperThrowWindup -= dt;
+        const u = 1 - Math.max(0, paperThrowWindup) / PAPER_THROW_WINDUP;
+        th.armR.elbow.rotation.x = u * 1.48;
+        th.armR.shoulder.rotation.x = -u * 0.22;
+        th.armR.shoulder.rotation.z = -u * 0.38;
+        th.torso.rotation.z = u * 0.06;
+        th.torso.rotation.x = -0.03 + u * 0.08;
+        th.head.rotation.y = -0.04 + idleC * 0.03;
+        th.head.rotation.x = idleB * 0.02;
+        th.armL.shoulder.rotation.z = 0.18 + idleA * 0.04;
+        th.armL.elbow.rotation.x = 0.45 + idleB * 0.08;
+        if (paperThrowWindup <= 0) {
+          paperThrowWindup = 0;
+          launchPaperPlaneFromThrower();
+          paperThrowFollow = PAPER_THROW_FOLLOW;
+        }
+      } else if (paperThrowFollow > 0) {
+        paperThrowFollow -= dt;
+        const t = 1 - paperThrowFollow / PAPER_THROW_FOLLOW;
+        th.armR.elbow.rotation.x = THREE.MathUtils.lerp(-0.95, 0, t);
+        th.armR.shoulder.rotation.x = THREE.MathUtils.lerp(-0.22, 0, t);
+        th.armR.shoulder.rotation.z = THREE.MathUtils.lerp(-0.38, 0, t);
+        th.torso.rotation.z = THREE.MathUtils.lerp(0.06, 0, t);
+        th.torso.rotation.x = THREE.MathUtils.lerp(0.06, 0, t);
+        th.head.rotation.y = THREE.MathUtils.lerp(-0.02, idleC * 0.07, t);
+        th.head.rotation.x = THREE.MathUtils.lerp(0.02, idleB * 0.03, t);
+        th.armL.shoulder.rotation.z = THREE.MathUtils.lerp(0.2, 0.22 + idleA * 0.05, t);
+        th.armL.elbow.rotation.x = THREE.MathUtils.lerp(0.38, 0.48 + idleB * 0.1, t);
+        if (paperThrowFollow <= 0) {
+          paperThrowFollow = 0;
+          th.armR.elbow.rotation.x = 0;
+          th.armR.shoulder.rotation.x = 0;
+          th.armR.shoulder.rotation.z = 0;
+          th.torso.rotation.z = 0;
+          th.torso.rotation.x = 0;
+          if (th.heldPaper) th.heldPaper.visible = true;
+        }
+      } else {
+        // Ambient "office impatience" loop so throwers feel alive while waiting.
+        th.group.position.y = 0.02 + idleA * 0.015;
+        th.group.rotation.y = Math.PI + idleC * 0.05;
+        th.torso.position.y = 1.34 + idleA * 0.018;
+        th.torso.rotation.z = idleB * 0.03;
+        th.torso.rotation.x = idleC * 0.025;
+        th.head.rotation.y = idleC * 0.13;
+        th.head.rotation.x = idleA * 0.045;
+        th.armL.shoulder.rotation.z = 0.22 + idleB * 0.08;
+        th.armL.shoulder.rotation.x = -0.06 + idleA * 0.05;
+        th.armL.elbow.rotation.x = 0.48 + idleB * 0.13;
+        th.armR.shoulder.rotation.x = -0.04 + idleB * 0.05;
+        th.armR.shoulder.rotation.z = -0.06 + idleA * 0.06;
+        th.armR.elbow.rotation.x = 0.16 + idleC * 0.08;
+      }
+    }
+    if (paperPlane) {
+      const p = paperPlane;
+      p.t += dt;
+      p.phase += dt * 3.05;
+      p.group.position.x += p.vx * dt;
+      const bob = Math.sin(p.phase) * 0.2;
+      const swayZ = Math.sin(p.phase * 0.55) * 0.2;
+      p.group.position.y = p.baseY + bob;
+      p.group.position.z = p.baseZ + swayZ;
+      // Inner mesh keeps fixed “dart” pose; outer group banks in flight.
+      p.group.rotation.z = Math.sin(p.phase * 0.82) * 0.34;
+      p.group.rotation.y = Math.sin(p.phase * 0.27) * 0.1;
+      p.group.rotation.x = Math.sin(p.phase * 0.44) * 0.1;
+      p.worldCollisionDelay = Math.max(0, (p.worldCollisionDelay ?? 0) - dt);
+
+      p.trailT += dt;
+      if (p.trailT > 0.035) {
+        p.trailT = 0;
+        const tx = p.group.position.x + 0.22;
+        const ty = p.group.position.y + (Math.random() - 0.5) * 0.1;
+        const tz = p.group.position.z;
+        emit('wind', tx, ty, {
+          z: tz + (Math.random() - 0.5) * 0.5,
+          vx: 1.4 + Math.random() * 1.8,
+          vy: (Math.random() - 0.5) * 0.6,
+          life: 0.32 + Math.random() * 0.2,
+          scale: 0.4 + Math.random() * 0.4,
+          opacity: 0.2 + Math.random() * 0.1,
+        });
+        if (Math.random() < 0.4) {
+          emit('paper', tx, ty - 0.04, {
+            z: tz,
+            vx: 0.6 + Math.random() * 0.8,
+            vy: (Math.random() - 0.5) * 1.0,
+            life: 0.5 + Math.random() * 0.2,
+            scale: 0.3 + Math.random() * 0.25,
+            vRot: 3 + Math.random() * 6,
+          });
+        }
+      }
+
+      if (!p.didHit && !state.dying && !state.adminGodMode && state.invuln <= 0) {
+        const px = p.group.position.x;
+        const py = p.group.position.y;
+        const pz = p.group.position.z;
+        // Tight hitbox along the dart body (sleek obstacle)
+        if (Math.abs(px - player.x) < player.w * 0.45 + 0.2 &&
+            Math.abs(py - player.y) < player.h * 0.42 + 0.14 &&
+            Math.abs(pz) < 0.45) {
+          p.didHit = true;
+          for (let k = 0; k < 28; k++) {
+            const ang = Math.random() * Math.PI * 2;
+            emit('paper', px, py, {
+              z: pz + (Math.random() - 0.5) * 0.7,
+              vx: Math.cos(ang) * (3 + Math.random() * 4),
+              vy: Math.sin(ang) * (2 + Math.random() * 3),
+              life: 0.55 + Math.random() * 0.3,
+              scale: 0.2 + Math.random() * 0.38,
+              vRot: 6 + Math.random() * 10,
+            });
+          }
+          disposePaperPlane();
+          paperPlaneSpawnTimer = 4.8 + Math.random() * 2.6;
+          damage(MAX_HEALTH, 'paper_plane');
+        }
+      }
+      if (!p.didHit && (p.worldCollisionDelay ?? 0) <= 0) {
+        // Plane should not ghost through world solids — shred when it clips platforms/walls.
+        for (const plat of platforms) {
+          if (!plat || !plat.w || !plat.h) continue;
+          if (Math.abs(p.group.position.x - plat.x) < (plat.w * 0.5 + 0.16) &&
+              Math.abs(p.group.position.y - plat.y) < (plat.h * 0.5 + 0.12)) {
+            const hx = p.group.position.x;
+            const hy = p.group.position.y;
+            const hz = p.group.position.z;
+            for (let k = 0; k < 14; k++) {
+              const ang = Math.random() * Math.PI * 2;
+              emit('paper', hx, hy, {
+                z: hz + (Math.random() - 0.5) * 0.5,
+                vx: Math.cos(ang) * (1.2 + Math.random() * 1.8),
+                vy: Math.sin(ang) * (1.0 + Math.random() * 1.6),
+                life: 0.3 + Math.random() * 0.2,
+                scale: 0.12 + Math.random() * 0.18,
+                vRot: 4 + Math.random() * 7,
+              });
+            }
+            disposePaperPlane();
+            paperPlaneSpawnTimer = 4.8 + Math.random() * 2.6;
+            break;
+          }
+        }
+      }
+      if (paperPlane && p.group.position.x < -20) {
+        disposePaperPlane();
+        paperPlaneSpawnTimer = 4.8 + Math.random() * 2.6;
+      }
+    } else {
+      paperPlaneSpawnTimer -= dt;
+      if (paperPlaneSpawnTimer <= 0 && paperThrowWindup <= 0 && paperThrowFollow <= 0) {
+        if (paperThrower) {
+          if (paperThrower.heldPaper) paperThrower.heldPaper.visible = true;
+          paperThrowWindup = PAPER_THROW_WINDUP;
+        } else {
+          // Keep the mechanic coherent: no thrower means no off-screen magic spawn.
+          paperPlaneSpawnTimer = 1.0;
+        }
+      }
+    }
   }
 
   // Acid death check + ambient acid effects
@@ -4560,23 +5544,23 @@
     const bubbleColors = [0x2aff28, 0x6afa40, 0x9afa4a, 0x4acc2a, 0x8afa2a, 0x3aaa20];
 
     acidZones.forEach((az, i) => {
-      if (az.glow) az.glow.intensity = 0.6 + Math.sin(t * 2 + i) * 0.3;
-      // Spawn new bubbles — rate scales with acid width
-      const spawnRate = az.w * 1.5; // bubbles per second per zone
+      if (az.glow) az.glow.intensity = 0.9 + Math.sin(t * 2 + i) * 0.25;
+      // Spawn new bubbles — rate scales with acid width (cap concurrent bubbles instead of thinning acid meshes).
+      const spawnRate = Math.min(22, 8 + az.w * 0.12);
+      if (acidBubbles.length >= 56) return;
       if (Math.random() < dt * spawnRate) {
         const bx = az.x + Math.random() * az.w;
         const bz = -2.2 + Math.random() * 4.4;
         const maxRadius = 0.08 + Math.random() * 0.22;
         const lifetime = 0.5 + Math.random() * 0.8;
         const color = bubbleColors[Math.floor(Math.random() * bubbleColors.length)];
+        if (!acidBubbleSurfGeo) acidBubbleSurfGeo = new THREE.SphereGeometry(1, 8, 6);
         const mat = new THREE.MeshStandardMaterial({
           color, emissive: color, emissiveIntensity: 1.4,
           transparent: true, opacity: 0.85,
-          roughness: 0.1, metalness: 0.0
+          roughness: 0.1, metalness: 0.0,
         });
-        // Sphere scaled to be a dome (flatter bottom)
-        const geo = new THREE.SphereGeometry(1, 8, 6);
-        const mesh = new THREE.Mesh(geo, mat);
+        const mesh = new THREE.Mesh(acidBubbleSurfGeo, mat);
         mesh.position.set(bx, 0.09, bz);
         mesh.scale.setScalar(0.001); // start tiny
         worldGroup.add(mesh);
@@ -4622,7 +5606,7 @@
 
       if (b.popped && b.age >= b.lifetime + 0.05) {
         worldGroup.remove(b.mesh);
-        b.mesh.geometry.dispose();
+        if (b.mesh.geometry !== acidBubbleSurfGeo) b.mesh.geometry.dispose();
         b.mat.dispose();
         acidBubbles.splice(i, 1);
       }
@@ -4670,7 +5654,7 @@
 
       const intensity = L.state * hum;
       L.mat.emissiveIntensity = L.baseEmissive * intensity;
-      L.light.intensity = L.baseIntensity * intensity;
+      if (L.light) L.light.intensity = L.baseIntensity * intensity;
     }
 
     // ---- ACID BALLS ----
@@ -4885,6 +5869,8 @@
         scene.remove(b.mesh); b.dead = true; acidBalls.splice(i, 1);
       }
     }
+
+    updatePaperPlane(dt);
   }
 
   function splatAcidBall(b, sx, sy) {
@@ -5162,36 +6148,36 @@
     eyeR.position.set(0.06, 0.02, 0.145);
     head.add(eyeR);
 
-    // ---- STAPLER (held in right hand) ----
-    const staplerGroup = new THREE.Group();
-    // Body — black base
-    const staplerBase = new THREE.Mesh(
-      new THREE.BoxGeometry(0.35, 0.1, 0.13),
-      new THREE.MeshStandardMaterial({ color: 0x1a1814, metalness: 0.3, roughness: 0.5 })
+    // ---- BRIEFCASE (always at right side; swing attack prop) ----
+    const briefcasePivot = new THREE.Group();
+    briefcasePivot.position.set(-0.02, -0.36, 0.02);
+    const briefcase = new THREE.Group();
+    const caseBody = new THREE.Mesh(
+      new THREE.BoxGeometry(0.36, 0.28, 0.12),
+      new THREE.MeshStandardMaterial({ color: 0x2a1e16, roughness: 0.45, metalness: 0.12 })
     );
-    staplerBase.position.set(0.12, 0, 0);
-    staplerGroup.add(staplerBase);
-    // Top pivot arm (red)
-    const staplerTop = new THREE.Mesh(
-      new THREE.BoxGeometry(0.32, 0.08, 0.11),
-      new THREE.MeshStandardMaterial({ color: 0xb82d1f, metalness: 0.2, roughness: 0.4 })
+    caseBody.castShadow = true;
+    briefcase.add(caseBody);
+    const caseFlap = new THREE.Mesh(
+      new THREE.BoxGeometry(0.36, 0.03, 0.13),
+      new THREE.MeshStandardMaterial({ color: 0x3a2a1c, roughness: 0.4, metalness: 0.15 })
     );
-    staplerTop.position.set(0.13, 0.08, 0);
-    staplerGroup.add(staplerTop);
-    // Small metallic tip — where staples come out
-    const staplerTip = new THREE.Mesh(
-      new THREE.BoxGeometry(0.05, 0.06, 0.09),
-      new THREE.MeshStandardMaterial({ color: 0xc0c0c0, metalness: 0.9, roughness: 0.2 })
+    caseFlap.position.y = 0.125;
+    briefcase.add(caseFlap);
+    const handle = new THREE.Mesh(
+      new THREE.TorusGeometry(0.07, 0.012, 6, 10, Math.PI),
+      new THREE.MeshStandardMaterial({ color: 0x14100c, roughness: 0.5, metalness: 0.2 })
     );
-    staplerTip.position.set(0.3, 0.02, 0);
-    staplerGroup.add(staplerTip);
-    // Attach to right hand — position relative to the hand bone
-    staplerGroup.position.set(0, -0.1, 0);
-    armR.hand.add(staplerGroup);
+    handle.rotation.x = Math.PI;
+    handle.position.set(0, 0.17, 0);
+    handle.castShadow = true;
+    briefcase.add(handle);
+    briefcasePivot.add(briefcase);
+    armR.hand.add(briefcasePivot);
 
     // Store rig references for animation
     g.userData = {
-      legL, legR, armL, armR, head, torso, belt, stapler: staplerGroup, staplerTip,
+      legL, legR, armL, armR, head, torso, belt, briefcasePivot, briefcase,
       // For dash trail etc
       allBodyParts: [torso, belt, shirtPanel, lapelL, lapelR, tieKnot, tieBody, collarL, collarR, neck, hair, sideHairL, sideHairR, skull],
     };
@@ -5641,31 +6627,426 @@
   // =========================================================================
   // INPUT
   // =========================================================================
+  const INPUT_PREF_KEY = 'floor25_input_mode_v1';
+
+  function isTypingFocus(el) {
+    if (!el || el === document.body) return false;
+    const t = el.tagName;
+    if (t === 'INPUT' || t === 'TEXTAREA' || t === 'SELECT') return true;
+    return el.isContentEditable === true;
+  }
+
+  function inputChoiceOverlayOpen() {
+    const el = document.getElementById('input-choice-overlay');
+    return el && !el.classList.contains('hidden');
+  }
+
+  function controlsHelpOverlayOpen() {
+    const el = document.getElementById('controls-help-overlay');
+    return el && !el.classList.contains('hidden');
+  }
+
+  function setControlsHelpTab(mode) {
+    const gp = mode === 'gamepad';
+    const tabG = document.getElementById('controls-help-tab-gamepad');
+    const tabK = document.getElementById('controls-help-tab-keyboard');
+    const panelG = document.getElementById('controls-help-body-gamepad');
+    const panelK = document.getElementById('controls-help-body-keyboard');
+    if (tabG) tabG.setAttribute('aria-selected', gp ? 'true' : 'false');
+    if (tabK) tabK.setAttribute('aria-selected', gp ? 'false' : 'true');
+    if (panelG) panelG.hidden = !gp;
+    if (panelK) panelK.hidden = gp;
+  }
+
+  function syncControlsHelpTabToPreference() {
+    setControlsHelpTab(document.body.classList.contains('input-mode-gamepad') ? 'gamepad' : 'keyboard');
+  }
+
+  function chooseInputMode(mode) {
+    try {
+      localStorage.setItem(INPUT_PREF_KEY, mode);
+    } catch (err) {}
+    document.body.classList.remove('input-mode-keyboard', 'input-mode-gamepad');
+    document.body.classList.add('input-mode-' + mode);
+    document.getElementById('input-choice-overlay')?.classList.add('hidden');
+    document.getElementById('controls-help-overlay')?.classList.remove('hidden');
+    setControlsHelpTab(mode);
+  }
+
   const keys = {};
   window.addEventListener('keydown', e => {
-    // Escape opens/closes pause menu (even during death animation or game over)
+    // Escape — close controls reference first, otherwise pause menu
     if (e.code === 'Escape') {
+      const chelp = document.getElementById('controls-help-overlay');
+      if (chelp && !chelp.classList.contains('hidden')) {
+        chelp.classList.add('hidden');
+        e.preventDefault();
+        return;
+      }
       togglePause();
       e.preventDefault();
       return;
+    }
+    // C — toggle controls reference (after input mode is chosen)
+    if (e.code === 'KeyC' && !e.repeat) {
+      if (isTypingFocus(document.activeElement)) return;
+      if (inputChoiceOverlayOpen()) return;
+      if (!document.body.classList.contains('input-mode-keyboard') && !document.body.classList.contains('input-mode-gamepad')) return;
+      e.preventDefault();
+      const chelp = document.getElementById('controls-help-overlay');
+      if (!chelp) return;
+      const wasHidden = chelp.classList.contains('hidden');
+      chelp.classList.toggle('hidden');
+      if (!chelp.classList.contains('hidden') && wasHidden) syncControlsHelpTabToPreference();
+      return;
+    }
+    // B — same back / dismiss behavior as gamepad face B (when a menu is open)
+    if (e.code === 'KeyB' && !e.repeat) {
+      if (controlsHelpOverlayOpen()) return;
+      const ctxMenu = computeUiMenuCtx();
+      if (ctxMenu === 'pause-main') {
+        e.preventDefault();
+        document.getElementById('pause-resume')?.click();
+        return;
+      }
+      if (ctxMenu === 'pause-levels') {
+        e.preventDefault();
+        document.getElementById('levels-back')?.click();
+        return;
+      }
+      if (ctxMenu === 'pause-reset') {
+        e.preventDefault();
+        document.getElementById('reset-confirm-no')?.click();
+        return;
+      }
+      if (ctxMenu === 'pause-admin-code') {
+        e.preventDefault();
+        document.getElementById('admin-code-cancel')?.click();
+        return;
+      }
+      if (ctxMenu === 'pause-admin') {
+        e.preventDefault();
+        document.getElementById('admin-back')?.click();
+        return;
+      }
+      if (ctxMenu === 'tutorial') {
+        e.preventDefault();
+        document.getElementById('tut-skip')?.click();
+        return;
+      }
+      if (ctxMenu === 'lb-overlay') {
+        e.preventDefault();
+        window.closeLeaderboardOverlay?.();
+        return;
+      }
     }
     // While paused, ignore all other game input
     if (state.paused) return;
     // Ignore auto-repeat events so holding Space doesn't re-buffer jump/dash
     if (e.repeat) return;
     keys[e.code] = true;
-    if (e.code === 'Space') { player.jumpBuf = PHYS.jumpBuffer; e.preventDefault(); }
-    if (e.code === 'KeyF')  { fireStaple(); e.preventDefault(); }
+    if (e.code === 'Space') {
+      player.jumpBuf = PHYS.jumpBuffer;
+      e.preventDefault();
+    }
+    if (e.code === 'KeyF')  { tryBriefcaseSwing(); e.preventDefault(); }
     if (e.code === 'KeyR') { respawnPlayer(); }
   });
   window.addEventListener('keyup', e => { keys[e.code] = false; });
 
-  // Left mouse button = parry/strike
   window.addEventListener('mousedown', e => {
-    if (e.button === 0) { // left button
-      tryParry();
-    }
+    if (e.button === 0) tryBriefcaseSwing();
+    else if (e.button === 2) tryParry();
   });
+  window.addEventListener('contextmenu', e => {
+    if (state.running && !state.paused) e.preventDefault();
+  });
+
+  // ---- Gamepad (standard mapping: Xbox / DualSense / Switch Pro when mapped) ----
+  let preferredGamepadIndex = null;
+  window.addEventListener('gamepadconnected', (e) => { preferredGamepadIndex = e.gamepad.index; });
+  window.addEventListener('gamepaddisconnected', (e) => {
+    if (preferredGamepadIndex === e.gamepad.index) preferredGamepadIndex = null;
+  });
+
+  function gpDeadzone(v, dz = 0.22) {
+    return Math.abs(v) < dz ? 0 : v;
+  }
+
+  function getActiveGamepad() {
+    const pads = navigator.getGamepads?.();
+    if (!pads) return null;
+    if (preferredGamepadIndex != null && pads[preferredGamepadIndex]) return pads[preferredGamepadIndex];
+    for (let i = 0; i < pads.length; i++) if (pads[i]) return pads[i];
+    return null;
+  }
+
+  const gpPrev = { start: false, a: false, rb: false, back: false, lt: false };
+
+  /** Menu navigation: D-pad only (buttons 12–15). Analog sticks are ignored in menus. */
+  const gpMenuNav = {
+    dup: false,
+    ddown: false,
+    dleft: false,
+    dright: false,
+    uiA: false,
+    uiB: false,
+    uiBack: false,
+    forceFocusApply: false,
+  };
+
+  let _menuCtxSig = '';
+  let uiMenuFocusIdx = 0;
+
+  function menuBtnOk(el) {
+    if (!el || el.disabled) return false;
+    const st = getComputedStyle(el);
+    return st.visibility !== 'hidden' && st.display !== 'none';
+  }
+
+  function menuApplyFocus(elements, idx) {
+    const list = elements.filter(Boolean);
+    list.forEach((el) => el?.classList.remove('gp-menu-focus'));
+    const clamped = list.length ? ((idx % list.length) + list.length) % list.length : 0;
+    const el = list[clamped];
+    if (menuBtnOk(el)) {
+      el.classList.add('gp-menu-focus');
+    }
+    return clamped;
+  }
+
+  function gpMenuDirectionStep(gp) {
+    let mx = 0;
+    let my = 0;
+    const u = !!gp.buttons[12]?.pressed;
+    const d = !!gp.buttons[13]?.pressed;
+    const l = !!gp.buttons[14]?.pressed;
+    const r = !!gp.buttons[15]?.pressed;
+    if (u && !gpMenuNav.dup) my -= 1;
+    else if (d && !gpMenuNav.ddown) my += 1;
+    else if (l && !gpMenuNav.dleft) mx -= 1;
+    else if (r && !gpMenuNav.dright) mx += 1;
+    gpMenuNav.dup = u;
+    gpMenuNav.ddown = d;
+    gpMenuNav.dleft = l;
+    gpMenuNav.dright = r;
+
+    if (mx !== 0 || my !== 0) return { mx, my };
+    return { mx: 0, my: 0 };
+  }
+
+  function computeUiMenuCtx() {
+    const lbOpen = typeof window.isLeaderboardOverlayOpen === 'function' && window.isLeaderboardOverlayOpen();
+    if (lbOpen) return 'lb-overlay';
+    const tut = document.getElementById('tutorial');
+    if (tut && !tut.classList.contains('hidden')) return 'tutorial';
+    const go = document.getElementById('gameover');
+    if (go && !go.classList.contains('hidden')) return 'gameover';
+    const win = document.getElementById('win');
+    if (win && !win.classList.contains('hidden')) return 'win';
+    const pauseMenu = document.getElementById('pause-menu');
+    if (state.paused && pauseMenu && !pauseMenu.classList.contains('hidden')) {
+      const adm = document.getElementById('admin-panel');
+      const admCode = document.getElementById('admin-code-panel');
+      const rst = document.getElementById('reset-confirm-panel');
+      const lv = document.getElementById('levels-panel');
+      if (adm && !adm.classList.contains('hidden')) return 'pause-admin';
+      if (admCode && !admCode.classList.contains('hidden')) return 'pause-admin-code';
+      if (rst && !rst.classList.contains('hidden')) return 'pause-reset';
+      if (lv && !lv.classList.contains('hidden')) return 'pause-levels';
+      return 'pause-main';
+    }
+    const title = document.getElementById('title-screen');
+    if (title && !title.classList.contains('hidden')) return 'title';
+    return 'none';
+  }
+
+  function defaultMenuFocus(ctx) {
+    if (ctx === 'pause-levels') return Math.max(0, Math.min(TOTAL_FLOORS - 1, (state.floor || 1) - 1));
+    if (ctx === 'pause-reset') return 1;
+    if (ctx === 'tutorial') return 0;
+    return 0;
+  }
+
+  function gridFocusMove(idx, mx, my) {
+    const COLS = 5;
+    const ROWS = 5;
+    let r = Math.floor(idx / COLS);
+    let c = idx % COLS;
+    if (mx < 0 && c > 0) c--;
+    else if (mx > 0 && c < COLS - 1) c++;
+    else if (my < 0 && r > 0) r--;
+    else if (my > 0 && r < ROWS - 1) r++;
+    const ni = r * COLS + c;
+    return Math.max(0, Math.min(TOTAL_FLOORS - 1, ni));
+  }
+
+  function pollGamepadUIMenus(now = performance.now()) {
+    const pick = document.getElementById('input-choice-overlay');
+    const help = document.getElementById('controls-help-overlay');
+    if ((pick && !pick.classList.contains('hidden')) || (help && !help.classList.contains('hidden'))) {
+      const gpBlock = getActiveGamepad();
+      if (gpBlock) gpPrev.start = !!gpBlock.buttons[9]?.pressed;
+      return;
+    }
+
+    const gp = getActiveGamepad();
+    if (!gp) {
+      gpMenuNav.dup = gpMenuNav.ddown = gpMenuNav.dleft = gpMenuNav.dright = false;
+      gpMenuNav.uiA = gpMenuNav.uiB = false;
+      gpMenuNav.uiBack = false;
+      gpPrev.start = false;
+      return;
+    }
+
+    const startNow = !!gp.buttons[9]?.pressed;
+    const startEdge = startNow && !gpPrev.start;
+    if (startEdge && typeof window.isLeaderboardOverlayOpen === 'function' && window.isLeaderboardOverlayOpen()) {
+      window.closeLeaderboardOverlay?.();
+      gpPrev.start = startNow;
+      return;
+    }
+
+    const ctx = computeUiMenuCtx();
+    if (ctx !== _menuCtxSig) {
+      document.querySelectorAll('.gp-menu-focus').forEach((el) => el.classList.remove('gp-menu-focus'));
+      _menuCtxSig = ctx;
+      uiMenuFocusIdx = defaultMenuFocus(ctx);
+      gpMenuNav.forceFocusApply = ctx !== 'none';
+    }
+
+    const dir = gpMenuDirectionStep(gp);
+    const aNow = !!gp.buttons[0]?.pressed;
+    const bNow = !!gp.buttons[1]?.pressed;
+    const backNow = !!gp.buttons[8]?.pressed;
+    const aEdge = aNow && !gpMenuNav.uiA;
+    const bEdge = bNow && !gpMenuNav.uiB;
+    const backEdge = backNow && !gpMenuNav.uiBack;
+    gpMenuNav.uiA = aNow;
+    gpMenuNav.uiB = bNow;
+    gpMenuNav.uiBack = backNow;
+
+    const wrapIdx = (i, n, delta) => (i + delta + n * 64) % n;
+
+    function bindVertical(ids) {
+      const els = ids.map((id) => document.getElementById(id)).filter(menuBtnOk);
+      if (!els.length) return;
+      const prevIdx = uiMenuFocusIdx;
+      // Vertical lists: D-pad up/down only (buttons 12/13).
+      const delta = dir.my;
+      const nav = delta !== 0;
+      if (nav) {
+        if (delta < 0) uiMenuFocusIdx = wrapIdx(uiMenuFocusIdx, els.length, -1);
+        if (delta > 0) uiMenuFocusIdx = wrapIdx(uiMenuFocusIdx, els.length, 1);
+      }
+      const idxMoved = nav && prevIdx !== uiMenuFocusIdx;
+      if (idxMoved || gpMenuNav.forceFocusApply) {
+        uiMenuFocusIdx = menuApplyFocus(els, uiMenuFocusIdx);
+        if (gpMenuNav.forceFocusApply) gpMenuNav.forceFocusApply = false;
+      }
+      if (aEdge) els[uiMenuFocusIdx]?.click();
+    }
+
+    function bindHorizontal(ids) {
+      const els = ids.map((id) => document.getElementById(id)).filter(menuBtnOk);
+      if (!els.length) return;
+      const prevIdx = uiMenuFocusIdx;
+      // Tutorial row: D-pad left/right only (buttons 14/15).
+      const nav = dir.mx !== 0;
+      if (nav) {
+        if (dir.mx < 0) uiMenuFocusIdx = wrapIdx(uiMenuFocusIdx, els.length, -1);
+        if (dir.mx > 0) uiMenuFocusIdx = wrapIdx(uiMenuFocusIdx, els.length, 1);
+      }
+      const idxMoved = nav && prevIdx !== uiMenuFocusIdx;
+      if (idxMoved || gpMenuNav.forceFocusApply) {
+        uiMenuFocusIdx = menuApplyFocus(els, uiMenuFocusIdx);
+        if (gpMenuNav.forceFocusApply) gpMenuNav.forceFocusApply = false;
+      }
+      if (aEdge) els[uiMenuFocusIdx]?.click();
+    }
+
+    switch (ctx) {
+      case 'lb-overlay': {
+        const backBtn = document.getElementById('lb-overlay-back');
+        if (gpMenuNav.forceFocusApply) {
+          menuApplyFocus([backBtn], 0);
+          gpMenuNav.forceFocusApply = false;
+        }
+        if (aEdge || backEdge || bEdge) window.closeLeaderboardOverlay?.();
+        break;
+      }
+      case 'tutorial': {
+        bindHorizontal(['tut-prev', 'tut-next', 'tut-skip']);
+        if (bEdge) document.getElementById('tut-skip')?.click();
+        break;
+      }
+      case 'title':
+        bindVertical(['start-btn', 'tutorial-btn', 'title-leaderboard-btn']);
+        break;
+      case 'gameover': {
+        const els = [document.getElementById('go-retry')].filter(menuBtnOk);
+        if (gpMenuNav.forceFocusApply) {
+          menuApplyFocus(els, 0);
+          gpMenuNav.forceFocusApply = false;
+        }
+        if (aEdge) els[0]?.click();
+        break;
+      }
+      case 'win':
+        bindVertical(['win-retry', 'lb-submit-btn']);
+        break;
+      case 'pause-main':
+        bindVertical(['pause-resume', 'pause-levels', 'pause-leaderboard', 'pause-audio', 'pause-reset']);
+        if (bEdge || backEdge) document.getElementById('pause-resume')?.click();
+        break;
+      case 'pause-levels': {
+        const nodes = [...document.querySelectorAll('#levels-grid .level-btn')];
+        const prevIdx = uiMenuFocusIdx;
+        const nav = dir.mx !== 0 || dir.my !== 0;
+        if (nav) uiMenuFocusIdx = gridFocusMove(uiMenuFocusIdx, dir.mx, dir.my);
+        const idxMoved = nav && prevIdx !== uiMenuFocusIdx;
+        if (idxMoved || gpMenuNav.forceFocusApply) {
+          uiMenuFocusIdx = menuApplyFocus(nodes, uiMenuFocusIdx);
+          if (gpMenuNav.forceFocusApply) gpMenuNav.forceFocusApply = false;
+        }
+        if (aEdge) nodes[uiMenuFocusIdx]?.click();
+        if (bEdge || backEdge) document.getElementById('levels-back')?.click();
+        break;
+      }
+      case 'pause-reset': {
+        bindVertical(['reset-confirm-yes', 'reset-confirm-no']);
+        if (bEdge || backEdge) document.getElementById('reset-confirm-no')?.click();
+        break;
+      }
+      case 'pause-admin-code':
+        bindVertical(['admin-code-cancel', 'admin-code-submit']);
+        if (bEdge || backEdge) document.getElementById('admin-code-cancel')?.click();
+        break;
+      case 'pause-admin':
+        bindVertical([
+          'admin-reset-scoreboard',
+          'admin-unlock-floors',
+          'admin-god-mode',
+          'admin-win-now',
+          'admin-back',
+        ]);
+        if (bEdge || backEdge) document.getElementById('admin-back')?.click();
+        break;
+      default:
+        break;
+    }
+
+    if (ctx === 'none') {
+      document.querySelectorAll('.gp-menu-focus').forEach((el) => el.classList.remove('gp-menu-focus'));
+      gpMenuNav.forceFocusApply = false;
+    }
+
+    if (startEdge && state.running) {
+      const lbOpen = typeof window.isLeaderboardOverlayOpen === 'function' && window.isLeaderboardOverlayOpen();
+      if (!lbOpen) togglePause();
+    }
+    gpPrev.start = startNow;
+  }
 
   // =========================================================================
   // COLLISION — AABB (2D, ignoring Z)
@@ -5699,6 +7080,68 @@
     return { px, py, pvx, pvy, onGround };
   }
 
+  /** Soft deadzone for stick aim (dash); separate from movement deadzone. */
+  function gpDeadzoneSoft(v, dz = 0.12) {
+    return Math.abs(v) < dz ? 0 : v;
+  }
+
+  /** Best pushed stick among common axis pairs (some browsers/pads use 4,5 for right stick). */
+  function gamepadAimUnit(gp) {
+    if (!gp?.axes?.length) return null;
+    const pairs = [[0, 1], [2, 3], [4, 5]];
+    let bx = 0;
+    let by = 0;
+    let best = 0;
+    for (const [ia, ib] of pairs) {
+      const sx = gpDeadzoneSoft(gp.axes[ia] ?? 0);
+      const sy = gpDeadzoneSoft(gp.axes[ib] ?? 0);
+      const m = Math.hypot(sx, sy);
+      if (m > best) {
+        best = m;
+        bx = sx;
+        by = sy;
+      }
+    }
+    // Ignore tiny noise; diagonal inputs must pass magnitude check (per-axis threshold broke diagonals).
+    if (best < 0.2) return null;
+    // Browser stick Y: positive = down; game dashDirY: positive = up (matches KeyW / jump cut logic).
+    const nx = bx / best;
+    const nyUp = -by / best;
+    return { x: nx, y: nyUp };
+  }
+
+  /** Air dash from aim direction (keyboard / sticks); requires dash charged and not on ground. */
+  function attemptAirDash(gp) {
+    if (!player.dashAvailable || player.dashing > 0 || player.onGround) return false;
+    let dx = 0;
+    let dy = 0;
+    if (keys['KeyA'] || keys['ArrowLeft']) dx -= 1;
+    if (keys['KeyD'] || keys['ArrowRight']) dx += 1;
+    if (keys['KeyW'] || keys['ArrowUp']) dy += 1;
+    if (keys['KeyS'] || keys['ArrowDown']) dy -= 1;
+    if (dx === 0 && dy === 0 && gp) {
+      const aim = gamepadAimUnit(gp);
+      if (aim) {
+        dx = aim.x;
+        dy = aim.y;
+      }
+    }
+    if (dx === 0 && dy === 0) dx = player.facing;
+    const mag = Math.sqrt(dx * dx + dy * dy);
+    dx /= mag;
+    dy /= mag;
+
+    player.dashing = PHYS.dashTime;
+    player.dashAvailable = false;
+    player.dashDirX = dx;
+    player.dashDirY = dy;
+    player.vx = dx * PHYS.dashVel;
+    player.vy = dy * PHYS.dashVel;
+    if (Math.abs(dx) > 0.1) player.facing = dx > 0 ? 1 : -1;
+    sfx('dash');
+    return true;
+  }
+
   // =========================================================================
   // PLAYER UPDATE
   // =========================================================================
@@ -5706,10 +7149,31 @@
     // Skip everything while death animation plays — player is frozen, mesh hidden
     if (state.dying) return;
 
-    // Input
+    const gp = getActiveGamepad();
+
+    // Face buttons / shoulders — mirror Space / R / LMB (jump buffer uses edge + hold)
+    if (gp) {
+      if (gp.buttons[0]?.pressed && !gpPrev.a) player.jumpBuf = PHYS.jumpBuffer;
+      gpPrev.a = !!gp.buttons[0]?.pressed;
+      if (gp.buttons[5]?.pressed && !gpPrev.rb) tryParry();
+      gpPrev.rb = !!gp.buttons[5]?.pressed;
+      if (gp.buttons[8]?.pressed && !gpPrev.back) respawnPlayer();
+      gpPrev.back = !!gp.buttons[8]?.pressed;
+    } else {
+      gpPrev.a = gpPrev.rb = gpPrev.back = gpPrev.lt = false;
+    }
+
+    // Input — keyboard + left stick / D-pad
     let ix = 0;
     if (keys['KeyA'] || keys['ArrowLeft']) ix -= 1;
     if (keys['KeyD'] || keys['ArrowRight']) ix += 1;
+    if (ix === 0 && gp) {
+      const lax = gpDeadzone(gp.axes[0] ?? 0);
+      if (gp.buttons[14]?.pressed) ix -= 1;
+      else if (gp.buttons[15]?.pressed) ix += 1;
+      else if (lax < -0.35) ix = -1;
+      else if (lax > 0.35) ix = 1;
+    }
 
     if (ix !== 0) player.facing = ix;
 
@@ -5731,11 +7195,7 @@
     }
     player.onSlip = onSlip;
 
-    // Crouch — only while on ground and not dashing
-    const crouchInput = (keys['KeyS'] || keys['ArrowDown']) && player.onGround && player.dashing <= 0;
-    player.crouching = !!crouchInput;
-
-    const speedCap = player.crouching ? PHYS.moveMax * 0.45 : PHYS.moveMax;
+    const speedCap = PHYS.moveMax;
 
     // Accel / friction
     const accelMul = onSlip ? 0.35 : 1.0;
@@ -5753,7 +7213,7 @@
     // Gravity
     // Gravity — with variable jump height:
     // If player releases Space while rising, apply extra gravity to cut the jump short.
-    const spaceHeld = !!keys['Space'];
+    const spaceHeld = !!(keys['Space'] || gp?.buttons[0]?.pressed);
     let g = PHYS.gravity;
     if (player.vy > 0 && !spaceHeld) g *= 1.8; // jump cut — softer so tap-jumps feel natural
     player.vy -= g * dt;
@@ -5769,7 +7229,7 @@
     if (player.parrying > 0) {
       for (const h of hazards) {
         if (h._parried) continue;
-        if (h.type !== 'airplane' && h.type !== 'coworker') continue;
+        if (h.type !== 'airplane' && h.type !== 'coworker' && h.type !== 'boss_proj') continue;
         const dx = h.x - player.x;
         const dy = h.y - player.y;
         if (Math.abs(dx) < PHYS.parryRange && Math.abs(dy) < PHYS.parryRange) {
@@ -5801,29 +7261,19 @@
         player.onGround = false;
         player.dashAvailable = true; // arm the air dash after leaving ground
         sfx('jump');
-      } else if (player.dashAvailable && player.dashing <= 0) {
-        // Second press in air — dash in held direction
-        let dx = 0, dy = 0;
-        if (keys['KeyA'] || keys['ArrowLeft'])  dx -= 1;
-        if (keys['KeyD'] || keys['ArrowRight']) dx += 1;
-        if (keys['KeyW'] || keys['ArrowUp'])    dy += 1;
-        if (keys['KeyS'] || keys['ArrowDown'])  dy -= 1;
-        if (dx === 0 && dy === 0) dx = player.facing; // default: forward
-        const mag = Math.sqrt(dx * dx + dy * dy);
-        dx /= mag; dy /= mag;
-
-        player.dashing = PHYS.dashTime;
-        player.dashAvailable = false;
-        player.dashDirX = dx;
-        player.dashDirY = dy;
-        player.vx = dx * PHYS.dashVel;
-        player.vy = dy * PHYS.dashVel;
-        if (Math.abs(dx) > 0.1) player.facing = dx > 0 ? 1 : -1;
+      } else if (attemptAirDash(gp)) {
         player.jumpBuf = 0;
-        sfx('dash');
       }
     }
     player.jumpBuf -= dt;
+
+    // Left trigger — air dash (same directions as second jump / Space in air)
+    if (gp) {
+      const ltRaw = Number(gp.buttons[6]?.value) || 0;
+      const ltNow = ltRaw > 0.35 || !!gp.buttons[6]?.pressed;
+      if (ltNow && !gpPrev.lt) attemptAirDash(gp);
+      gpPrev.lt = ltNow;
+    }
 
     // Hold dash velocity during active dash
     if (player.dashing > 0) {
@@ -5888,17 +7338,9 @@
 
     // Update mesh — new character origin is at FEET, so position directly at player.y
     // player.y is the center of the collision box (1.6 tall), so feet are at player.y - player.h/2
-    // Smooth crouch interpolation (0 = standing, 1 = fully crouched)
-    const crouchTarget = player.crouching ? 1 : 0;
-    player._crouchAmt = player._crouchAmt || 0;
-    const crouchSpeed = 14;
-    player._crouchAmt += (crouchTarget - player._crouchAmt) * Math.min(1, crouchSpeed * dt);
+    player.mesh.position.set(player.x, player.y - player.h / 2, 0);
 
-    // Lower mesh so feet stay on ground when crouched
-    const crouchYOffset = player._crouchAmt * (player.h * 0.25);
-    player.mesh.position.set(player.x, player.y - player.h / 2 + crouchYOffset, 0);
-
-    // Landing squash — briefly scale wider/shorter on hard impact (layered on top of crouch)
+    // Landing squash — briefly scale wider/shorter on hard impact
     let sx = 1, sy = 1, sz = 1;
     if (player._squashTimer > 0) {
       player._squashTimer -= dt;
@@ -5906,12 +7348,6 @@
       const amt = (player._squashIntensity || 1) * 0.25 * t;
       sx = 1 + amt; sy = 1 - amt; sz = 1 + amt;
     }
-    // Crouch squash: shorter and slightly wider
-    const crouchSquashY = 1 - player._crouchAmt * 0.45;
-    const crouchSquashX = 1 + player._crouchAmt * 0.18;
-    sy *= crouchSquashY;
-    sx *= crouchSquashX;
-    sz *= crouchSquashX;
     player.mesh.scale.set(sx, sy, sz);
     // Rotate to face movement direction (character model faces +Z by default;
     // rotating +90° puts them facing +X, -90° puts them facing -X)
@@ -6045,6 +7481,44 @@
     if (state_ !== 'dash') {
       player.mesh.rotation.x *= 0.8;
       if (Math.abs(player.mesh.rotation.x) < 0.01) player.mesh.rotation.x = 0;
+    }
+
+    // ---- BRIEFCASE SWING OVERLAY (Hollow Knight–style slash: windup → fast cut → follow-through) ----
+    if (player.briefcaseSwing > 0) {
+      const t = 1 - (player.briefcaseSwing / BRIEFCASE_SWING_DURATION);
+      const arc = briefcaseSlashEase(t);
+      const side = player.facing > 0 ? 1 : -1;
+      const slashSnap = Math.sin(Math.min(1, Math.max(0, (t - 0.14) / 0.22)) * Math.PI);
+
+      rig.armR.shoulder.rotation.x = -0.52 + arc * 2.05 + slashSnap * 0.08;
+      rig.armR.shoulder.rotation.z = (-1.05 + arc * 2.05) * side;
+      rig.armR.elbow.rotation.x = -0.55 + Math.sin(arc * Math.PI) * 0.55;
+      if (rig.briefcasePivot) {
+        rig.briefcasePivot.rotation.z = (-0.55 + arc * 2.65) * side;
+        rig.briefcasePivot.rotation.x = Math.sin(arc * Math.PI) * 0.52;
+        rig.briefcasePivot.rotation.y = side * Math.sin(arc * Math.PI) * 0.22;
+      }
+      rig.torso.rotation.y = side * (0.06 + arc * 0.38);
+      rig.torso.rotation.x = -0.1 + arc * 0.22;
+      rig.head.rotation.y = -side * arc * 0.18;
+      rig.head.rotation.x = arc * 0.12;
+      rig.armL.shoulder.rotation.x = 0.42 + arc * 0.28;
+      rig.armL.elbow.rotation.x = -0.38 - arc * 0.15;
+    } else if (rig.briefcasePivot) {
+      rig.briefcasePivot.rotation.z *= 0.68;
+      if (Math.abs(rig.briefcasePivot.rotation.z) < 0.01) rig.briefcasePivot.rotation.z = 0;
+      rig.briefcasePivot.rotation.x *= 0.65;
+      rig.briefcasePivot.rotation.y *= 0.65;
+      if (Math.abs(rig.briefcasePivot.rotation.x) < 0.01) rig.briefcasePivot.rotation.x = 0;
+      if (Math.abs(rig.briefcasePivot.rotation.y) < 0.01) rig.briefcasePivot.rotation.y = 0;
+    }
+    if (player.briefcaseSwing <= 0 && rig.torso && rig.torso.rotation.x) {
+      rig.torso.rotation.x *= 0.78;
+      if (Math.abs(rig.torso.rotation.x) < 0.008) rig.torso.rotation.x = 0;
+    }
+    if (player.briefcaseSwing <= 0 && rig.head && rig.head.rotation.y) {
+      rig.head.rotation.y *= 0.78;
+      if (Math.abs(rig.head.rotation.y) < 0.008) rig.head.rotation.y = 0;
     }
 
     // ---- PARRY ANIMATION OVERLAY ----
@@ -6221,14 +7695,28 @@
           h.mesh.rotation.z = Math.sin(now * 0.005 + (h.phase ?? 0)) * 0.25;
           h.mesh.rotation.y = h.vx < 0 ? Math.PI : 0;
         }
+        if (h.type === 'boss_proj') {
+          const ph = h._rpPhase ?? (h._rpPhase = Math.random() * Math.PI * 2);
+          const tn = performance.now() * 0.001;
+          const spin = 4.5 + Math.sin(tn * 3.05 + ph) * 1.05;
+          h.mesh.rotation.z += dt * spin;
+          h.mesh.rotation.x = Math.sin(tn * 11.2 + ph) * 0.13 + Math.sin(tn * 6.8 - ph * 2) * 0.055;
+          h.mesh.rotation.y = Math.sin(tn * 4.4 + ph * 0.55) * 0.075;
+        }
         if (h.type === 'stapler') {
           h.mesh.rotation.z += dt * 10;
         }
-
         h.mesh.position.set(h.x, h.y, 0);
-
-        // Off screen — respawn or remove
-        if (h.x < -30 || h.x > 32 || h.y < -10) {
+        if (!Number.isFinite(h.x) || !Number.isFinite(h.y)) {
+          worldGroup.remove(h.mesh);
+          disposeHazardMesh(h);
+          hazards.splice(i, 1);
+          continue;
+        }
+        // Off screen — respawn or remove (camera-relative so hazards work across long rooms)
+        let offScreen = h.x < camera.position.x - 30 || h.x > camera.position.x + 32;
+        if (h.bossProjectile) offScreen = h.x < camera.position.x - 55 || h.x > camera.position.x + 95;
+        if (offScreen || h.y < -10) {
           if (h.respawn && !h._parried) {
             h.x = h.respawnX ?? 20;
             h.y = h.respawnY ?? h.y;
@@ -6239,6 +7727,8 @@
               emitPaperShred(Math.max(-28, Math.min(30, h.x)), h.y);
             }
             worldGroup.remove(h.mesh);
+            if (h.type === 'boss_proj') boss_disposeProjectile(h);
+            else disposeHazardMesh(h);
             hazards.splice(i, 1);
             continue;
           }
@@ -6263,6 +7753,7 @@
   // DAMAGE / DEATH
   // =========================================================================
   function damage(amt, reason) {
+    if (state.adminGodMode) return;
     if (state.invuln > 0) return;
     state.health -= amt;
     state.invuln = 1.2;
@@ -6388,114 +7879,115 @@
     }
   }
 
-  // =========================================================================
-  // STAPLER WEAPON
-  // =========================================================================
-  const STAPLE_SPEED = 28;
-  const STAPLE_COOLDOWN = 0.18;
-  const STAPLE_RANGE = 35;
-  let stapleCd = 0;
-
-  function fireStaple() {
-    if (stapleCd > 0) return;
-    stapleCd = STAPLE_COOLDOWN;
-
-    // Spawn at stapler tip
-    const dir = player.facing;
-    const sx = player.x + dir * 0.6;
-    const sy = player.y - 0.05;
-
-    // Staple mesh — small metallic rectangle
-    const staple = new THREE.Mesh(
-      new THREE.BoxGeometry(0.25, 0.06, 0.04),
-      new THREE.MeshStandardMaterial({
-        color: 0xd0d0d0, metalness: 0.9, roughness: 0.2,
-        emissive: 0x888888, emissiveIntensity: 0.3,
-      })
-    );
-    staple.position.set(sx, sy, 0);
-    scene.add(staple);
-
-    staples.push({
-      mesh: staple,
-      x: sx, y: sy,
-      vx: dir * STAPLE_SPEED,
-      vy: 0,
-      life: STAPLE_RANGE / STAPLE_SPEED, // despawn after traveling STAPLE_RANGE units
-      damage: 1,
-    });
-
-    // Visual kickback on arm
-    const rig = player.mesh.userData;
-    if (rig && rig.armR) {
-      rig.armR.shoulder.rotation.x = -1.0;
-      rig.armR.elbow.rotation.x = -0.3;
-      player._staplerKick = 0.15; // hold animation briefly
+  /** Ease 0→1 with slow windup, sharp mid-swing (HK nail slash feel), soft recovery. */
+  function briefcaseSlashEase(t) {
+    if (t <= 0.14) {
+      const u = t / 0.14;
+      return u * u * 0.1;
     }
-
-    // Tiny muzzle spark
-    emitSparks(sx + dir * 0.3, sy, 3);
+    if (t <= 0.4) {
+      const u = (t - 0.14) / 0.26;
+      const k = 1 - (1 - u) ** 3;
+      return 0.1 + k * 0.78;
+    }
+    const u = (t - 0.4) / 0.6;
+    return 0.88 + (1 - (1 - u) ** 2) * 0.12;
   }
 
-  function updateStaples(dt) {
-    stapleCd = Math.max(0, stapleCd - dt);
-    for (let i = staples.length - 1; i >= 0; i--) {
-      const s = staples[i];
-      s.x += s.vx * dt;
-      s.y += s.vy * dt;
-      s.life -= dt;
-      s.mesh.position.set(s.x, s.y, 0);
+  function emitBriefcaseSlashBurst() {
+    const f = player.facing;
+    const cx = player.x + f * 0.74;
+    const cy = player.y + 0.38;
+    for (let i = 0; i < 16; i++) {
+      const fan = -Math.PI * 0.38 * f;
+      const ang = fan + (Math.random() - 0.5) * 1.3;
+      const sp = 2.8 + Math.random() * 5.5;
+      emit('spark', cx, cy, {
+        vx: Math.cos(ang) * sp,
+        vy: Math.sin(ang) * sp - 0.45,
+        z: (Math.random() - 0.5) * 0.22,
+        life: 0.11 + Math.random() * 0.15,
+        drag: 4.5,
+        scale: 0.38 + Math.random() * 0.58,
+        color: Math.random() > 0.42 ? 0xffffff : 0x9fd8ff,
+      });
+    }
+    for (let i = 0; i < 7; i++) {
+      emit('wind', player.x + f * (0.22 + i * 0.11), player.y + 0.26 - i * 0.045, {
+        vx: f * (7.5 + Math.random() * 5),
+        vy: -0.35 - Math.random() * 0.55,
+        life: 0.1 + Math.random() * 0.05,
+        drag: 7,
+        scale: 0.62 + Math.random() * 0.6,
+        opacity: 0.38,
+      });
+    }
+  }
 
-      // Check hazard collision
-      let hit = false;
-      for (const h of hazards) {
-        if (!h) continue;
-        const dx = s.x - h.x;
-        const dy = s.y - h.y;
-        const hw = (h.w || 0.6) / 2 + 0.15;
-        const hh = (h.h || 1) / 2 + 0.1;
-        if (Math.abs(dx) < hw && Math.abs(dy) < hh) {
-          // Damage enemy if it has HP
-          if (h.hp !== undefined) {
-            h.hp -= s.damage;
-            emitSparks(s.x, s.y, 5);
-            // Flash red
-            h.mesh.traverse(c => {
-              if (c.isMesh && c.material) {
-                c.material = c.material.clone();
-                c.material.emissive = new THREE.Color(0xb82d1f);
-                c.material.emissiveIntensity = 0.8;
-                setTimeout(() => { if (c.material) c.material.emissiveIntensity = 0; }, 120);
-              }
-            });
-            state.hitstop = Math.max(state.hitstop, 0.03);
-          } else {
-            // Non-HP hazard — just sparks
-            emitSparks(s.x, s.y, 4);
-          }
-          hit = true;
-          break;
-        }
+  function spawnBriefcaseSlashVFX() {
+    const f = player.facing;
+    const baseX = player.x + f * 0.64;
+    const baseY = player.y + 0.44;
+
+    function pushSwipe(color, rotZ, rotX, scale0, life) {
+      let swipe;
+      if (swipePool.length > 0) swipe = swipePool.pop();
+      else {
+        const geo = new THREE.TorusGeometry(1.2, 0.06, 8, 24, Math.PI * 0.9);
+        const mat = new THREE.MeshBasicMaterial({
+          color: 0xffffff,
+          transparent: true,
+          opacity: 0.9,
+        });
+        swipe = new THREE.Mesh(geo, mat);
       }
+      swipe.material.color.setHex(color);
+      swipe.material.opacity = 0.93;
+      swipe.position.set(baseX, baseY, 0.4);
+      swipe.rotation.set(rotX, f > 0 ? 0.22 : -0.22, rotZ);
+      swipe.scale.setScalar(scale0);
+      scene.add(swipe);
+      activeSwipes.push({ mesh: swipe, life, max: life });
+    }
 
-      // Check platform collision (staples stick into walls briefly then despawn)
-      if (!hit) {
-        for (const p of platforms) {
-          if (p.isCeiling) continue;
-          if (Math.abs(s.x - p.x) < p.w / 2 + 0.15 &&
-              Math.abs(s.y - p.y) < p.h / 2 + 0.1) {
-            emitSparks(s.x, s.y, 3);
-            hit = true;
-            break;
-          }
-        }
-      }
+    pushSwipe(0xffffff, f > 0 ? -Math.PI * 0.6 : Math.PI * 0.6, f > 0 ? -0.45 : 0.45, 0.36, 0.18);
+    pushSwipe(0x7ec8ff, f > 0 ? -Math.PI * 0.54 : Math.PI * 0.54, f > 0 ? -0.38 : 0.38, 0.48, 0.14);
+  }
 
-      if (hit || s.life <= 0 || Math.abs(s.x - player.x) > STAPLE_RANGE) {
-        scene.remove(s.mesh);
-        staples.splice(i, 1);
+  // =========================================================================
+  // BRIEFCASE SWING ATTACK
+  // =========================================================================
+  const BRIEFCASE_SWING_DURATION = 0.30;
+  const BRIEFCASE_SWING_COOLDOWN = 0.26;
+  /** Normalized swing progress (0 start → 1 end) when slash arc / sparks fire */
+  const BRIEFCASE_SLASH_VFX_AT = 0.155;
+  const BRIEFCASE_HIT_T0 = 0.12;
+  const BRIEFCASE_HIT_T1 = 0.52;
+  let briefcaseSwingCd = 0;
+
+  function tryBriefcaseSwing() {
+    if (!state.running || state.paused) return;
+    if (briefcaseSwingCd > 0) return;
+    briefcaseSwingCd = BRIEFCASE_SWING_COOLDOWN;
+    player.briefcaseSwing = BRIEFCASE_SWING_DURATION;
+    player._briefcaseHitDone = false;
+    player._briefcaseSlashVfxDone = false;
+  }
+
+  function updateBriefcaseAttack(dt) {
+    briefcaseSwingCd = Math.max(0, briefcaseSwingCd - dt);
+    if (player.briefcaseSwing > 0) {
+      player.briefcaseSwing = Math.max(0, player.briefcaseSwing - dt);
+      const progress = 1 - (player.briefcaseSwing / BRIEFCASE_SWING_DURATION);
+      if (!player._briefcaseSlashVfxDone && progress >= BRIEFCASE_SLASH_VFX_AT) {
+        player._briefcaseSlashVfxDone = true;
+        spawnBriefcaseSlashVFX();
+        emitBriefcaseSlashBurst();
+        state.hitstop = Math.max(state.hitstop, 0.026);
+        state.shakeAmount = Math.max(state.shakeAmount, 0.055);
       }
     }
+    // No dedicated melee target hook here now that thrower NPCs are removed.
   }
 
   function tryParry() {
@@ -6514,7 +8006,7 @@
     // Immediately check if any parryable hazard is in range (airplanes, coworkers)
     let parried = false;
     for (const h of hazards) {
-      if (h.type !== 'airplane' && h.type !== 'coworker') continue;
+      if (h.type !== 'airplane' && h.type !== 'coworker' && h.type !== 'boss_proj') continue;
       if (h._parried) continue;
       const dx = h.x - player.x;
       const dy = h.y - player.y;
@@ -6530,6 +8022,18 @@
   }
 
   function performParry(h) {
+    if (h.type === 'boss_proj') {
+      emitParrySparks(h.x, h.y, 16);
+      worldGroup.remove(h.mesh);
+      boss_disposeProjectile(h);
+      const ix = hazards.indexOf(h);
+      if (ix >= 0) hazards.splice(ix, 1);
+      player.vx += -player.facing * 2.5;
+      state.hitstop = Math.max(state.hitstop, 0.035);
+      state.shakeAmount = Math.max(state.shakeAmount, 0.12);
+      return;
+    }
+
     h._parried = true;
 
     if (h.type === 'airplane') {
@@ -6910,7 +8414,9 @@
       return;
     }
     const floorNumEl = document.getElementById('minimap-floor-num');
+    const floorPrefEl = document.getElementById('minimap-floor-prefix');
     if (floorNumEl) floorNumEl.textContent = String(state.floor || 1);
+    if (floorPrefEl) floorPrefEl.textContent = (state.floor || 1) === 25 ? 'FINAL' : 'FLOOR';
     drawMinimap(state.floor || 1);
   }
 
@@ -6924,6 +8430,9 @@
     const dc = document.getElementById('death-count');
     if (dc) dc.textContent = String(state.deaths || 0);
     updateMinimap();
+
+    const bossPh = document.getElementById('boss-phase-hud');
+    if (bossPh) bossPh.classList.add('hidden');
   }
 
   // =========================================================================
@@ -6952,6 +8461,14 @@
   }
   function getHighestFloor() {
     return loadSave().highestFloor || 1;
+  }
+  function unlockAllFloors() {
+    try {
+      localStorage.setItem(SAVE_KEY, JSON.stringify({
+        floor: Math.max(1, Math.min(state.floor || 1, TOTAL_FLOORS)),
+        highestFloor: TOTAL_FLOORS,
+      }));
+    } catch (e) {}
   }
   function resetProgress() {
     try {
@@ -7014,6 +8531,8 @@
       document.getElementById('pause-body').classList.remove('hidden');
       document.getElementById('levels-panel').classList.add('hidden');
       document.getElementById('reset-confirm-panel').classList.add('hidden');
+      document.getElementById('admin-code-panel').classList.add('hidden');
+      document.getElementById('admin-panel').classList.add('hidden');
       refreshAudioLabel();
       menu.classList.remove('hidden');
     } else {
@@ -7081,6 +8600,35 @@
     document.getElementById('reset-confirm-panel').classList.add('hidden');
     document.getElementById('pause-body').classList.remove('hidden');
   }
+
+  function closePausePanels() {
+    document.getElementById('pause-body').classList.add('hidden');
+    document.getElementById('levels-panel').classList.add('hidden');
+    document.getElementById('reset-confirm-panel').classList.add('hidden');
+    document.getElementById('admin-code-panel').classList.add('hidden');
+    document.getElementById('admin-panel').classList.add('hidden');
+  }
+
+  window.floor25AdminPowers = {
+    unlockAllFloors() {
+      unlockAllFloors();
+      return 'All floors unlocked.';
+    },
+    toggleGodMode() {
+      state.adminGodMode = !state.adminGodMode;
+      state.health = MAX_HEALTH;
+      renderHealth();
+      return `God mode ${state.adminGodMode ? 'enabled' : 'disabled'}.`;
+    },
+    winNow() {
+      closePausePanels();
+      document.getElementById('pause-menu').classList.add('hidden');
+      state.paused = false;
+      musicRestore();
+      triggerWin();
+      return 'Win sequence triggered.';
+    },
+  };
 
   function doResetGame() {
     resetProgress();
@@ -7245,6 +8793,8 @@
     const dt = Math.min(0.033, (now - last) / 1000);
     last = now;
 
+    pollGamepadUIMenus(now);
+
     if (state.running && !state.paused) {
       // Hitstop — skip simulation updates but still render, so the impact frame is "held"
       if (state.hitstop > 0) {
@@ -7259,12 +8809,13 @@
         updateDoorSwing(dt);
         updateTrailGhosts(dt);
         updateSwipes(dt);
-        updateStaples(dt);
+        updateBriefcaseAttack(dt);
         updateCrumblePlatforms(dt);
         updateMovingPlatforms(dt);
         updateCrystals(dt);
         audioTick(dt);
-        if (keys['KeyF']) fireStaple(); // auto-fire while holding F
+        const gpHold = getActiveGamepad();
+        if (keys['KeyF'] || gpHold?.buttons[2]?.pressed) tryBriefcaseSwing();
         updateParticles(dt);
         updateLandingRing();
       }
@@ -7274,7 +8825,6 @@
         state.shakeAmount = Math.max(0, state.shakeAmount - state.shakeDecay * dt);
       }
 
-      // Camera centered on player, Y fixed
       const CAM_Y_FIXED = 4.5;
       let camX = player.x;
       let camY = CAM_Y_FIXED;
@@ -7282,11 +8832,13 @@
         camX += (Math.random() - 0.5) * state.shakeAmount * 0.8;
         camY += (Math.random() - 0.5) * state.shakeAmount * 0.8;
       }
+      camera.position.z = 18;
       camera.position.x = camX;
       camera.position.y = camY;
       camera.lookAt(player.x, CAM_Y_FIXED, 0);
 
-      // Update background/fog/material colors per zone
+      renderer.toneMappingExposure = 1.25;
+
       const pal = currentZone();
       scene.background.setHex(pal.bg);
       scene.fog.color.setHex(pal.fog);
@@ -7339,16 +8891,16 @@
       body: 'Press Space again while in the air to dash. Combine with A/D/W/S for an 8-directional dash. Your dash resets when you touch the ground or a pink crystal.',
     },
     {
-      title: 'Crouch',
-      keys: [['S']],
-      keysLabel: 'Crouch',
-      body: 'Hold S while on the ground to crouch. You move slower while crouched — useful for careful approaches near edges.',
+      title: 'Briefcase slash',
+      keys: [['F']],
+      keysLabel: 'Melee',
+      body: 'LMB or F performs a quick briefcase slash (think Hollow Knight nail swipe): bright arc, sparks, and wind. Use it for close-range defense and clean timing.',
     },
     {
-      title: 'Staple Gun',
+      title: 'Parry windows',
       keys: [['F']],
-      keysLabel: 'Fire',
-      body: 'Press F to fire staples in the direction you\'re facing. Hold F to auto-fire. Damages enemies with health.',
+      keysLabel: 'Counterplay',
+      body: 'Mix slash and parry: slash for immediate pressure, parry to deflect incoming hazards and open space when rooms get hectic.',
     },
     {
       title: 'The Acid',
@@ -7366,7 +8918,7 @@
       title: 'Restart',
       keys: [['R'], 'or', ['Esc']],
       keysLabel: 'Reset floor / Pause',
-      body: 'Press R to respawn instantly if you\'re stuck. Press Escape to open the pause menu, where you can adjust settings, jump to a previously completed floor, or reset your save.',
+      body: 'Press R to respawn instantly if you\'re stuck. Press Escape for the pause menu, or C anytime to review controls. From pause you can adjust settings, jump to a completed floor, or reset your save.',
     },
   ];
   let tutStep = 0;
@@ -7425,6 +8977,14 @@
     document.getElementById('title-screen').classList.remove('hidden');
   }
 
+  document.getElementById('input-choice-gamepad')?.addEventListener('click', () => chooseInputMode('gamepad'));
+  document.getElementById('input-choice-keyboard')?.addEventListener('click', () => chooseInputMode('keyboard'));
+  document.getElementById('controls-help-close')?.addEventListener('click', () => {
+    document.getElementById('controls-help-overlay')?.classList.add('hidden');
+  });
+  document.getElementById('controls-help-tab-gamepad')?.addEventListener('click', () => setControlsHelpTab('gamepad'));
+  document.getElementById('controls-help-tab-keyboard')?.addEventListener('click', () => setControlsHelpTab('keyboard'));
+
   document.getElementById('tutorial-btn').addEventListener('click', openTutorial);
   document.getElementById('tut-prev').addEventListener('click', () => {
     if (tutStep > 0) { tutStep--; renderTutorialStep(); }
@@ -7461,7 +9021,7 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import {
       getFirestore, collection, addDoc, query, orderBy, limit,
-      getDocs, serverTimestamp
+      getDocs, serverTimestamp, deleteDoc
     } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
     const firebaseConfig = {
@@ -7494,11 +9054,15 @@
     }
 
     // ── render table ─────────────────────────────────────────────────────────
-    async function renderLeaderboard(highlightName) {
-      const loading = document.getElementById('lb-loading');
-      const table   = document.getElementById('lb-table');
-      const tbody   = document.getElementById('lb-body');
-      const status  = document.getElementById('lb-status');
+    // targets defaults to the win-screen elements; pass overlay IDs to render there instead.
+    const WIN_TARGETS = { loading: 'lb-loading',         table: 'lb-table',         body: 'lb-body' };
+    const OVERLAY_TARGETS = { loading: 'lb-overlay-loading', table: 'lb-overlay-table', body: 'lb-overlay-body' };
+
+    async function renderLeaderboard(highlightName, targets = WIN_TARGETS) {
+      const loading = document.getElementById(targets.loading);
+      const table   = document.getElementById(targets.table);
+      const tbody   = document.getElementById(targets.body);
+      if (!loading || !table || !tbody) return;
 
       loading.style.display = 'block';
       table.style.display   = 'none';
@@ -7530,7 +9094,7 @@
 
           tr.innerHTML = `
             <td style="opacity:0.55;min-width:28px">${i + 1}</td>
-            <td style="max-width:160px;overflow:hidden;text-overflow:ellipsis">${name}</td>
+            <td style="max-width:220px;overflow:hidden;text-overflow:ellipsis">${name}</td>
             <td style="text-align:right;min-width:50px">${d.deaths ?? '—'}</td>
             <td>${formatTimeLB(d.time)}</td>
           `;
@@ -7545,6 +9109,151 @@
         console.error('Leaderboard fetch error:', err);
       }
     }
+
+    // ── standalone leaderboard overlay (title + pause) ──────────────────────
+    let _lbOverlayReturnTo = null; // 'title' | 'pause' | null
+
+    function openLeaderboardOverlay(returnTo) {
+      _lbOverlayReturnTo = returnTo;
+      if (returnTo === 'title') {
+        document.getElementById('title-screen').classList.add('hidden');
+      } else if (returnTo === 'pause') {
+        document.getElementById('pause-menu').classList.add('hidden');
+      }
+      document.getElementById('leaderboard-overlay').classList.remove('hidden');
+      const savedName = localStorage.getItem('floor25_lb_name') || '';
+      renderLeaderboard(savedName, OVERLAY_TARGETS);
+    }
+
+    function closeLeaderboardOverlay() {
+      document.getElementById('leaderboard-overlay').classList.add('hidden');
+      if (_lbOverlayReturnTo === 'title') {
+        document.getElementById('title-screen').classList.remove('hidden');
+      } else if (_lbOverlayReturnTo === 'pause') {
+        document.getElementById('pause-body').classList.remove('hidden');
+        document.getElementById('levels-panel').classList.add('hidden');
+        document.getElementById('reset-confirm-panel').classList.add('hidden');
+        document.getElementById('pause-menu').classList.remove('hidden');
+      }
+      _lbOverlayReturnTo = null;
+    }
+
+    // Expose for the main game script's Esc handler.
+    window.isLeaderboardOverlayOpen = () =>
+      !document.getElementById('leaderboard-overlay').classList.contains('hidden');
+    window.closeLeaderboardOverlay = closeLeaderboardOverlay;
+
+    // Wire up buttons.
+    document.getElementById('title-leaderboard-btn')
+      .addEventListener('click', () => openLeaderboardOverlay('title'));
+    document.getElementById('pause-leaderboard')
+      .addEventListener('click', () => openLeaderboardOverlay('pause'));
+    document.getElementById('lb-overlay-back')
+      .addEventListener('click', () => closeLeaderboardOverlay());
+
+    // Allow Esc to close the overlay (intercept before the main game's pause handler).
+    window.addEventListener('keydown', (e) => {
+      if (e.code === 'Escape' && window.isLeaderboardOverlayOpen()) {
+        closeLeaderboardOverlay();
+        e.preventDefault();
+        e.stopImmediatePropagation();
+      }
+    }, true); // capture phase + stopImmediatePropagation = beats the main togglePause() listener
+
+    // ── hidden admin panel ───────────────────────────────────────────────────
+    const ADMIN_CODE = '0506';
+    const adminPanels = ['pause-body', 'levels-panel', 'reset-confirm-panel', 'admin-code-panel', 'admin-panel'];
+
+    function hidePausePanels() {
+      adminPanels.forEach(id => document.getElementById(id)?.classList.add('hidden'));
+    }
+
+    function showAdminCodePanel() {
+      hidePausePanels();
+      const input = document.getElementById('admin-code-input');
+      document.getElementById('admin-code-status').textContent = '';
+      input.value = '';
+      document.getElementById('admin-code-panel').classList.remove('hidden');
+      input.focus();
+    }
+
+    function showAdminPanel() {
+      hidePausePanels();
+      document.getElementById('admin-status').textContent = '';
+      document.getElementById('admin-status').className = '';
+      document.getElementById('admin-panel').classList.remove('hidden');
+    }
+
+    function backToPauseMenu() {
+      hidePausePanels();
+      document.getElementById('pause-body').classList.remove('hidden');
+    }
+
+    function setAdminStatus(message, type = '') {
+      const status = document.getElementById('admin-status');
+      status.textContent = message;
+      status.className = type;
+    }
+
+    async function resetScoreboard() {
+      const snap = await getDocs(collection(db, LB_COLLECTION));
+      await Promise.all(snap.docs.map(score => deleteDoc(score.ref)));
+      renderLeaderboard(localStorage.getItem('floor25_lb_name') || '', WIN_TARGETS);
+      renderLeaderboard(localStorage.getItem('floor25_lb_name') || '', OVERLAY_TARGETS);
+      return snap.size;
+    }
+
+    document.getElementById('pause-admin-hotspot')
+      .addEventListener('click', () => showAdminCodePanel());
+    document.getElementById('admin-code-cancel')
+      .addEventListener('click', () => backToPauseMenu());
+    document.getElementById('admin-back')
+      .addEventListener('click', () => backToPauseMenu());
+    document.getElementById('admin-code-submit')
+      .addEventListener('click', () => {
+        const input = document.getElementById('admin-code-input');
+        const status = document.getElementById('admin-code-status');
+        if (input.value === ADMIN_CODE) {
+          showAdminPanel();
+        } else {
+          status.textContent = 'Incorrect code.';
+          status.className = 'error';
+          input.value = '';
+          input.focus();
+        }
+      });
+    document.getElementById('admin-code-input')
+      .addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') document.getElementById('admin-code-submit').click();
+        if (e.key === 'Escape') backToPauseMenu();
+      });
+    document.getElementById('admin-reset-scoreboard')
+      .addEventListener('click', async () => {
+        if (!confirm('Delete every worldwide leaderboard score?')) return;
+        setAdminStatus('Resetting scoreboard...');
+        try {
+          const count = await resetScoreboard();
+          setAdminStatus(`Scoreboard reset. Deleted ${count} score${count === 1 ? '' : 's'}.`, 'success');
+        } catch (err) {
+          console.error('Admin scoreboard reset failed:', err);
+          setAdminStatus('Scoreboard reset failed. Check Firestore delete rules.', 'error');
+        }
+      });
+    document.getElementById('admin-unlock-floors')
+      .addEventListener('click', () => {
+        const msg = window.floor25AdminPowers?.unlockAllFloors?.() || 'Admin powers unavailable.';
+        setAdminStatus(msg, 'success');
+      });
+    document.getElementById('admin-god-mode')
+      .addEventListener('click', () => {
+        const msg = window.floor25AdminPowers?.toggleGodMode?.() || 'Admin powers unavailable.';
+        setAdminStatus(msg, 'success');
+      });
+    document.getElementById('admin-win-now')
+      .addEventListener('click', () => {
+        const msg = window.floor25AdminPowers?.winNow?.() || 'Admin powers unavailable.';
+        setAdminStatus(msg, 'success');
+      });
 
     // ── submit score ──────────────────────────────────────────────────────────
     async function submitScore(name, time, deaths) {
