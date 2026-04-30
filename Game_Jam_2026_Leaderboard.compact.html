@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>25TH FLOOR // Interview</title>
+<title>Toxic Work Environment</title>
 <style>
   :root {
     --bg: #f0eeea;          /* office white */
@@ -753,35 +753,35 @@
   /* Mechanic hint banner */
   #hint-banner {
     position: fixed;
-    top: -120px;
+    top: -80px;
     left: 50%;
     transform: translateX(-50%);
-    background: rgba(10, 10, 8, 0.92);
-    border: 1px solid rgba(232, 223, 168, 0.4);
-    padding: 14px 28px;
+    background: rgba(10, 10, 8, 0.88);
+    border: 1px solid rgba(232, 223, 168, 0.35);
+    padding: 7px 16px;
     display: flex;
     align-items: center;
-    gap: 14px;
+    gap: 10px;
     z-index: 80;
     pointer-events: none;
     transition: top 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-    max-width: 640px;
+    max-width: 380px;
     backdrop-filter: blur(6px);
   }
-  #hint-banner.show { top: 24px; }
+  #hint-banner.show { top: 12px; }
   #hint-icon { display: none; }
   #hint-text {
     font-family: 'IBM Plex Mono', monospace;
-    font-size: 12px;
-    letter-spacing: 0.05em;
+    font-size: 10px;
+    letter-spacing: 0.04em;
     color: #e8e4dc;
-    line-height: 1.6;
+    line-height: 1.5;
   }
   #hint-text .hint-lead {
-    margin: 8px 0 12px;
+    margin: 4px 0 6px;
     opacity: 0.92;
-    font-size: 11px;
-    line-height: 1.55;
+    font-size: 9px;
+    line-height: 1.45;
   }
   #hint-text .gp-input-split {
     margin-top: 4px;
@@ -797,17 +797,17 @@
   }
   #hint-text .hint-bind-details {
     margin: 0;
-    font-size: 11px;
-    line-height: 1.55;
-    letter-spacing: 0.04em;
+    font-size: 9px;
+    line-height: 1.45;
+    letter-spacing: 0.03em;
   }
   #hint-text kbd {
     background: rgba(232, 223, 168, 0.12);
     border: 1px solid rgba(232, 223, 168, 0.4);
-    padding: 1px 6px;
+    padding: 1px 4px;
     border-radius: 2px;
     font-family: 'IBM Plex Mono', monospace;
-    font-size: 11px;
+    font-size: 9px;
   }
 
   #floor-banner {
@@ -1049,6 +1049,7 @@
     min-width: 200px;
   }
 </style>
+<script async src="https://vibej.am/2026/widget.js"></script>
 </head>
 <body>
   <canvas id="game"></canvas>
@@ -1078,9 +1079,8 @@
       <div id="controls-help-body-gamepad" class="controls-help-body controls-help-tabpanel" role="tabpanel" aria-labelledby="controls-help-tab-gamepad">
         <div class="controls-help-section-title">In-game</div>
         <div class="hud-bind-stack" title="PS/DualSense: ⊗ ○ △ □ · Xbox names shown">
-          <span>LS — Move (incl. wall climb)</span>
+          <span>LS — Move</span>
           <span>A — Jump · LT — Dash (air)</span>
-          <span>RB — Briefcase slash · RT — Parry / strike</span>
           <span>View — Restart floor</span>
         </div>
       </div>
@@ -1088,9 +1088,8 @@
       <div id="controls-help-body-keyboard" class="controls-help-body controls-help-tabpanel" role="tabpanel" aria-labelledby="controls-help-tab-keyboard" hidden>
         <div class="controls-help-section-title">In-game</div>
         <div class="hud-bind-stack">
-          <span><kbd>A</kbd><kbd>D</kbd> Move & wall climb</span>
+          <span><kbd>A</kbd><kbd>D</kbd> Move</span>
           <span><kbd>Space</kbd> Jump · <kbd>Space</kbd> (air) Dash</span>
-          <span><kbd>LMB</kbd> or <kbd>F</kbd> Briefcase slash · <kbd>RMB</kbd> Parry</span>
           <span><kbd>R</kbd> Restart floor · <kbd>Esc</kbd> Pause menu</span>
         </div>
       </div>
@@ -1135,7 +1134,7 @@
     <div></div>
     <div class="hud-bottom">
       <div class="hud-controls-reminder-line"><kbd>C</kbd> Controls</div>
-      <div>LUMON // 25TH FLOOR</div>
+      <div>TOXIC WORK ENVIRONMENT</div>
     </div>
     <div id="boss-phase-hud" class="boss-phase-hud hidden"></div>
   </div>
@@ -1144,9 +1143,9 @@
   <!-- ============== TITLE SCREEN ============== -->
   <div id="title-screen" class="screen">
     <div class="title-stamp">// Cursor Vibe Jam 2026 //</div>
-    <h1 class="title">25<span class="accent">TH</span><br>FLOOR</h1>
-    <p class="subtitle">You slept through your alarm. The interview is on the 25th floor. The elevator is out of order. Climb.</p>
-    <button class="cta" id="start-btn">Begin Interview</button>
+    <h1 class="title">TOXIC<br><span class="accent">WORK</span><br>ENVIRONMENT</h1>
+    <p class="subtitle">You're trapped in the office. The exit is on the 25th floor. The elevator is out of order. Climb.</p>
+    <button class="cta" id="start-btn">Begin</button>
     <button class="cta" id="tutorial-btn" style="margin-top:16px;">Tutorial</button>
     <button class="cta" id="title-leaderboard-btn" style="margin-top:16px;">Leaderboard</button>
     <div class="best-time" id="best-time-display"></div>
@@ -1303,13 +1302,7 @@
     dashTime: 0.18,
     coyoteTime: 0.1,
     jumpBuffer: 0.12,
-    wallSlideSpeed: 2,      // max downward slide speed while grabbing
-    wallGrabDuration: 1.5,  // seconds you can hold a wall before dropping
-    wallJumpVx: 14,         // horizontal launch speed away from wall
-    wallJumpVy: 20,         // vertical launch speed on wall jump
-    parryWindow: 0.3,       // how long the parry is "active" after pressing
-    parryCooldown: 0.5,     // how long after a missed parry before you can try again
-    parryRange: 2.5,        // how close a plane needs to be to parry
+
   };
 
   /** Horizontal clearance from platform edges to dash crystal centers — matches full flat dash travel (vx × dash duration). */
@@ -1321,14 +1314,14 @@
   const FLOOR_PALETTES = [
     null, // index 0 unused (floors are 1-indexed)
     // ---- LOBBY ZONE (1-8) — warm yellows, greens, tans ----
-    { name: 'Floor 1',  bg: 0xe8e6e2, fog: 0xe0deda, wallColor: 0xf4f2ee, floorColor: 0xb4b0ac, ceilColor: 0xfafaf8 }, // office white
-    { name: 'Floor 2',  bg: 0xe6e4e0, fog: 0xdedcda, wallColor: 0xf2f0ec, floorColor: 0xb2aeaa, ceilColor: 0xf8f8f6 }, // office white
-    { name: 'Floor 3',  bg: 0xe4e2de, fog: 0xdcdad8, wallColor: 0xf0eeea, floorColor: 0xb0aca8, ceilColor: 0xf6f6f4 }, // office white
-    { name: 'Floor 4',  bg: 0xe6e4e0, fog: 0xdedcda, wallColor: 0xf2f0ec, floorColor: 0xb2aeaa, ceilColor: 0xf8f8f6 }, // office white
-    { name: 'Floor 5',  bg: 0xe4e2de, fog: 0xdcdad8, wallColor: 0xf2f0ec, floorColor: 0xb2aeaa, ceilColor: 0xf8f8f6 }, // office white
-    { name: 'Floor 6',  bg: 0xe2e0dc, fog: 0xdadad6, wallColor: 0xf0eeea, floorColor: 0xb0aca8, ceilColor: 0xf6f6f4 }, // office white
-    { name: 'Floor 7',  bg: 0xe0dedc, fog: 0xd8d8d4, wallColor: 0xeeecea, floorColor: 0xaeaaa6, ceilColor: 0xf6f4f2 }, // office white
-    { name: 'Floor 8',  bg: 0xdedcda, fog: 0xd6d6d2, wallColor: 0xeceae6, floorColor: 0xacaaa6, ceilColor: 0xf4f2f0 }, // office white
+    { name: 'Floor 1',  bg: 0xd4d8e4, fog: 0xe0deda, wallColor: 0xf4f2ee, floorColor: 0xb4b0ac, ceilColor: 0xfafaf8 }, // office white
+    { name: 'Floor 2',  bg: 0xd2d6e2, fog: 0xdedcda, wallColor: 0xf2f0ec, floorColor: 0xb2aeaa, ceilColor: 0xf8f8f6 }, // office white
+    { name: 'Floor 3',  bg: 0xd0d4e0, fog: 0xdcdad8, wallColor: 0xf0eeea, floorColor: 0xb0aca8, ceilColor: 0xf6f6f4 }, // office white
+    { name: 'Floor 4',  bg: 0xd2d6e2, fog: 0xdedcda, wallColor: 0xf2f0ec, floorColor: 0xb2aeaa, ceilColor: 0xf8f8f6 }, // office white
+    { name: 'Floor 5',  bg: 0xd0d4e0, fog: 0xdcdad8, wallColor: 0xf2f0ec, floorColor: 0xb2aeaa, ceilColor: 0xf8f8f6 }, // office white
+    { name: 'Floor 6',  bg: 0xcecee0, fog: 0xdadad6, wallColor: 0xf0eeea, floorColor: 0xb0aca8, ceilColor: 0xf6f6f4 }, // office white
+    { name: 'Floor 7',  bg: 0xcccede, fog: 0xd8d8d4, wallColor: 0xeeecea, floorColor: 0xaeaaa6, ceilColor: 0xf6f4f2 }, // office white
+    { name: 'Floor 8',  bg: 0xcaccdc, fog: 0xd6d6d2, wallColor: 0xeceae6, floorColor: 0xacaaa6, ceilColor: 0xf4f2f0 }, // office white
 
     // ---- CORPORATE ZONE (9-16) — cold blues, grays, slates ----
     { name: 'Floor 9',  bg: 0xccd8e0, fog: 0xbcccd6, wallColor: 0xdce8f0, floorColor: 0x9ab0be, ceilColor: 0xeaf4f8 }, // pale blue entry
@@ -1361,7 +1354,7 @@
 
   // Keep ZONES for backward compat (pickFloorKindSet still uses zone names)
   const ZONES = [
-    { name: 'Lobby',     range: [1, 8],   bg: 0xe4e2de, fog: 0xdcdcda, accent: 0xb82d1f, wallColor: 0xf4f2ee, floorColor: 0xb4b0ac, ceilColor: 0xfafaf8 },
+    { name: 'Lobby',     range: [1, 8],   bg: 0xd2d6e2, fog: 0xdedcda, accent: 0xb82d1f, wallColor: 0xf4f2ee, floorColor: 0xb4b0ac, ceilColor: 0xfafaf8 },
     { name: 'Corporate', range: [9, 16],  bg: 0xc0cdd4, fog: 0xb0bdc4, accent: 0xb82d1f, wallColor: 0xdde4e8, floorColor: 0x88929a, ceilColor: 0xe8ecf0 },
     { name: 'Executive', range: [17, 25], bg: 0x8a958a, fog: 0x6a756a, accent: 0xb82d1f, wallColor: 0xa8b2ac, floorColor: 0x4a5550, ceilColor: 0xc8d2cc },
   ];
@@ -1705,7 +1698,14 @@
       const targetVol = audio.master * (def?.volume ?? 0.55);
       gain.gain.setValueAtTime(0, ctx2.currentTime);
       gain.gain.linearRampToValueAtTime(targetVol, ctx2.currentTime + 1.2);
-      gain.connect(ctx2.destination);
+
+      // Lowpass to cut high-frequency fuzz from the source files
+      const lpf = ctx2.createBiquadFilter();
+      lpf.type = 'lowpass';
+      lpf.frequency.value = 12000;
+      lpf.Q.value = 0.5;
+      gain.connect(lpf);
+      lpf.connect(ctx2.destination);
 
       const src = ctx2.createBufferSource();
       src.buffer = buffer;
@@ -1825,10 +1825,10 @@
   renderer.outputColorSpace = THREE.SRGBColorSpace;
 
   const scene = new THREE.Scene();
-  scene.background = new THREE.Color(0xdcdad6);
+  scene.background = new THREE.Color(0xd0d4e0);
   // Exponential fog — hallway fades into distance (density ↑ = thicker haze)
-  const FOG_EXP_DENSITY = 0.038;
-  scene.fog = new THREE.FogExp2(0xd8d4cc, FOG_EXP_DENSITY);
+  const FOG_EXP_DENSITY = 0.028;
+  scene.fog = new THREE.FogExp2(0xc4c8d8, FOG_EXP_DENSITY);
 
   // Fixed side-view camera — wider FOV for that wide-angle surveillance feel
   const camera = new THREE.PerspectiveCamera(52, window.innerWidth / window.innerHeight, 0.1, 400);
@@ -1914,6 +1914,9 @@
   const matPlatform = new THREE.MeshStandardMaterial({ color: 0xe8e4e0, roughness: 0.7 });
   const matPlatformDark = new THREE.MeshStandardMaterial({ color: 0xc0bcb8, roughness: 0.5 });
   const matAccent = new THREE.MeshStandardMaterial({ color: 0xb82d1f, roughness: 0.4, emissive: 0xb82d1f, emissiveIntensity: 0.2 });
+  let _skylinePlane = null;
+  const _skylineTex = new THREE.TextureLoader().load('assets/skyline.jpg');
+  _skylineTex.colorSpace = THREE.SRGBColorSpace;
   const matGoal = new THREE.MeshStandardMaterial({ color: 0xb82d1f, roughness: 0.3, emissive: 0xb82d1f, emissiveIntensity: 1.2 });
   const matMetal = new THREE.MeshStandardMaterial({ color: 0x4a4540, roughness: 0.35, metalness: 0.7 });
   const matExitSign = new THREE.MeshStandardMaterial({ color: 0xffffff, emissive: 0x4aaa40, emissiveIntensity: 1.5 });
@@ -2191,21 +2194,27 @@
     const core = new THREE.Mesh(
       new THREE.OctahedronGeometry(0.48, 0),
       new THREE.MeshStandardMaterial({
-        color: 0xff6ad0, emissive: 0xff6ad0, emissiveIntensity: 1.4,
+        color: 0x7722bb, emissive: 0x5511aa, emissiveIntensity: 1.2,
         metalness: 0.6, roughness: 0.2, transparent: true, opacity: 0.95
       })
     );
+    // Black outline — back-face child so it rotates with the core
+    const outline = new THREE.Mesh(
+      new THREE.OctahedronGeometry(0.54, 0),
+      new THREE.MeshBasicMaterial({ color: 0x000000, side: THREE.BackSide })
+    );
+    core.add(outline);
     group.add(core);
     // Outer glow shell
     const shell = new THREE.Mesh(
       new THREE.OctahedronGeometry(0.75, 0),
       new THREE.MeshBasicMaterial({
-        color: 0xff9ad8, transparent: true, opacity: 0.25, side: THREE.DoubleSide
+        color: 0xaa66dd, transparent: true, opacity: 0.22, side: THREE.DoubleSide
       })
     );
     group.add(shell);
     // Point light pulse
-    const glow = new THREE.PointLight(0xff6ad0, 1.8, 5);
+    const glow = new THREE.PointLight(0x9933cc, 1.8, 5);
     group.add(glow);
     group.position.set(x, y, 0);
     worldGroup.add(group);
@@ -2269,7 +2278,7 @@
             vx: Math.cos(ang) * 3,
             vy: Math.sin(ang) * 3,
             life: 0.4 + Math.random() * 0.2,
-            drag: 3, scale: 0.8, color: 0xff6ad0,
+            drag: 3, scale: 0.8, color: 0x9933cc,
           });
         }
         state.hitstop = Math.max(state.hitstop, 0.04);
@@ -3315,7 +3324,6 @@
       hazard.vx = opts.vx ?? -patrolSpeed;
       hazard.vy = 0;
       hazard.walkPhase = Math.random() * Math.PI * 2;
-      hazard.parryable = true;
       hazard.gravity = true;         // enables gravity in updateHazards
       hazard.platformCollide = true; // stand on platforms
       hazard.patrol = true;           // turns around at platform edges
@@ -3573,7 +3581,7 @@
   // Safe ground exists at segments NOT listed in acid.
   function pickFloorKindSet(zoneName, n) {
     const themes = {
-      Lobby:     [['tileFloor','tileFloor','tileFloor'],['receptionCounter','tileFloor','receptionCounter'],['tileFloor','marbleBench','tileFloor'],['tileFloor','planter','tileFloor']],
+      Lobby:     [['tileFloor','tileFloor','tileFloor'],['receptionCounter','tileFloor','receptionCounter'],['tileFloor','marbleBench','tileFloor'],['tileFloor','planter','tileFloor'],['cubicleWall','tileFloor','cubicleWall'],['cubicleWall','marbleBench','cubicleWall']],
       Corporate: [['deskMetal','deskMetal','deskMetal'],['filingCabinet','filingCabinet','filingCabinet'],['cubicleWall','deskMetal','cubicleWall'],['bookshelf','bookshelf','filingCabinet']],
       Executive: [['glassTable','glassTable','glassTable'],['leatherOttoman','woodPlinth','leatherOttoman'],['brassShelf','woodPlinth','brassShelf'],['woodPlinth','woodPlinth','leatherOttoman']],
       'Top Floor':[['richSlab','richSlab','richSlab']],
@@ -3897,7 +3905,8 @@
     addWain(prevEdge, hallSpanX - prevEdge);
 
     // Chair rail — segmented to skip window openings
-    const chairRailMat = new THREE.MeshStandardMaterial({ color: 0xb8b4b0, roughness: 0.5 });
+    const chairRailColor = zone.name === 'Lobby' ? 0x9e98b8 : 0xb8b4b0;
+    const chairRailMat = new THREE.MeshStandardMaterial({ color: chairRailColor, roughness: 0.5 });
     let crPrev = 0;
     for (let wx = WIN_START; wx < roomLen - 4; wx += winStep) {
       const segW = wx - WIN_W / 2 - crPrev;
@@ -3916,7 +3925,8 @@
     }
 
     // Wainscoting vertical panel dividers — only between windows
-    const panelMat = new THREE.MeshStandardMaterial({ color: 0xa8a4a0, roughness: 0.6 });
+    const panelColor = zone.name === 'Lobby' ? 0x8a84a4 : 0xa8a4a0;
+    const panelMat = new THREE.MeshStandardMaterial({ color: panelColor, roughness: 0.6 });
     for (let px = 0; px < roomLen; px += panelPxStep) {
       // Skip if inside a window opening
       let inWindow = false;
@@ -4005,24 +4015,25 @@
     const skyZ = -12;
 
     // ---- CITY SKYLINE TEXTURE — one image across all windows ----
-    // Loaded once, used as a single wide plane behind all windows
-  // SKYLINE_B64: externalized to assets/skyline.jpg
-    const skyImg = new Image();
-    skyImg.src = 'assets/skyline.jpg';
-    const skyTex = new THREE.Texture(skyImg);
-    skyTex.needsUpdate = false;
-    skyImg.onload = () => { skyTex.needsUpdate = true; };
-    skyTex.wrapS = THREE.ClampToEdgeWrapping;
-    skyTex.wrapT = THREE.ClampToEdgeWrapping;
-    const skyPlaneMat = new THREE.MeshBasicMaterial({ map: skyTex, side: THREE.FrontSide });
-
-    // One wide plane spanning the whole room behind the windows
+    // Pre-loaded once at startup (_skylineTex); added to scene directly so clearWorld() never disposes it.
+    if (_skylinePlane) { _skylinePlane.material.dispose(); scene.remove(_skylinePlane); _skylinePlane = null; }
     const skyPlaneW = hallSpanX + 20;
     const skyPlaneH = winH2 + 4;
-    // Position slightly low so the city fills the window — aerial look
-    const skyPlane = new THREE.Mesh(new THREE.PlaneGeometry(skyPlaneW, skyPlaneH), skyPlaneMat);
-    skyPlane.position.set(hallCx, winY2 - winH2 * 0.08, skyZ);
-    worldGroup.add(skyPlane);
+    _skylinePlane = new THREE.Mesh(
+      new THREE.PlaneGeometry(skyPlaneW, skyPlaneH),
+      new THREE.MeshBasicMaterial({ map: _skylineTex, side: THREE.FrontSide, fog: false })
+    );
+    _skylinePlane.position.set(hallCx, winY2 - winH2 * 0.08, skyZ);
+    scene.add(_skylinePlane);
+
+    // Atmospheric haze layer — sits between back wall (z=-3) and skyline (z=-12),
+    // visible only through window openings, giving the city a foggy distant look.
+    const hazeMesh = new THREE.Mesh(
+      new THREE.PlaneGeometry(skyPlaneW, skyPlaneH),
+      new THREE.MeshBasicMaterial({ color: zone.fog, transparent: true, opacity: 0.45, depthWrite: false })
+    );
+    hazeMesh.position.set(hallCx, winY2 - winH2 * 0.08, -8);
+    worldGroup.add(hazeMesh);
 
     for (let wx = WIN_START; wx < roomLen - 4; wx += winStep) {
 
@@ -4947,22 +4958,8 @@
     // No-op — floor banner removed, floor number is now on the back wall of each room.
   }
 
-  let _hintTimer = null;
-  function showHint(icon, html) {
-    const banner = document.getElementById('hint-banner');
-    const iconEl = document.getElementById('hint-icon');
-    const textEl = document.getElementById('hint-text');
-    if (!banner) return;
-    if (_hintTimer) { clearTimeout(_hintTimer); _hintTimer = null; }
-    iconEl.textContent = icon;
-    textEl.innerHTML = html;
-    banner.classList.add('show');
-  }
-
-  function hideHint() {
-    const banner = document.getElementById('hint-banner');
-    if (banner) banner.classList.remove('show');
-  }
+  function showHint() {}
+  function hideHint() {}
 
   // Called at the start of each floor to show the relevant mechanic hint
   const FLOOR_HINTS = {
@@ -5922,9 +5919,6 @@
     onGround: false,
     coyote: 0, jumpBuf: 0,
     dashing: 0, dashAvailable: true, doubleJumpAvailable: false,
-    onWall: 0,       // which wall: -1 = left, 1 = right, 0 = none
-    wallGrabTime: 0, // seconds remaining on wall grab
-    parrying: 0, parryCd: 0,
     facing: 1,
     mesh: null,
   };
@@ -6148,36 +6142,9 @@
     eyeR.position.set(0.06, 0.02, 0.145);
     head.add(eyeR);
 
-    // ---- BRIEFCASE (always at right side; swing attack prop) ----
-    const briefcasePivot = new THREE.Group();
-    briefcasePivot.position.set(-0.02, -0.36, 0.02);
-    const briefcase = new THREE.Group();
-    const caseBody = new THREE.Mesh(
-      new THREE.BoxGeometry(0.36, 0.28, 0.12),
-      new THREE.MeshStandardMaterial({ color: 0x2a1e16, roughness: 0.45, metalness: 0.12 })
-    );
-    caseBody.castShadow = true;
-    briefcase.add(caseBody);
-    const caseFlap = new THREE.Mesh(
-      new THREE.BoxGeometry(0.36, 0.03, 0.13),
-      new THREE.MeshStandardMaterial({ color: 0x3a2a1c, roughness: 0.4, metalness: 0.15 })
-    );
-    caseFlap.position.y = 0.125;
-    briefcase.add(caseFlap);
-    const handle = new THREE.Mesh(
-      new THREE.TorusGeometry(0.07, 0.012, 6, 10, Math.PI),
-      new THREE.MeshStandardMaterial({ color: 0x14100c, roughness: 0.5, metalness: 0.2 })
-    );
-    handle.rotation.x = Math.PI;
-    handle.position.set(0, 0.17, 0);
-    handle.castShadow = true;
-    briefcase.add(handle);
-    briefcasePivot.add(briefcase);
-    armR.hand.add(briefcasePivot);
-
     // Store rig references for animation
     g.userData = {
-      legL, legR, armL, armR, head, torso, belt, briefcasePivot, briefcase,
+      legL, legR, armL, armR, head, torso, belt,
       // For dash trail etc
       allBodyParts: [torso, belt, shirtPanel, lapelL, lapelR, tieKnot, tieBody, collarL, collarR, neck, hair, sideHairL, sideHairR, skull],
     };
@@ -6749,14 +6716,11 @@
       player.jumpBuf = PHYS.jumpBuffer;
       e.preventDefault();
     }
-    if (e.code === 'KeyF')  { tryBriefcaseSwing(); e.preventDefault(); }
     if (e.code === 'KeyR') { respawnPlayer(); }
   });
   window.addEventListener('keyup', e => { keys[e.code] = false; });
 
   window.addEventListener('mousedown', e => {
-    if (e.button === 0) tryBriefcaseSwing();
-    else if (e.button === 2) tryParry();
   });
   window.addEventListener('contextmenu', e => {
     if (state.running && !state.paused) e.preventDefault();
@@ -7155,12 +7119,10 @@
     if (gp) {
       if (gp.buttons[0]?.pressed && !gpPrev.a) player.jumpBuf = PHYS.jumpBuffer;
       gpPrev.a = !!gp.buttons[0]?.pressed;
-      if (gp.buttons[5]?.pressed && !gpPrev.rb) tryParry();
-      gpPrev.rb = !!gp.buttons[5]?.pressed;
       if (gp.buttons[8]?.pressed && !gpPrev.back) respawnPlayer();
       gpPrev.back = !!gp.buttons[8]?.pressed;
     } else {
-      gpPrev.a = gpPrev.rb = gpPrev.back = gpPrev.lt = false;
+      gpPrev.a = gpPrev.back = gpPrev.lt = false;
     }
 
     // Input — keyboard + left stick / D-pad
@@ -7218,25 +7180,6 @@
     if (player.vy > 0 && !spaceHeld) g *= 1.8; // jump cut — softer so tap-jumps feel natural
     player.vy -= g * dt;
     if (player.vy < -40) player.vy = -40;
-
-    // ---- WALL GRAB ----
-    // Wall grab not applicable in horizontal world
-    player.dashCd = 0; // unused, kept for compat
-    player.parrying -= dt;
-    player.parryCd -= dt;
-
-    // During active parry window, continuously check for parryable hazards
-    if (player.parrying > 0) {
-      for (const h of hazards) {
-        if (h._parried) continue;
-        if (h.type !== 'airplane' && h.type !== 'coworker' && h.type !== 'boss_proj') continue;
-        const dx = h.x - player.x;
-        const dy = h.y - player.y;
-        if (Math.abs(dx) < PHYS.parryRange && Math.abs(dy) < PHYS.parryRange) {
-          performParry(h);
-        }
-      }
-    }
 
     // Fan push
     for (const h of hazards) {
@@ -7312,8 +7255,6 @@
       player.dashAvailable = false; // re-armed after first jump
       player.dashing = 0;
       player.doubleJumpAvailable = false;
-      player.onWall = 0;
-      player.wallGrabTime = PHYS.wallGrabDuration;
       player.onGround = true;
       player.coyote = PHYS.coyoteTime;
     } else {
@@ -7483,69 +7424,9 @@
       if (Math.abs(player.mesh.rotation.x) < 0.01) player.mesh.rotation.x = 0;
     }
 
-    // ---- BRIEFCASE SWING OVERLAY (Hollow Knight–style slash: windup → fast cut → follow-through) ----
-    if (player.briefcaseSwing > 0) {
-      const t = 1 - (player.briefcaseSwing / BRIEFCASE_SWING_DURATION);
-      const arc = briefcaseSlashEase(t);
-      const side = player.facing > 0 ? 1 : -1;
-      const slashSnap = Math.sin(Math.min(1, Math.max(0, (t - 0.14) / 0.22)) * Math.PI);
-
-      rig.armR.shoulder.rotation.x = -0.52 + arc * 2.05 + slashSnap * 0.08;
-      rig.armR.shoulder.rotation.z = (-1.05 + arc * 2.05) * side;
-      rig.armR.elbow.rotation.x = -0.55 + Math.sin(arc * Math.PI) * 0.55;
-      if (rig.briefcasePivot) {
-        rig.briefcasePivot.rotation.z = (-0.55 + arc * 2.65) * side;
-        rig.briefcasePivot.rotation.x = Math.sin(arc * Math.PI) * 0.52;
-        rig.briefcasePivot.rotation.y = side * Math.sin(arc * Math.PI) * 0.22;
-      }
-      rig.torso.rotation.y = side * (0.06 + arc * 0.38);
-      rig.torso.rotation.x = -0.1 + arc * 0.22;
-      rig.head.rotation.y = -side * arc * 0.18;
-      rig.head.rotation.x = arc * 0.12;
-      rig.armL.shoulder.rotation.x = 0.42 + arc * 0.28;
-      rig.armL.elbow.rotation.x = -0.38 - arc * 0.15;
-    } else if (rig.briefcasePivot) {
-      rig.briefcasePivot.rotation.z *= 0.68;
-      if (Math.abs(rig.briefcasePivot.rotation.z) < 0.01) rig.briefcasePivot.rotation.z = 0;
-      rig.briefcasePivot.rotation.x *= 0.65;
-      rig.briefcasePivot.rotation.y *= 0.65;
-      if (Math.abs(rig.briefcasePivot.rotation.x) < 0.01) rig.briefcasePivot.rotation.x = 0;
-      if (Math.abs(rig.briefcasePivot.rotation.y) < 0.01) rig.briefcasePivot.rotation.y = 0;
-    }
-    if (player.briefcaseSwing <= 0 && rig.torso && rig.torso.rotation.x) {
-      rig.torso.rotation.x *= 0.78;
-      if (Math.abs(rig.torso.rotation.x) < 0.008) rig.torso.rotation.x = 0;
-    }
-    if (player.briefcaseSwing <= 0 && rig.head && rig.head.rotation.y) {
-      rig.head.rotation.y *= 0.78;
-      if (Math.abs(rig.head.rotation.y) < 0.008) rig.head.rotation.y = 0;
-    }
-
-    // ---- PARRY ANIMATION OVERLAY ----
-    // Right arm swings forward in an arc during the parry active window.
-    // Arc: 0 → 1 progress over parry window, mapped to shoulder swing.
-    if (player.parrying > 0) {
-      const progress = 1 - (player.parrying / PHYS.parryWindow); // 0 → 1
-      // Swing arc: starts back at -0.8, sweeps forward through 2.0 (big overhead swipe)
-      const swing = -0.8 + progress * 3.0;
-      // Bend elbow in on the windup, straighten on release
-      const elbowBend = -Math.sin(progress * Math.PI) * 1.0 - 0.2;
-      rig.armR.shoulder.rotation.x = swing;
-      rig.armR.shoulder.rotation.z = -0.15 + progress * 0.3;
-      rig.armR.elbow.rotation.x = elbowBend;
-      // Left arm pulls back for counter-balance
-      rig.armL.shoulder.rotation.x = 0.6 - progress * 0.4;
-      rig.armL.elbow.rotation.x = -0.3;
-      // Slight torso twist into the swing
-      rig.torso.rotation.y = progress * 0.25;
-      // Head tilts slightly forward during the swing
-      rig.head.rotation.x = progress * 0.2;
-    } else {
-      // Reset torso twist when not parrying
-      if (rig.torso.rotation.y) {
-        rig.torso.rotation.y *= 0.7;
-        if (Math.abs(rig.torso.rotation.y) < 0.01) rig.torso.rotation.y = 0;
-      }
+    if (rig.torso.rotation.y) {
+      rig.torso.rotation.y *= 0.7;
+      if (Math.abs(rig.torso.rotation.y) < 0.01) rig.torso.rotation.y = 0;
     }
 
     // Damage flicker
@@ -7828,286 +7709,10 @@
   }
 
   // =========================================================================
-  // PARRY
+  // FLOOR PROGRESSION — placeholder pools kept for VFX that still reference swipePool
   // =========================================================================
-  // Pool of reusable swipe arcs for parry/strike VFX
   const swipePool = [];
-  const activeSwipes = [];
-
-  function spawnSwipeVFX(success) {
-    let swipe;
-    if (swipePool.length > 0) {
-      swipe = swipePool.pop();
-    } else {
-      // Half-ring torus to evoke a swing arc
-      const geo = new THREE.TorusGeometry(1.2, 0.06, 8, 24, Math.PI * 0.9);
-      const mat = new THREE.MeshBasicMaterial({
-        color: 0xffffff,
-        transparent: true,
-        opacity: 0.9,
-      });
-      swipe = new THREE.Mesh(geo, mat);
-    }
-    swipe.material.color.setHex(success ? 0xffe090 : 0xcfd4da);
-    swipe.material.opacity = 0.9;
-    // Place in front of player based on facing
-    swipe.position.set(
-      player.x + player.facing * 0.8,
-      player.y + 0.1,
-      0.3
-    );
-    // Rotate so the arc opens in the facing direction
-    // Torus with arc opens toward +X by default; rotate Z to point arc forward
-    swipe.rotation.set(0, 0, player.facing > 0 ? -Math.PI * 0.55 : Math.PI * 0.55);
-    swipe.scale.setScalar(0.4); // starts small, scales up
-    scene.add(swipe);
-    activeSwipes.push({ mesh: swipe, life: 0.2, max: 0.2 });
-  }
-
-  function updateSwipes(dt) {
-    for (let i = activeSwipes.length - 1; i >= 0; i--) {
-      const s = activeSwipes[i];
-      s.life -= dt;
-      const p = 1 - s.life / s.max; // 0 → 1
-      s.mesh.scale.setScalar(0.4 + p * 1.2);
-      s.mesh.material.opacity = 0.9 * (1 - p);
-      if (s.life <= 0) {
-        scene.remove(s.mesh);
-        swipePool.push(s.mesh);
-        activeSwipes.splice(i, 1);
-      }
-    }
-  }
-
-  /** Ease 0→1 with slow windup, sharp mid-swing (HK nail slash feel), soft recovery. */
-  function briefcaseSlashEase(t) {
-    if (t <= 0.14) {
-      const u = t / 0.14;
-      return u * u * 0.1;
-    }
-    if (t <= 0.4) {
-      const u = (t - 0.14) / 0.26;
-      const k = 1 - (1 - u) ** 3;
-      return 0.1 + k * 0.78;
-    }
-    const u = (t - 0.4) / 0.6;
-    return 0.88 + (1 - (1 - u) ** 2) * 0.12;
-  }
-
-  function emitBriefcaseSlashBurst() {
-    const f = player.facing;
-    const cx = player.x + f * 0.74;
-    const cy = player.y + 0.38;
-    for (let i = 0; i < 16; i++) {
-      const fan = -Math.PI * 0.38 * f;
-      const ang = fan + (Math.random() - 0.5) * 1.3;
-      const sp = 2.8 + Math.random() * 5.5;
-      emit('spark', cx, cy, {
-        vx: Math.cos(ang) * sp,
-        vy: Math.sin(ang) * sp - 0.45,
-        z: (Math.random() - 0.5) * 0.22,
-        life: 0.11 + Math.random() * 0.15,
-        drag: 4.5,
-        scale: 0.38 + Math.random() * 0.58,
-        color: Math.random() > 0.42 ? 0xffffff : 0x9fd8ff,
-      });
-    }
-    for (let i = 0; i < 7; i++) {
-      emit('wind', player.x + f * (0.22 + i * 0.11), player.y + 0.26 - i * 0.045, {
-        vx: f * (7.5 + Math.random() * 5),
-        vy: -0.35 - Math.random() * 0.55,
-        life: 0.1 + Math.random() * 0.05,
-        drag: 7,
-        scale: 0.62 + Math.random() * 0.6,
-        opacity: 0.38,
-      });
-    }
-  }
-
-  function spawnBriefcaseSlashVFX() {
-    const f = player.facing;
-    const baseX = player.x + f * 0.64;
-    const baseY = player.y + 0.44;
-
-    function pushSwipe(color, rotZ, rotX, scale0, life) {
-      let swipe;
-      if (swipePool.length > 0) swipe = swipePool.pop();
-      else {
-        const geo = new THREE.TorusGeometry(1.2, 0.06, 8, 24, Math.PI * 0.9);
-        const mat = new THREE.MeshBasicMaterial({
-          color: 0xffffff,
-          transparent: true,
-          opacity: 0.9,
-        });
-        swipe = new THREE.Mesh(geo, mat);
-      }
-      swipe.material.color.setHex(color);
-      swipe.material.opacity = 0.93;
-      swipe.position.set(baseX, baseY, 0.4);
-      swipe.rotation.set(rotX, f > 0 ? 0.22 : -0.22, rotZ);
-      swipe.scale.setScalar(scale0);
-      scene.add(swipe);
-      activeSwipes.push({ mesh: swipe, life, max: life });
-    }
-
-    pushSwipe(0xffffff, f > 0 ? -Math.PI * 0.6 : Math.PI * 0.6, f > 0 ? -0.45 : 0.45, 0.36, 0.18);
-    pushSwipe(0x7ec8ff, f > 0 ? -Math.PI * 0.54 : Math.PI * 0.54, f > 0 ? -0.38 : 0.38, 0.48, 0.14);
-  }
-
-  // =========================================================================
-  // BRIEFCASE SWING ATTACK
-  // =========================================================================
-  const BRIEFCASE_SWING_DURATION = 0.30;
-  const BRIEFCASE_SWING_COOLDOWN = 0.26;
-  /** Normalized swing progress (0 start → 1 end) when slash arc / sparks fire */
-  const BRIEFCASE_SLASH_VFX_AT = 0.155;
-  const BRIEFCASE_HIT_T0 = 0.12;
-  const BRIEFCASE_HIT_T1 = 0.52;
-  let briefcaseSwingCd = 0;
-
-  function tryBriefcaseSwing() {
-    if (!state.running || state.paused) return;
-    if (briefcaseSwingCd > 0) return;
-    briefcaseSwingCd = BRIEFCASE_SWING_COOLDOWN;
-    player.briefcaseSwing = BRIEFCASE_SWING_DURATION;
-    player._briefcaseHitDone = false;
-    player._briefcaseSlashVfxDone = false;
-  }
-
-  function updateBriefcaseAttack(dt) {
-    briefcaseSwingCd = Math.max(0, briefcaseSwingCd - dt);
-    if (player.briefcaseSwing > 0) {
-      player.briefcaseSwing = Math.max(0, player.briefcaseSwing - dt);
-      const progress = 1 - (player.briefcaseSwing / BRIEFCASE_SWING_DURATION);
-      if (!player._briefcaseSlashVfxDone && progress >= BRIEFCASE_SLASH_VFX_AT) {
-        player._briefcaseSlashVfxDone = true;
-        spawnBriefcaseSlashVFX();
-        emitBriefcaseSlashBurst();
-        state.hitstop = Math.max(state.hitstop, 0.026);
-        state.shakeAmount = Math.max(state.shakeAmount, 0.055);
-      }
-    }
-    // No dedicated melee target hook here now that thrower NPCs are removed.
-  }
-
-  function tryParry() {
-    // Can't parry if dashing, or on cooldown, or game not running
-    if (!state.running) return;
-    if (player.parryCd > 0) return;
-    if (player.parrying > 0) return;
-    if (player.dashing > 0) return;
-
-    // Activate parry window
-    player.parrying = PHYS.parryWindow;
-    player.parryCd = PHYS.parryCooldown;
-    // Brief i-frames during parry window so players aren't punished for trying
-    state.invuln = Math.max(state.invuln, PHYS.parryWindow);
-
-    // Immediately check if any parryable hazard is in range (airplanes, coworkers)
-    let parried = false;
-    for (const h of hazards) {
-      if (h.type !== 'airplane' && h.type !== 'coworker' && h.type !== 'boss_proj') continue;
-      if (h._parried) continue;
-      const dx = h.x - player.x;
-      const dy = h.y - player.y;
-      if (Math.abs(dx) < PHYS.parryRange && Math.abs(dy) < PHYS.parryRange) {
-        performParry(h);
-        parried = true;
-      }
-    }
-
-    // Visual cue — brief red flash on the tie regardless of hit
-    showParryFlash(parried);
-    spawnSwipeVFX(parried);
-  }
-
-  function performParry(h) {
-    if (h.type === 'boss_proj') {
-      emitParrySparks(h.x, h.y, 16);
-      worldGroup.remove(h.mesh);
-      boss_disposeProjectile(h);
-      const ix = hazards.indexOf(h);
-      if (ix >= 0) hazards.splice(ix, 1);
-      player.vx += -player.facing * 2.5;
-      state.hitstop = Math.max(state.hitstop, 0.035);
-      state.shakeAmount = Math.max(state.shakeAmount, 0.12);
-      return;
-    }
-
-    h._parried = true;
-
-    if (h.type === 'airplane') {
-      // Airplanes reverse and speed up — fly back at the boss
-      h.vx = -h.vx * 1.6;
-      h.doesDamage = false;
-      h.mesh.traverse(c => {
-        if (c.isMesh && c.material && c.material.color) {
-          c.material = c.material.clone();
-          c.material.color.setHex(0xffb89a);
-          c.material.emissive = new THREE.Color(0xb82d1f);
-          c.material.emissiveIntensity = 0.3;
-        }
-      });
-      emitParrySparks(h.x, h.y, 12);
-      emitPaperShred(h.x, h.y);
-      player.vx += -player.facing * 3;
-      // Light hit feedback — airplanes are paper, not a heavy impact
-      state.hitstop = Math.max(state.hitstop, 0.04);
-      state.shakeAmount = Math.max(state.shakeAmount, 0.15);
-
-    } else if (h.type === 'coworker') {
-      // Deal 1 HP damage
-      if (h.hp !== undefined) {
-        h.hp--;
-        emitParrySparks(h.x, h.y + 0.2, 8);
-        emitStumbleBurst(h.x, h.y);
-        // Knockback — but enemy stays alive if HP > 0
-        h.vx = -Math.sign(h.vx || -1) * 8;
-        h.vy = 6;
-        h._parried = false; // allow re-parry after knockback
-        h.doesDamage = false;
-        // Brief stagger — re-enables damage after 1s
-        setTimeout(() => { if (h && h.hp > 0) h.doesDamage = true; }, 1000);
-        // Flash red
-        h.mesh.traverse(c => {
-          if (c.isMesh && c.material) {
-            const orig = c.material.color.getHex();
-            c.material = c.material.clone();
-            c.material.emissive = new THREE.Color(0xb82d1f);
-            c.material.emissiveIntensity = 1.0;
-            setTimeout(() => { c.material.emissiveIntensity = 0; }, 200);
-          }
-        });
-      } else {
-        // Old behavior for non-wave coworkers
-        h.vx = -Math.sign(h.vx || -1) * 10;
-        h.vy = 9;
-        h.gravity = true;
-        h.doesDamage = false;
-        h.platformCollide = false;
-        h.patrol = false;
-        h.mesh.rotation.x = -0.5 * Math.sign(h.vx || -1);
-        emitStumbleBurst(h.x, h.y);
-        emitParrySparks(h.x, h.y + 0.2, 8);
-      }
-      player.vx += -player.facing * 2;
-      state.hitstop = Math.max(state.hitstop, 0.09);
-      state.shakeAmount = Math.max(state.shakeAmount, 0.4);
-    }
-  }
-
-  function showParryFlash(success) {
-    // Brief tie highlight — find the tie meshes on the player rig
-    const flashColor = success ? 0xfff0b0 : 0xffffff;
-    const rig = player.mesh?.userData;
-    if (!rig) return;
-    // Pulse scale on the torso briefly
-    if (rig.torso) {
-      const original = rig.torso.scale.clone();
-      rig.torso.scale.multiplyScalar(1.08);
-      setTimeout(() => { if (rig.torso) rig.torso.scale.copy(original); }, 100);
-    }
-  }
+  function updateSwipes(dt) {}
 
   // =========================================================================
   // FLOOR PROGRESSION
@@ -8808,8 +8413,6 @@
         updateGauntlet(dt);
         updateDoorSwing(dt);
         updateTrailGhosts(dt);
-        updateSwipes(dt);
-        updateBriefcaseAttack(dt);
         updateCrumblePlatforms(dt);
         updateMovingPlatforms(dt);
         updateCrystals(dt);
