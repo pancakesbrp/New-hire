@@ -1786,6 +1786,9 @@
     }
   };
 
+  let _lastRunTime   = null;
+  let _lastRunDeaths = 0;
+
   const state = {
     running: false,
     floor: 1,
@@ -1799,6 +1802,7 @@
     bossHealth: 100,
     winning: false,
     bossPhase: 0,
+    usedLevelSelect: false,
     // Hit feedback
     hitstop: 0,          // seconds of simulation freeze remaining
     shakeAmount: 0,      // current shake intensity
@@ -8053,6 +8057,7 @@
       localStorage.setItem(SAVE_KEY, JSON.stringify({
         floor: state.floor,
         highestFloor,
+        elapsed: state.elapsed,
       }));
     } catch (e) {}
   }
@@ -8165,8 +8170,8 @@
       const btn = document.createElement('button');
       btn.className = 'level-btn' + (i === state.floor ? ' current' : '');
       btn.textContent = String(i).padStart(2, '0');
-      // Player can jump to any floor up to and including highest reached
-      if (false && i > highest) btn.disabled = true; // TEMP: all levels unlocked for testing
+      // Player can only jump to floors they've legitimately reached
+      if (i > highest) btn.disabled = true;
       btn.addEventListener('click', () => {
         if (btn.disabled) return;
         state.paused = false;
@@ -8179,6 +8184,7 @@
 
   function jumpToFloor(n) {
     state.floor = n;
+    state.usedLevelSelect = true; // disqualifies this session from leaderboard
     buildRoom(n);
     player.x = spawnX; player.y = spawnY + 1;
     player.vx = 0; player.vy = 0;
@@ -8294,11 +8300,13 @@
   // =========================================================================
   function startGame(resume) {
     state.running = true;
-    state.floor = resume ? loadProgress() : 1;
+    state.usedLevelSelect = false; // reset exploit flag on every new session
+    const saved = resume ? loadSave() : {};
+    state.floor = resume ? (saved.floor || 1) : 1;
     if (state.floor > TOTAL_FLOORS) state.floor = 1;
     state.health = MAX_HEALTH;
     state.timeLeft = INTERVIEW_SECONDS;
-    state.elapsed = 0;
+    state.elapsed = resume ? (saved.elapsed || 0) : 0;
     state.deaths = resume ? (state.deaths || 0) : 0;
     state.bossHealth = 100;
 
@@ -8382,10 +8390,12 @@
         const isBest = saveBest(state.elapsed);
         document.getElementById('new-best').classList.toggle('hidden', !isBest);
         try { localStorage.removeItem(SAVE_KEY); } catch(e) {}
-        // Expose run stats for the leaderboard script
-        window._lastRunTime   = state.elapsed;
-        window._lastRunDeaths = state.deaths || 0;
-        document.getElementById('win').classList.remove('hidden');
+        _lastRunTime   = state.usedLevelSelect ? null : state.elapsed;
+        _lastRunDeaths = state.deaths || 0;
+        const winEl = document.getElementById('win');
+        const submitSection = winEl?.querySelector('#lb-submit-btn')?.closest('div') ?? null;
+        if (state.usedLevelSelect && submitSection) submitSection.style.display = 'none';
+        winEl?.classList.remove('hidden');
       }, 1500);
     }, 3200);
   }
@@ -8599,11 +8609,15 @@
   document.getElementById('tut-skip').addEventListener('click', closeTutorial);
 
   document.getElementById('start-btn').addEventListener('click', () => {
-    const saved = loadProgress();
-    startGame(saved > 1);
+    resetProgress();
+    startGame(false);
   });
   document.getElementById('go-retry').addEventListener('click', () => startGame(true));
   document.getElementById('win-retry').addEventListener('click', () => { try { localStorage.removeItem(SAVE_KEY); } catch(e){} startGame(false); });
+
+  // Save timer + floor whenever the tab is closed or navigated away mid-run
+  window.addEventListener('pagehide', () => { if (state.running && !state.dying) saveProgress(); });
+  window.addEventListener('beforeunload', () => { if (state.running && !state.dying) saveProgress(); });
 
   // =========================================================================
 
@@ -8898,9 +8912,9 @@
           return;
         }
 
-        // Grab the current run's time & deaths from window globals set by the game
-        let runTime   = window._lastRunTime   ?? null;
-        let runDeaths = window._lastRunDeaths ?? 0;
+        // Grab the current run's time & deaths
+        let runTime   = _lastRunTime   ?? null;
+        let runDeaths = _lastRunDeaths ?? 0;
 
         // Fallback: parse the displayed time string (MM:SS.cs format)
         if (runTime == null) {
