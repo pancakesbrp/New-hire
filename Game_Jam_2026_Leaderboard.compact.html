@@ -9350,6 +9350,18 @@
         document.getElementById('lb-submit-btn').disabled = false;
         document.getElementById('lb-status').textContent  = '';
         document.getElementById('lb-status').className    = '';
+
+        // Debug: log visibility state of key elements
+        const nameForm = document.getElementById('lb-name-form');
+        const lbSection = document.getElementById('leaderboard-section');
+        console.log('[DEBUG observer] win screen became visible');
+        console.log('[DEBUG observer] #lb-name-form display:', nameForm?.style.display, '| offsetParent:', nameForm?.offsetParent);
+        console.log('[DEBUG observer] #leaderboard-section display:', lbSection?.style.display);
+        console.log('[DEBUG observer] window._lbRunTime at this moment:', window._lbRunTime);
+
+        // Restore submit form visibility in case a prior disqualified run hid it
+        if (nameForm) nameForm.style.display = '';
+
         initLeaderboard();
       }
     });
