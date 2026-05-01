@@ -839,6 +839,27 @@
     text-shadow: 0 0 8px rgba(0,0,0,0.6);
   }
 
+  /* Death reminder toast */
+  #death-reminder {
+    position: fixed; bottom: -80px; left: 50%;
+    transform: translateX(-50%);
+    background: rgba(18, 14, 10, 0.92);
+    border: 1px solid rgba(200, 152, 60, 0.45);
+    border-radius: 4px;
+    padding: 10px 20px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.05em;
+    color: #e8d8a0;
+    z-index: 85;
+    pointer-events: none;
+    transition: bottom 0.45s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.45s;
+    opacity: 0;
+    white-space: nowrap;
+    backdrop-filter: blur(6px);
+  }
+  #death-reminder.show { bottom: 28px; opacity: 1; }
+
   /* Damage flash */
   #damage-flash {
     position: fixed; inset: 0;
@@ -869,6 +890,30 @@
   #dash-ind.empty { opacity: 0.15; }
 
   /* ========== LEADERBOARD ========== */
+  .lb-tabs {
+    display: flex; gap: 0; margin-bottom: 16px; border-bottom: 1px solid rgba(244,234,208,0.2);
+  }
+  .lb-tab {
+    flex: 1; padding: 8px 0;
+    background: transparent; border: none; border-bottom: 2px solid transparent;
+    color: rgba(244,234,208,0.4);
+    font-family: 'IBM Plex Mono', monospace; font-size: 10px;
+    letter-spacing: 0.25em; text-transform: uppercase; cursor: pointer;
+    transition: color 0.18s, border-color 0.18s; margin-bottom: -1px;
+  }
+  .lb-tab:hover { color: rgba(244,234,208,0.75); }
+  .lb-tab.active { color: #f4f2ee; border-bottom-color: var(--accent); }
+  .lb-best-display {
+    padding: 24px 12px; text-align: center;
+    font-family: 'VT323', monospace; font-size: 48px; letter-spacing: 0.05em; color: #f4f2ee;
+  }
+  .lb-best-display .lb-best-label {
+    font-family: 'IBM Plex Mono', monospace; font-size: 9px;
+    letter-spacing: 0.3em; text-transform: uppercase; opacity: 0.45; margin-bottom: 6px;
+  }
+  .lb-best-display .lb-best-none {
+    font-family: 'IBM Plex Mono', monospace; font-size: 11px; opacity: 0.35; letter-spacing: 0.2em;
+  }
   #leaderboard-section {
     margin-top: 28px;
     width: 100%;
@@ -1144,7 +1189,7 @@
   <div id="title-screen" class="screen">
     <div class="title-stamp">// Cursor Vibe Jam 2026 //</div>
     <h1 class="title">TOXIC<br><span class="accent">WORK</span><br>ENVIRONMENT</h1>
-    <p class="subtitle">You're trapped in the office. The exit is on the 25th floor. The elevator is out of order. Climb.</p>
+    <p class="subtitle">Your interview is on the 25th floor. The elevator is out of order. Climb.</p>
     <button class="cta" id="start-btn">Begin</button>
     <button class="cta" id="tutorial-btn" style="margin-top:16px;">Tutorial</button>
     <button class="cta" id="title-leaderboard-btn" style="margin-top:16px;">Leaderboard</button>
@@ -1195,6 +1240,10 @@
           <thead><tr><th>#</th><th>Name</th><th>Deaths</th><th>Time</th></tr></thead>
           <tbody id="lb-body"></tbody>
         </table>
+      </div>
+      <div class="lb-best-display" style="margin-top:20px;">
+        <div class="lb-best-label">Your Best Run</div>
+        <div id="lb-best-time">—</div>
       </div>
     </div>
   </div>
@@ -1250,6 +1299,10 @@
         <tbody id="lb-overlay-body"></tbody>
       </table>
     </div>
+    <div class="lb-best-display" style="margin-top:20px;">
+      <div class="lb-best-label">Your Best Run</div>
+      <div id="lb-overlay-best-time">—</div>
+    </div>
     <button class="cta pause-btn pause-sec" id="lb-overlay-back">Back</button>
   </div>
 
@@ -1259,6 +1312,7 @@
     <div id="hint-text"></div>
   </div>
 
+  <div id="death-reminder"></div>
   <div id="damage-flash"></div>
 
   <div id="vignette"></div>
@@ -1763,17 +1817,22 @@
   window.setGameAudioEnabled = (on) => {
     audio.enabled = on;
     if (!on) {
+      // Stop all loops, mono sounds, music, and any active speech clip
       for (const key in audio.loops) {
         try { audio.loops[key].el.pause(); } catch (e) {}
       }
       for (const key in audio.monoPlaying) {
         try { audio.monoPlaying[key].pause?.(); } catch (e) {}
       }
+      if (_activeSpeechClip) {
+        try { _activeSpeechClip.pause(); _activeSpeechClip = null; } catch (e) {}
+      }
       if (music.gain) {
         const ctx = audio.getCtx();
         if (ctx) music.gain.gain.setTargetAtTime(0, ctx.currentTime, 0.1);
       }
     } else {
+      // Resume loops and music
       for (const key in audio.loops) {
         try { audio.loops[key].el.play(); } catch (e) {}
       }
@@ -1796,6 +1855,7 @@
     timeLeft: INTERVIEW_SECONDS,
     elapsed: 0,
     deaths: 0,
+    floorDeaths: 0,   // deaths on the current floor only — resets on floor change
     paused: false,
     invuln: 0,
     deathReason: '',
@@ -3564,6 +3624,7 @@
   let acidBalls = [];      // dangerous acid balls that launch up and kill player
   let ceilingLights = [];  // flickering fluorescent fixtures per floor
   let doorState = null;    // door animation state {pivot, openAmount}
+  let backDoorState = null; // back door animation state {pivot, openAmount} — null on floor 1
   let doorLocked = false;  // door is always open (no wave system)
   /** Active gauntlet length (ROOM_LENGTH or extended finale hall). Used for ambient spawns. */
   let gauntletRoomLen = ROOM_LENGTH;
@@ -3805,28 +3866,12 @@
     const layout = getRoomLayout(n);
     const isFinale = n === 25;
 
-    // Finale floor — distinct mood: darker void, warm key/rim, subdued walls (reads as "last room," not another gauntlet).
-    if (isFinale) {
-      scene.background.setHex(0x100c14);
-      key.color.setHex(0xffe8d0);
-      key.intensity = 0.72;
-      rim.color.setHex(0xff6a4a);
-      rim.intensity = 0.32;
-      ambient.color.setHex(0x584868);
-      ambient.intensity = 0.2;
-      matWall.color.setHex(0x322a34);
-      matWallDark.color.setHex(0x2a222c);
-      matCeiling.color.setHex(0x1e1a22);
-      matFloor.color.setHex(0x3a343e);
-      matFloorDetail.color.setHex(0x2e2830);
-    } else {
-      key.color.setHex(0xfff0b8);
-      key.intensity = 0.7;
-      rim.color.setHex(0x6a7580);
-      rim.intensity = 0.2;
-      ambient.color.setHex(0xfff4c8);
-      ambient.intensity = 0.25;
-    }
+    key.color.setHex(0xfff0b8);
+    key.intensity = 0.7;
+    rim.color.setHex(0x6a7580);
+    rim.intensity = 0.2;
+    ambient.color.setHex(0xfff4c8);
+    ambient.intensity = 0.25;
     scene.fog.density = FOG_EXP_DENSITY;
 
     state.currentFloorKindSet = pickFloorKindSet(zone.name, n);
@@ -4890,12 +4935,219 @@
     goalY = doorH / 2;
     doorState = { pivot: doorPivot, openAmount: 0 };
 
-    // Left wall to stop player going backwards
-    const leftWall = new THREE.Mesh(new THREE.BoxGeometry(0.5, HALL_H, 6),
-      new THREE.MeshStandardMaterial({ color: 0x1a1410, roughness: 0.8 }));
-    leftWall.position.set(-1, HALL_H / 2, 0);
-    worldGroup.add(leftWall);
-    platforms.push({ x: -1, y: HALL_H / 2, w: 0.5, h: HALL_H, isWall: true });
+    // Left wall — solid on floor 1, back door on floors 2+
+    backDoorState = null;
+    if (n <= 1) {
+      const leftWall = new THREE.Mesh(new THREE.BoxGeometry(0.5, HALL_H, 6),
+        new THREE.MeshStandardMaterial({ color: 0x1a1410, roughness: 0.8 }));
+      leftWall.position.set(-1, HALL_H / 2, 0);
+      worldGroup.add(leftWall);
+      platforms.push({ x: -1, y: HALL_H / 2, w: 0.5, h: HALL_H, isWall: true });
+    } else {
+      // ============================================================
+      // BACK DOOR — leads to the end of the previous floor
+      // ============================================================
+      const bdX = -1;
+
+      // Wall above the back door opening
+      const bdWallAbove = new THREE.Mesh(
+        new THREE.BoxGeometry(wallT, wallH - doorH, 6),
+        wallMat
+      );
+      bdWallAbove.position.set(bdX, doorH + (wallH - doorH) / 2, 0);
+      worldGroup.add(bdWallAbove);
+      platforms.push({ x: bdX, y: doorH + (wallH - doorH) / 2, w: wallT, h: wallH - doorH, isWall: true });
+
+      // Door frame — amber metal trim to distinguish from exit door
+      const bdFrameMat = new THREE.MeshStandardMaterial({
+        color: 0x4a3820, metalness: 0.55, roughness: 0.5,
+        emissive: 0x1a0e05, emissiveIntensity: 0.06
+      });
+      // Top bar of frame
+      const bdTopBar = new THREE.Mesh(new THREE.BoxGeometry(doorW + 0.35, 0.25, 0.5), bdFrameMat);
+      bdTopBar.position.set(bdX, doorH + 0.125, 0);
+      worldGroup.add(bdTopBar);
+      // Side bars of frame
+      for (const side of [-1, 1]) {
+        const bdSideBar = new THREE.Mesh(new THREE.BoxGeometry(0.18, doorH + 0.25, 0.5), bdFrameMat);
+        bdSideBar.position.set(bdX, doorH / 2 + 0.01, side * (doorW / 2 + 0.08));
+        worldGroup.add(bdSideBar);
+      }
+      // Bottom threshold
+      const bdThreshold = new THREE.Mesh(new THREE.BoxGeometry(doorW + 0.35, 0.06, 0.5), bdFrameMat);
+      bdThreshold.position.set(bdX, 0.03, 0);
+      worldGroup.add(bdThreshold);
+
+      // Back door pivot — hinge on z+ side (mirrored from exit door's z- hinge)
+      const bDoorPivot = new THREE.Group();
+      bDoorPivot.position.set(bdX, 0, doorW / 2 - 0.05);
+      worldGroup.add(bDoorPivot);
+
+      // Door panel — same steel material, panel extends in local -z
+      const bdPanelMat = new THREE.MeshStandardMaterial({
+        color: 0x7a7a78, metalness: 0.55, roughness: 0.45
+      });
+      const bdPanel = new THREE.Mesh(
+        new THREE.BoxGeometry(0.12, doorH - 0.1, doorW - 0.12),
+        bdPanelMat
+      );
+      bdPanel.position.set(0, doorH / 2, -(doorW - 0.12) / 2);
+      bDoorPivot.add(bdPanel);
+
+      // Kick plate
+      const bdKickPlate = new THREE.Mesh(
+        new THREE.BoxGeometry(0.13, 0.45, doorW - 0.2),
+        new THREE.MeshStandardMaterial({ color: 0x5a5a58, metalness: 0.8, roughness: 0.3 })
+      );
+      bdKickPlate.position.set(-0.005, 0.3, -(doorW - 0.12) / 2);
+      bDoorPivot.add(bdKickPlate);
+
+      // Panel inset detail
+      const bdInset = new THREE.Mesh(
+        new THREE.BoxGeometry(0.02, doorH - 1.2, doorW - 0.4),
+        new THREE.MeshStandardMaterial({ color: 0x5a5a58, metalness: 0.4, roughness: 0.6 })
+      );
+      bdInset.position.set(-0.07, doorH / 2 + 0.1, -(doorW - 0.12) / 2);
+      bDoorPivot.add(bdInset);
+
+      // Push bar — amber colored to match back-door theme
+      const bdPushBar = new THREE.Mesh(
+        new THREE.BoxGeometry(0.08, 0.1, doorW - 0.45),
+        new THREE.MeshStandardMaterial({
+          color: 0xc87820, metalness: 0.35, roughness: 0.38,
+          emissive: 0x3a2205, emissiveIntensity: 0.15
+        })
+      );
+      bdPushBar.position.set(-0.09, doorH * 0.45, -(doorW - 0.12) / 2);
+      bDoorPivot.add(bdPushBar);
+      for (const off of [-(doorW - 0.45) / 2 + 0.1, (doorW - 0.45) / 2 - 0.1]) {
+        const bdBracket = new THREE.Mesh(
+          new THREE.BoxGeometry(0.1, 0.18, 0.08),
+          new THREE.MeshStandardMaterial({ color: 0x2a2a28, metalness: 0.8, roughness: 0.3 })
+        );
+        bdBracket.position.set(-0.08, doorH * 0.45, -(doorW - 0.12) / 2 + off);
+        bDoorPivot.add(bdBracket);
+      }
+
+      // Small window near top of back door
+      const bdWindowFrame = new THREE.Mesh(
+        new THREE.BoxGeometry(0.03, 0.6, 0.5),
+        new THREE.MeshStandardMaterial({ color: 0x2a2a28, metalness: 0.5, roughness: 0.5 })
+      );
+      bdWindowFrame.position.set(-0.07, doorH * 0.78, -(doorW - 0.12) / 2);
+      bDoorPivot.add(bdWindowFrame);
+      const bdWindowGlass = new THREE.Mesh(
+        new THREE.BoxGeometry(0.04, 0.5, 0.4),
+        new THREE.MeshStandardMaterial({
+          color: 0xe0c880, metalness: 0.2, roughness: 0.1,
+          transparent: true, opacity: 0.4,
+          emissive: 0xc8a020, emissiveIntensity: 0.3
+        })
+      );
+      bdWindowGlass.position.set(-0.08, doorH * 0.78, -(doorW - 0.12) / 2);
+      bDoorPivot.add(bdWindowGlass);
+
+      // ---- BACK sign above the door ---- amber glow
+      const bdSignBoxMat = new THREE.MeshStandardMaterial({ color: 0x3a2408, roughness: 0.7 });
+      const bdSignBox = new THREE.Mesh(new THREE.BoxGeometry(1.3, 0.5, 0.12), bdSignBoxMat);
+      bdSignBox.position.set(bdX + 0.02, doorH + 0.8, 0);
+      worldGroup.add(bdSignBox);
+      const bdSignFaceMat = new THREE.MeshStandardMaterial({
+        color: 0xfff4d0, emissive: 0xffa020, emissiveIntensity: 2.0
+      });
+      const bdSignFace = new THREE.Mesh(new THREE.BoxGeometry(1.22, 0.42, 0.02), bdSignFaceMat);
+      bdSignFace.position.set(bdX + 0.07, doorH + 0.8, 0);
+      worldGroup.add(bdSignFace);
+
+      // "BACK" pixel letters on the sign
+      const BACK_LETTERS = {
+        'B': '##.' + '#.#' + '##.' + '#.#' + '##.',
+        'A': '.#.' + '#.#' + '###' + '#.#' + '#.#',
+        'C': '.##' + '#..' + '#..' + '#..' + '.##',
+        'K': '#.#' + '#.#' + '##.' + '#.#' + '#.#',
+      };
+      const bdLetterMat = new THREE.MeshStandardMaterial({ color: 0x1a1008, roughness: 0.6 });
+      const bdPix = 0.055;
+      const bdLetterW = 3 * bdPix + 0.025;
+      const bdWord = 'BACK';
+      const bdTotalW = bdLetterW * bdWord.length - 0.025;
+      const bdStartX = -bdTotalW / 2 + bdPix / 2;
+      for (let li = 0; li < bdWord.length; li++) {
+        const pat = BACK_LETTERS[bdWord[li]];
+        for (let r = 0; r < 5; r++) {
+          for (let c = 0; c < 3; c++) {
+            if (pat[r * 3 + c] !== '#') continue;
+            const lx = bdStartX + li * bdLetterW + c * bdPix;
+            const ly = doorH + 0.8 + (2 - r) * bdPix;
+            const pixel = new THREE.Mesh(
+              new THREE.BoxGeometry(bdPix * 0.95, bdPix * 0.95, 0.02),
+              bdLetterMat
+            );
+            pixel.position.set(bdX + 0.085, ly, lx);
+            worldGroup.add(pixel);
+          }
+        }
+      }
+
+      // Amber glow light from sign
+      const bdSignLight = new THREE.PointLight(0xffa040, 1.0, 7);
+      bdSignLight.position.set(bdX + 0.5, doorH + 0.8, 0);
+      worldGroup.add(bdSignLight);
+
+      // Floor plaque showing the PREVIOUS floor number
+      const prevFloorNum = n - 1;
+      const bdPlaqueOffsetZ = -(doorW / 2 + 0.35);
+      const bdPlaqueBase = new THREE.Mesh(
+        new THREE.BoxGeometry(0.05, 0.9, 0.9),
+        new THREE.MeshStandardMaterial({ color: 0x2a2a28, metalness: 0.4, roughness: 0.5 })
+      );
+      bdPlaqueBase.position.set(bdX + 0.02, doorH * 0.55, bdPlaqueOffsetZ);
+      worldGroup.add(bdPlaqueBase);
+      const bdPlaqueFace = new THREE.Mesh(
+        new THREE.BoxGeometry(0.02, 0.8, 0.8),
+        new THREE.MeshStandardMaterial({ color: 0xc89840, metalness: 0.7, roughness: 0.3, emissive: 0x3a2808, emissiveIntensity: 0.2 })
+      );
+      bdPlaqueFace.position.set(bdX + 0.06, doorH * 0.55, bdPlaqueOffsetZ);
+      worldGroup.add(bdPlaqueFace);
+      // Render prev floor digits
+      const BD_DIGITS = {
+        '0': '.###.' + '#...#' + '#..##' + '#.#.#' + '##..#' + '#...#' + '.###.',
+        '1': '..#..' + '.##..' + '..#..' + '..#..' + '..#..' + '..#..' + '.###.',
+        '2': '.###.' + '#...#' + '....#' + '...#.' + '..#..' + '.#...' + '#####',
+        '3': '.###.' + '#...#' + '....#' + '..##.' + '....#' + '#...#' + '.###.',
+        '4': '...#.' + '..##.' + '.#.#.' + '#..#.' + '#####' + '...#.' + '...#.',
+        '5': '#####' + '#....' + '####.' + '....#' + '....#' + '#...#' + '.###.',
+        '6': '.###.' + '#...#' + '#....' + '####.' + '#...#' + '#...#' + '.###.',
+        '7': '#####' + '....#' + '...#.' + '..#..' + '.#...' + '.#...' + '.#...',
+        '8': '.###.' + '#...#' + '#...#' + '.###.' + '#...#' + '#...#' + '.###.',
+        '9': '.###.' + '#...#' + '#...#' + '.####' + '....#' + '#...#' + '.###.',
+      };
+      const bdDigitMat = new THREE.MeshStandardMaterial({ color: 0x1a1208, emissive: 0x1a1208, emissiveIntensity: 0.1 });
+      const bdpPix = 0.08;
+      const bdDigitW = 5 * bdpPix + 0.04;
+      const prevStr = String(prevFloorNum).padStart(2, '0');
+      const bdpTotalW = bdDigitW * prevStr.length - 0.04;
+      const bdpStartZ = bdPlaqueOffsetZ - bdpTotalW / 2 + bdpPix / 2;
+      const bdpStartY = doorH * 0.55 + 3.5 * bdpPix;
+      for (let d = 0; d < prevStr.length; d++) {
+        const pat = BD_DIGITS[prevStr[d]] || BD_DIGITS['0'];
+        for (let r = 0; r < 7; r++) {
+          for (let c = 0; c < 5; c++) {
+            if (pat[r * 5 + c] !== '#') continue;
+            const pz = bdpStartZ + d * bdDigitW + c * bdpPix;
+            const py = bdpStartY - r * bdpPix;
+            const pixel = new THREE.Mesh(
+              new THREE.BoxGeometry(0.015, bdpPix * 0.9, bdpPix * 0.9),
+              bdDigitMat
+            );
+            pixel.position.set(bdX + 0.075, py, pz);
+            worldGroup.add(pixel);
+          }
+        }
+      }
+
+      backDoorState = { pivot: bDoorPivot, openAmount: 0 };
+    }
 
     // Void fillers — block the camera from seeing past the room ends.
     const voidMat = new THREE.MeshBasicMaterial({ color: 0x000000 });
@@ -4965,6 +5217,34 @@
   function showHint() {}
   function hideHint() {}
 
+  // ── DEATH REMINDERS ──────────────────────────────────────────────────────
+  // Shown every 5 deaths on the same floor. Add recordings here when ready.
+  // Each entry is { text } for now; swap in { text, audio: 'path/to/clip.mp3' }
+  // when recordings arrive and call sfx / new Audio() in showDeathReminder.
+  const DEATH_REMINDERS = [
+    { text: "// reminder 01" },
+    { text: "// reminder 02" },
+    { text: "// reminder 03" },
+    { text: "// reminder 04" },
+    { text: "// reminder 05" },
+  ];
+  let _reminderTimeout = null;
+  const _reminderEl = document.getElementById('death-reminder');
+
+  function showDeathReminder() {
+    if (!_reminderEl || DEATH_REMINDERS.length === 0) return;
+    const msg = DEATH_REMINDERS[Math.floor(Math.random() * DEATH_REMINDERS.length)];
+    _reminderEl.textContent = msg.text;
+    _reminderEl.classList.add('show');
+    clearTimeout(_reminderTimeout);
+    _reminderTimeout = setTimeout(() => _reminderEl.classList.remove('show'), 4000);
+  }
+
+  function hideDeathReminder() {
+    clearTimeout(_reminderTimeout);
+    if (_reminderEl) _reminderEl.classList.remove('show');
+  }
+
   // Called at the start of each floor to show the relevant mechanic hint
   const FLOOR_HINTS = {
     1: ['', '<strong>NEW — ACID</strong><p class="hint-lead">Green pools kill instantly. Jump across the platforms to reach the door.</p><div class="gp-input-split"><div class="gp-input-col gp-input-col--pad"><span class="gp-input-col-label">Controller</span><p class="hint-bind-details">LS move · <strong>A</strong> jump between safe spots</p></div><div class="gp-input-col gp-input-col--keyboard"><span class="gp-input-col-label">Keyboard</span><p class="hint-bind-details"><kbd>A</kbd><kbd>D</kbd> move · <kbd>Space</kbd> jump</p></div></div>'],
@@ -4977,7 +5257,11 @@
   };
 
   function nextFloor() {
+    playFloorSpeech(`${state.floor}_complete`);
     state.floor++;
+    state.floorDeaths = 0;
+    hideDeathReminder();
+    playFloorSpeech(state.floor);
     saveProgress();
     if (state.floor > TOTAL_FLOORS) { triggerWin(); return; }
     state.health = Math.min(MAX_HEALTH, state.health + 1);
@@ -4994,6 +5278,23 @@
     hideHint();
     const hint = FLOOR_HINTS[state.floor];
     if (hint) setTimeout(() => showHint(hint[0], hint[1]), 600);
+  }
+
+  function prevFloor() {
+    if (state.floor <= 1) return;
+    state.floor--;
+    state.floorDeaths = 0;
+    hideDeathReminder();
+    // No saveProgress — going backwards doesn't record progress
+    buildRoom(state.floor);
+    player.x = goalX - 3; player.y = spawnY + 1;
+    player.vx = 0; player.vy = 0;
+    player.dashing = 0; player.dashAvailable = false;
+    state.invuln = 1.2;
+    camera.position.x = player.x;
+    showFloorBanner();
+    updateHUD();
+    hideHint();
   }
 
   function disposePaperPlane() {
@@ -5899,7 +6200,7 @@
   }
 
   function updateDoorSwing(dt) {
-    // Door swing animation — opens as player approaches within trigger range
+    // Forward exit door
     if (doorState && doorState.pivot) {
       const distToDoor = goalX - player.x;
       const openTarget = distToDoor < 8 ? Math.min(1, (8 - distToDoor) / 6.5) : 0;
@@ -5907,6 +6208,15 @@
       doorState.openAmount += (openTarget - doorState.openAmount) * Math.min(1, 6 * dt);
       if (prevAmount < 0.02 && doorState.openAmount >= 0.02) sfx('door_open');
       doorState.pivot.rotation.y = -doorState.openAmount * Math.PI * 0.55;
+    }
+    // Back door — starts opening as player approaches within 3 units (closed at spawn x=2)
+    if (backDoorState && backDoorState.pivot) {
+      const distToBack = player.x - (-1); // distance from back door at x=-1
+      const bdOpenTarget = distToBack < 3 ? Math.min(1, (3 - distToBack) / 2.5) : 0;
+      const bdPrev = backDoorState.openAmount;
+      backDoorState.openAmount += (bdOpenTarget - backDoorState.openAmount) * Math.min(1, 6 * dt);
+      if (bdPrev < 0.02 && backDoorState.openAmount >= 0.02) sfx('door_open');
+      backDoorState.pivot.rotation.y = -backDoorState.openAmount * Math.PI * 0.55;
     }
   }
 
@@ -7440,10 +7750,15 @@
       player.mesh.visible = true;
     }
 
-    // Check goal
+    // Check goal — forward exit door
     if (player.x > goalX - 1.5 && player.y < 3.5 && player.y > -1) {
       sfx('door_enter');
       nextFloor();
+    }
+    // Check back door — return to end of previous floor
+    if (backDoorState && player.x < -0.5 && player.y < 3.5 && player.y > -1) {
+      sfx('door_enter');
+      prevFloor();
     }
   }
 
@@ -7665,6 +7980,9 @@
     if (state.dying) return;
     state.dying = true;
     state.deaths = (state.deaths || 0) + 1;
+    state.floorDeaths = (state.floorDeaths || 0) + 1;
+    if (state.floorDeaths % 5 === 0) showDeathReminder();
+    if (state.floor === 5 && state.floorDeaths === 4) playFloorSpeech('5_death4');
 
     // Death explosion at current position
     emitDeathExplosion(player.x, player.y);
@@ -8296,6 +8614,33 @@
   }
 
   // =========================================================================
+  // FLOOR SPEECH — one clip per floor, plays first time that floor is entered
+  // per run. Add more entries as recordings arrive.
+  // =========================================================================
+  const FLOOR_SPEECH = {
+    1:           'assets/speech_floor1_intro.mp3',
+    20:          'assets/speech_floor20_intro.mp3',
+    25:          'assets/speech_floor25_intro.mp3',
+    '5_death4':  'assets/speech_floor5_death4.mp3',
+    '5_complete':'assets/speech_floor5_complete.mp3',
+  };
+  const _heardFloorSpeech = new Set();
+  let _activeSpeechClip = null;
+
+  function playFloorSpeech(floor) {
+    const src = FLOOR_SPEECH[floor];
+    if (!src || _heardFloorSpeech.has(floor)) return;
+    if (!audioEnabled()) return;
+    _heardFloorSpeech.add(floor);
+    if (_activeSpeechClip) { try { _activeSpeechClip.pause(); } catch(e) {} }
+    const clip = new Audio(src);
+    clip.volume = 0.65;
+    clip.play().catch(() => {});
+    _activeSpeechClip = clip;
+    clip.addEventListener('ended', () => { if (_activeSpeechClip === clip) _activeSpeechClip = null; });
+  }
+
+  // =========================================================================
   // GAME STATE TRANSITIONS
   // =========================================================================
   function startGame(resume) {
@@ -8308,6 +8653,7 @@
     state.timeLeft = INTERVIEW_SECONDS;
     state.elapsed = resume ? (saved.elapsed || 0) : 0;
     state.deaths = resume ? (state.deaths || 0) : 0;
+    state.floorDeaths = 0;
     state.bossHealth = 100;
 
     buildRoom(state.floor);
@@ -8325,6 +8671,10 @@
     if (startHint) setTimeout(() => showHint(startHint[0], startHint[1]), 1200);
     updateHUD();
     showFloorBanner();
+
+    // Play floor 1 intro speech on a fresh run (not resume)
+    if (!resume && state.floor === 1) playFloorSpeech(1);
+    _heardFloorSpeech.clear();
 
     document.getElementById('title-screen').classList.add('hidden');
     document.getElementById('gameover').classList.add('hidden');
@@ -8396,6 +8746,7 @@
         const submitSection = winEl?.querySelector('#lb-submit-btn')?.closest('div') ?? null;
         if (state.usedLevelSelect && submitSection) submitSection.style.display = 'none';
         winEl?.classList.remove('hidden');
+        _showBestTime('lb-best-time');
       }, 1500);
     }, 3200);
   }
@@ -8415,7 +8766,6 @@
       if (state.hitstop > 0) {
         state.hitstop -= dt;
       } else {
-        state.timeLeft -= dt;
         state.elapsed += dt;
 
         updatePlayer(dt);
@@ -8462,7 +8812,6 @@
 
       updateHUD();
 
-      if (state.timeLeft <= 0) triggerGameOver('timeout');
     }
 
     renderer.render(scene, camera);
@@ -8738,6 +9087,7 @@
         document.getElementById('pause-menu').classList.add('hidden');
       }
       document.getElementById('leaderboard-overlay').classList.remove('hidden');
+      _showBestTime('lb-overlay-best-time');
       const savedName = localStorage.getItem('floor25_lb_name') || '';
       renderLeaderboard(savedName, OVERLAY_TARGETS);
     }
@@ -8759,6 +9109,14 @@
     window.isLeaderboardOverlayOpen = () =>
       !document.getElementById('leaderboard-overlay').classList.contains('hidden');
     window.closeLeaderboardOverlay = closeLeaderboardOverlay;
+
+    // ── personal best display helper ─────────────────────────────────────────
+    function _showBestTime(elId) {
+      const b = getBest();
+      const el = document.getElementById(elId);
+      if (!el) return;
+      el.innerHTML = b != null ? formatTime(b) : '<span class="lb-best-none">No completed run yet</span>';
+    }
 
     // Wire up buttons.
     document.getElementById('title-leaderboard-btn')
