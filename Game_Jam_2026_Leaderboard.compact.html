@@ -8744,9 +8744,17 @@
         _lastRunDeaths = state.deaths || 0;
         window._lbRunTime   = _lastRunTime;
         window._lbRunDeaths = _lastRunDeaths;
+        console.log('[DEBUG win] usedLevelSelect:', state.usedLevelSelect);
+        console.log('[DEBUG win] state.elapsed:', state.elapsed);
+        console.log('[DEBUG win] _lbRunTime set to:', window._lbRunTime);
+        console.log('[DEBUG win] _lbRunDeaths set to:', window._lbRunDeaths);
         const winEl = document.getElementById('win');
         const submitSection = winEl?.querySelector('#lb-submit-btn')?.closest('div') ?? null;
-        if (state.usedLevelSelect && submitSection) submitSection.style.display = 'none';
+        console.log('[DEBUG win] submitSection found:', !!submitSection);
+        if (state.usedLevelSelect && submitSection) {
+          console.log('[DEBUG win] Hiding submit section because usedLevelSelect=true');
+          submitSection.style.display = 'none';
+        }
         winEl?.classList.remove('hidden');
         _showBestTime('lb-best-time');
       }, 1500);
@@ -9235,12 +9243,15 @@
     // ── submit score ──────────────────────────────────────────────────────────
     async function submitScore(name, time, deaths) {
       const cleanName = sanitize(name);
-      await addDoc(collection(db, LB_COLLECTION), {
+      const payload = {
         name:   cleanName,
         time:   Math.round(time * 1000) / 1000,
         deaths: deaths || 0,
         ts:     serverTimestamp(),
-      });
+      };
+      console.log('[DEBUG submitScore] Payload to Firestore:', JSON.stringify({ ...payload, ts: '(serverTimestamp)' }));
+      await addDoc(collection(db, LB_COLLECTION), payload);
+      console.log('[DEBUG submitScore] addDoc succeeded');
       return cleanName;
     }
 
@@ -9265,6 +9276,7 @@
 
       submitBtn.addEventListener('click', async () => {
         const name = nameInput.value.trim();
+        console.log('[DEBUG submit] Button clicked. name:', name);
         if (!name) {
           status.textContent  = 'Please enter your name first.';
           status.className    = 'error';
@@ -9275,21 +9287,32 @@
         // Grab the current run's time & deaths
         let runTime   = window._lbRunTime   ?? null;
         let runDeaths = window._lbRunDeaths ?? 0;
+        console.log('[DEBUG submit] window._lbRunTime:', window._lbRunTime);
+        console.log('[DEBUG submit] window._lbRunDeaths:', window._lbRunDeaths);
 
         // Fallback: parse the displayed time string (MM:SS.cs format)
         if (runTime == null) {
+          console.log('[DEBUG submit] _lbRunTime is null, attempting fallback parse from win-time element');
           try {
             const timeText = document.getElementById('win-time').textContent;
+            console.log('[DEBUG submit] win-time textContent:', timeText);
             const parts    = timeText.match(/(\d+):(\d+)\.(\d+)/);
             if (parts) {
               runTime = parseInt(parts[1]) * 60 + parseInt(parts[2]) + parseInt(parts[3]) / 100;
+              console.log('[DEBUG submit] Parsed fallback runTime:', runTime);
+            } else {
+              console.log('[DEBUG submit] Fallback regex did not match. timeText was:', JSON.stringify(timeText));
             }
             const dcEl = document.getElementById('death-count');
             if (dcEl) runDeaths = parseInt(dcEl.textContent) || 0;
-          } catch (e) {}
+            console.log('[DEBUG submit] Fallback runDeaths:', runDeaths);
+          } catch (e) { console.error('[DEBUG submit] Fallback parse threw:', e); }
         }
 
+        console.log('[DEBUG submit] Final runTime:', runTime, '| runDeaths:', runDeaths);
+
         if (runTime == null) {
+          console.warn('[DEBUG submit] runTime is still null — aborting submission');
           status.textContent = 'Could not read your time. Try again.';
           status.className   = 'error';
           return;
@@ -9300,17 +9323,20 @@
         status.className    = '';
 
         try {
+          console.log('[DEBUG submit] Calling submitScore with name:', name, 'time:', runTime, 'deaths:', runDeaths);
           const cleanName = await submitScore(name, runTime, runDeaths);
+          console.log('[DEBUG submit] submitScore resolved. cleanName:', cleanName);
           localStorage.setItem('floor25_lb_name', cleanName);
           status.textContent = '✓ Score submitted!';
           status.className   = 'success';
           submitBtn.disabled = true;
           await renderLeaderboard(cleanName);
         } catch (err) {
+          console.error('[DEBUG submit] submitScore threw:', err);
+          console.error('[DEBUG submit] err.code:', err?.code, '| err.message:', err?.message);
           status.textContent = 'Submission failed. Check connection.';
           status.className   = 'error';
           submitBtn.disabled = false;
-          console.error('Submit error:', err);
         }
       });
     }
