@@ -1,0 +1,5 @@
+{
+  "rewrites": [
+    { "source": "/", "destination": "/Game_Jam_2026_Leaderboard.compact.html" }
+  ]
+}
