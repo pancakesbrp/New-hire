@@ -8742,6 +8742,8 @@
         try { localStorage.removeItem(SAVE_KEY); } catch(e) {}
         _lastRunTime   = state.usedLevelSelect ? null : state.elapsed;
         _lastRunDeaths = state.deaths || 0;
+        window._lbRunTime   = _lastRunTime;
+        window._lbRunDeaths = _lastRunDeaths;
         const winEl = document.getElementById('win');
         const submitSection = winEl?.querySelector('#lb-submit-btn')?.closest('div') ?? null;
         if (state.usedLevelSelect && submitSection) submitSection.style.display = 'none';
@@ -9271,8 +9273,8 @@
         }
 
         // Grab the current run's time & deaths
-        let runTime   = _lastRunTime   ?? null;
-        let runDeaths = _lastRunDeaths ?? 0;
+        let runTime   = window._lbRunTime   ?? null;
+        let runDeaths = window._lbRunDeaths ?? 0;
 
         // Fallback: parse the displayed time string (MM:SS.cs format)
         if (runTime == null) {
