@@ -8744,18 +8744,7 @@
         _lastRunDeaths = state.deaths || 0;
         window._lbRunTime   = _lastRunTime;
         window._lbRunDeaths = _lastRunDeaths;
-        console.log('[DEBUG win] usedLevelSelect:', state.usedLevelSelect);
-        console.log('[DEBUG win] state.elapsed:', state.elapsed);
-        console.log('[DEBUG win] _lbRunTime set to:', window._lbRunTime);
-        console.log('[DEBUG win] _lbRunDeaths set to:', window._lbRunDeaths);
-        const winEl = document.getElementById('win');
-        const submitSection = winEl?.querySelector('#lb-submit-btn')?.closest('div') ?? null;
-        console.log('[DEBUG win] submitSection found:', !!submitSection);
-        if (state.usedLevelSelect && submitSection) {
-          console.log('[DEBUG win] Hiding submit section because usedLevelSelect=true');
-          submitSection.style.display = 'none';
-        }
-        winEl?.classList.remove('hidden');
+        document.getElementById('win').classList.remove('hidden');
         _showBestTime('lb-best-time');
       }, 1500);
     }, 3200);
@@ -9249,123 +9238,71 @@
         deaths: deaths || 0,
         ts:     serverTimestamp(),
       };
-      console.log('[DEBUG submitScore] Payload to Firestore:', JSON.stringify({ ...payload, ts: '(serverTimestamp)' }));
       await addDoc(collection(db, LB_COLLECTION), payload);
-      console.log('[DEBUG submitScore] addDoc succeeded');
       return cleanName;
     }
 
-    // ── hook up UI when win screen appears ────────────────────────────────────
-    // Watch for the win div becoming visible via a MutationObserver
-    let lbInitialized = false;
+    // ── hook up leaderboard UI ───────────────────────────────────────────────
+    const lbNameInput = document.getElementById('lb-name-input');
+    const lbSubmitBtn = document.getElementById('lb-submit-btn');
+    const lbStatus    = document.getElementById('lb-status');
+    const lbNameForm  = document.getElementById('lb-name-form');
 
-    function initLeaderboard() {
-      if (lbInitialized) return;
-      lbInitialized = true;
+    // Pre-fill name from localStorage
+    const savedLbName = localStorage.getItem('floor25_lb_name') || '';
+    if (savedLbName) lbNameInput.value = savedLbName;
 
-      // Pre-fill name from localStorage if available
-      const savedName = localStorage.getItem('floor25_lb_name') || '';
-      const nameInput = document.getElementById('lb-name-input');
-      if (savedName) nameInput.value = savedName;
+    // Single click listener — reads live run data at click time
+    lbSubmitBtn.addEventListener('click', async () => {
+      const name = lbNameInput.value.trim();
+      if (!name) {
+        lbStatus.textContent = 'Please enter your name first.';
+        lbStatus.className   = 'error';
+        lbNameInput.focus();
+        return;
+      }
 
-      // Load existing scores immediately
-      renderLeaderboard(savedName);
+      const runTime   = window._lbRunTime   ?? null;
+      const runDeaths = window._lbRunDeaths ?? 0;
 
-      const submitBtn = document.getElementById('lb-submit-btn');
-      const status    = document.getElementById('lb-status');
+      if (runTime == null) {
+        lbStatus.textContent = 'Score not eligible — level select was used.';
+        lbStatus.className   = 'error';
+        return;
+      }
 
-      submitBtn.addEventListener('click', async () => {
-        const name = nameInput.value.trim();
-        console.log('[DEBUG submit] Button clicked. name:', name);
-        if (!name) {
-          status.textContent  = 'Please enter your name first.';
-          status.className    = 'error';
-          nameInput.focus();
-          return;
-        }
+      lbSubmitBtn.disabled = true;
+      lbStatus.textContent = 'Submitting…';
+      lbStatus.className   = '';
 
-        // Grab the current run's time & deaths
-        let runTime   = window._lbRunTime   ?? null;
-        let runDeaths = window._lbRunDeaths ?? 0;
-        console.log('[DEBUG submit] window._lbRunTime:', window._lbRunTime);
-        console.log('[DEBUG submit] window._lbRunDeaths:', window._lbRunDeaths);
-
-        // Fallback: parse the displayed time string (MM:SS.cs format)
-        if (runTime == null) {
-          console.log('[DEBUG submit] _lbRunTime is null, attempting fallback parse from win-time element');
-          try {
-            const timeText = document.getElementById('win-time').textContent;
-            console.log('[DEBUG submit] win-time textContent:', timeText);
-            const parts    = timeText.match(/(\d+):(\d+)\.(\d+)/);
-            if (parts) {
-              runTime = parseInt(parts[1]) * 60 + parseInt(parts[2]) + parseInt(parts[3]) / 100;
-              console.log('[DEBUG submit] Parsed fallback runTime:', runTime);
-            } else {
-              console.log('[DEBUG submit] Fallback regex did not match. timeText was:', JSON.stringify(timeText));
-            }
-            const dcEl = document.getElementById('death-count');
-            if (dcEl) runDeaths = parseInt(dcEl.textContent) || 0;
-            console.log('[DEBUG submit] Fallback runDeaths:', runDeaths);
-          } catch (e) { console.error('[DEBUG submit] Fallback parse threw:', e); }
-        }
-
-        console.log('[DEBUG submit] Final runTime:', runTime, '| runDeaths:', runDeaths);
-
-        if (runTime == null) {
-          console.warn('[DEBUG submit] runTime is still null — aborting submission');
-          status.textContent = 'Could not read your time. Try again.';
-          status.className   = 'error';
-          return;
-        }
-
-        submitBtn.disabled  = true;
-        status.textContent  = 'Submitting…';
-        status.className    = '';
-
-        try {
-          console.log('[DEBUG submit] Calling submitScore with name:', name, 'time:', runTime, 'deaths:', runDeaths);
-          const cleanName = await submitScore(name, runTime, runDeaths);
-          console.log('[DEBUG submit] submitScore resolved. cleanName:', cleanName);
-          localStorage.setItem('floor25_lb_name', cleanName);
-          status.textContent = '✓ Score submitted!';
-          status.className   = 'success';
-          submitBtn.disabled = true;
-          await renderLeaderboard(cleanName);
-        } catch (err) {
-          console.error('[DEBUG submit] submitScore threw:', err);
-          console.error('[DEBUG submit] err.code:', err?.code, '| err.message:', err?.message);
-          status.textContent = 'Submission failed. Check connection.';
-          status.className   = 'error';
-          submitBtn.disabled = false;
-        }
-      });
-    }
-
-    // Watch for win screen becoming visible
-    const winEl = document.getElementById('win');
-    const observer = new MutationObserver(() => {
-      if (!winEl.classList.contains('hidden')) {
-        // Reset submit button & status each time the win screen shows
-        lbInitialized = false;
-        document.getElementById('lb-submit-btn').disabled = false;
-        document.getElementById('lb-status').textContent  = '';
-        document.getElementById('lb-status').className    = '';
-
-        // Debug: log visibility state of key elements
-        const nameForm = document.getElementById('lb-name-form');
-        const lbSection = document.getElementById('leaderboard-section');
-        console.log('[DEBUG observer] win screen became visible');
-        console.log('[DEBUG observer] #lb-name-form display:', nameForm?.style.display, '| offsetParent:', nameForm?.offsetParent);
-        console.log('[DEBUG observer] #leaderboard-section display:', lbSection?.style.display);
-        console.log('[DEBUG observer] window._lbRunTime at this moment:', window._lbRunTime);
-
-        // Restore submit form visibility in case a prior disqualified run hid it
-        if (nameForm) nameForm.style.display = '';
-
-        initLeaderboard();
+      try {
+        const cleanName = await submitScore(name, runTime, runDeaths);
+        localStorage.setItem('floor25_lb_name', cleanName);
+        lbNameInput.value    = cleanName;
+        lbStatus.textContent = '✓ Score submitted!';
+        lbStatus.className   = 'success';
+        await renderLeaderboard(cleanName);
+      } catch (err) {
+        console.error('Leaderboard submit failed:', err);
+        lbStatus.textContent = 'Submission failed. Check connection.';
+        lbStatus.className   = 'error';
+        lbSubmitBtn.disabled = false;
       }
     });
-    observer.observe(winEl, { attributes: true, attributeFilter: ['class'] });
+
+    // Reset UI each time the win screen appears
+    const winEl = document.getElementById('win');
+    new MutationObserver(() => {
+      if (winEl.classList.contains('hidden')) return;
+
+      const eligible = window._lbRunTime != null;
+      lbNameForm.style.display = eligible ? '' : 'none';
+      lbSubmitBtn.disabled     = false;
+      lbStatus.textContent     = eligible ? '' : 'Level select was used — score not eligible.';
+      lbStatus.className       = eligible ? '' : 'error';
+
+      renderLeaderboard(localStorage.getItem('floor25_lb_name') || '');
+    }).observe(winEl, { attributes: true, attributeFilter: ['class'] });
   </script>
 </body>
 </html>
