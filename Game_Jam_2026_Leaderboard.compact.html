@@ -9296,9 +9296,9 @@
       if (winEl.classList.contains('hidden')) return;
 
       const eligible = window._lbRunTime != null;
-      lbNameForm.style.display = eligible ? '' : 'none';
-      lbSubmitBtn.disabled     = false;
-      lbStatus.textContent     = eligible ? '' : 'Level select was used — score not eligible.';
+      lbNameForm.style.display = '';
+      lbSubmitBtn.disabled     = !eligible;
+      lbStatus.textContent     = eligible ? '' : 'Score not eligible — level select was used.';
       lbStatus.className       = eligible ? '' : 'error';
 
       renderLeaderboard(localStorage.getItem('floor25_lb_name') || '');
